@@ -1,1 +1,5 @@
 # cnakes
+
+```
+mvn package
+```
