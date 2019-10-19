@@ -1,5 +1,5 @@
-package com.thehshow.cnakes.menus;
-import com.thehshow.cnakes.levels.singleplayer.LevelScreen;
+package lv.herbis.cnakes.menus;
+import lv.herbis.cnakes.levels.singleplayer.LevelScreen;
 
 
 public class StartScreen {

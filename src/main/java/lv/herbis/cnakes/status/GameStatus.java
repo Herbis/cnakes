@@ -1,4 +1,4 @@
-package com.thehshow.cnakes.status;
+package lv.herbis.cnakes.status;
 
 public interface GameStatus {
 	

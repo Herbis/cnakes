@@ -1,4 +1,4 @@
-package com.thehshow.cnakes.levels.singleplayer;
+package lv.herbis.cnakes.levels.singleplayer;
 
 import javax.swing.JPanel;
 

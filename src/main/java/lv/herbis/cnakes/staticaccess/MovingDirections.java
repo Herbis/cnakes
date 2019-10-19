@@ -1,4 +1,4 @@
-package com.thehshow.cnakes.staticaccess;
+package lv.herbis.cnakes.staticaccess;
 
 import java.util.LinkedList;
 import java.util.Queue;

@@ -1,52 +1,77 @@
-package com.thehshow.cnakes.levels.singleplayer;
+package lv.herbis.cnakes.levels.singleplayer;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Random;
-
-import org.lwjgl.glfw.*;
-import org.lwjgl.opengl.*;
+import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
+import static org.lwjgl.glfw.GLFW.GLFW_FALSE;
+import static org.lwjgl.glfw.GLFW.GLFW_RESIZABLE;
+import static org.lwjgl.glfw.GLFW.glfwCreateWindow;
+import static org.lwjgl.glfw.GLFW.glfwDestroyWindow;
+import static org.lwjgl.glfw.GLFW.glfwGetPrimaryMonitor;
+import static org.lwjgl.glfw.GLFW.glfwGetVideoMode;
+import static org.lwjgl.glfw.GLFW.glfwInit;
+import static org.lwjgl.glfw.GLFW.glfwMakeContextCurrent;
+import static org.lwjgl.glfw.GLFW.glfwPollEvents;
+import static org.lwjgl.glfw.GLFW.glfwSetKeyCallback;
+import static org.lwjgl.glfw.GLFW.glfwSetWindowPos;
+import static org.lwjgl.glfw.GLFW.glfwSwapBuffers;
+import static org.lwjgl.glfw.GLFW.glfwSwapInterval;
+import static org.lwjgl.glfw.GLFW.glfwWindowHint;
+import static org.lwjgl.glfw.GLFW.glfwWindowShouldClose;
+import static org.lwjgl.opengl.GL11.GL_ALPHA;
+import static org.lwjgl.opengl.GL11.GL_BLEND;
+import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
+import static org.lwjgl.opengl.GL11.GL_DEPTH_TEST;
+import static org.lwjgl.opengl.GL11.GL_LINES;
+import static org.lwjgl.opengl.GL11.GL_LINE_STRIP;
+import static org.lwjgl.opengl.GL11.GL_MODELVIEW;
+import static org.lwjgl.opengl.GL11.GL_ONE_MINUS_SRC_ALPHA;
+import static org.lwjgl.opengl.GL11.GL_PROJECTION;
+import static org.lwjgl.opengl.GL11.GL_QUADS;
+import static org.lwjgl.opengl.GL11.GL_SRC_ALPHA;
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
+import static org.lwjgl.opengl.GL11.glBegin;
+import static org.lwjgl.opengl.GL11.glBlendFunc;
+import static org.lwjgl.opengl.GL11.glClear;
+import static org.lwjgl.opengl.GL11.glClearColor;
+import static org.lwjgl.opengl.GL11.glColor3f;
+import static org.lwjgl.opengl.GL11.glDisable;
+import static org.lwjgl.opengl.GL11.glEnable;
+import static org.lwjgl.opengl.GL11.glEnd;
+import static org.lwjgl.opengl.GL11.glLoadIdentity;
+import static org.lwjgl.opengl.GL11.glMatrixMode;
+import static org.lwjgl.opengl.GL11.glOrtho;
+import static org.lwjgl.opengl.GL11.glVertex2f;
+import static org.lwjgl.system.MemoryUtil.NULL;
 
 import java.awt.Font;
 import java.awt.FontFormatException;
 import java.io.File;
 import java.io.IOException;
-import java.nio.ByteBuffer;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Random;
 
-import static org.lwjgl.glfw.Callbacks.*;
-import static org.lwjgl.glfw.GLFW.*;
-import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.system.MemoryUtil.*;
+import org.lwjgl.glfw.GLFWErrorCallback;
+import org.lwjgl.glfw.GLFWVidMode;
+import org.lwjgl.opengl.GL;
 
-import org.lwjgl.opengl.GLContext;
-
+import lv.herbis.cnakes.entities.PointCoordinates;
+import lv.herbis.cnakes.entities.Timer;
+import lv.herbis.cnakes.listeners.SinglePlayerKeyListener;
+import lv.herbis.cnakes.save.HighScore;
+import lv.herbis.cnakes.save.HighScores;
+import lv.herbis.cnakes.staticaccess.GameRules;
+import lv.herbis.cnakes.staticaccess.MovingDirections;
+import lv.herbis.cnakes.status.SinglePlayerGameStatus;
+import lv.herbis.cnakes.tools.SerializationUtil;
 import other.fontloader.Color4f;
 import other.fontloader.FontTT;
-
-import com.thehshow.cnakes.entities.PointCoordinates;
-import com.thehshow.cnakes.entities.Timer;
-import com.thehshow.cnakes.listeners.SinglePlayerKeyListener;
-import com.thehshow.cnakes.save.HighScore;
-import com.thehshow.cnakes.save.HighScores;
-import com.thehshow.cnakes.staticaccess.GameRules;
-import com.thehshow.cnakes.staticaccess.MovingDirections;
-import com.thehshow.cnakes.status.SinglePlayerGameStatus;
-import com.thehshow.cnakes.tools.SerializationUtil;
 
 
 public class LevelScreen implements Runnable {
 	
-	/* Callbacks, needed to avoid them being garbage collected. Have to be in the main class. */
-	private static GLFWErrorCallback errorCallback;
-	private static GLFWWindowSizeCallback winSizeCallback;
-	private static GLFWKeyCallback winKeyCallback;
-	private static GLFWWindowPosCallback winPosCallback;
-	private static GLFWCursorPosCallback winCurPosCallback;
-	
-	private static final String SAVE_FILE_PATH = "C:/Users/Herbis/Documents/cnakes/";
+	private static final String SAVE_FILE_PATH = "C:/Users/Herbis/Documents/cnakes/"; // TODO should not be hardcoded
 	private static final String HIGHSCORE_FILE = "classic.hs";
 	private HighScores highScores;
 	
@@ -91,13 +116,8 @@ public class LevelScreen implements Runnable {
 	 * Cleans up (releases) the resources and destroys the window. 
 	 */
 	private void cleanUp() {
-		errorCallback.release();
-		winSizeCallback.release();
-		winKeyCallback.release();
-		winPosCallback.release();
-		winCurPosCallback.release();
+		glfwFreeCallbacks(windowId);
 		glfwDestroyWindow(windowId);
-
 	}
 	
 	
@@ -482,7 +502,7 @@ public class LevelScreen implements Runnable {
 	 * Starts the game loop, that keeps the game running. 
 	 */
 	private void gameLoop() {
-		while(glfwWindowShouldClose(windowId) == 0) {
+		while(!glfwWindowShouldClose(windowId)) {
 			glClear(GL_COLOR_BUFFER_BIT);
 			update();
 			
@@ -556,20 +576,34 @@ public class LevelScreen implements Runnable {
 	 * Initializes the display / window. 
 	 */
 	private void initDisplay() {
-		glfwSetErrorCallback(errorCallback = errorCallbackPrint(System.err));
-		if ( glfwInit() != GL11.GL_TRUE )
-            throw new IllegalStateException("Unable to initialize GLFW");
-		glfwWindowHint(GLFW_RESIZABLE, GL_FALSE); // the window will NOT be resizable
+		// Setup an error callback. The default implementation
+		// will print the error message in System.err.
+		GLFWErrorCallback.createPrint(System.err).set();
+
+		// Initialize GLFW. Most GLFW functions will not work before doing this.
+		if ( !glfwInit() )
+			throw new IllegalStateException("Unable to initialize GLFW");
+
+
+		// Configure GLFW
+		//glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE); // the window will stay hidden after creation
+		glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE); // the window will not be resizable
+
+
 		windowId = glfwCreateWindow(WIDTH, HEIGHT, "Cnakes", 0, NULL);
-		ByteBuffer vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+		if ( windowId == NULL ) {
+			throw new RuntimeException("Failed to create the GLFW window");
+		}
+
+		// Get the resolution of the primary monitor
+		GLFWVidMode vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
 		glfwSetWindowPos(
-	            windowId,
-	            (GLFWvidmode.width(vidmode) - WIDTH) / 2,
-	            (GLFWvidmode.height(vidmode) - HEIGHT) / 2
-	        );
+			windowId,
+			(vidmode.width() - WIDTH) / 2,
+			(vidmode.height() - HEIGHT) / 2
+		);
 		
 
-		
 		
 		glfwMakeContextCurrent(windowId);
 		glfwSwapInterval(0);
@@ -577,7 +611,7 @@ public class LevelScreen implements Runnable {
 		glfwSetKeyCallback(windowId, winKeyCallback);
 		glfwSetWindowPosCallback(windowId, winPosCallback);
 		glfwSetCursorPosCallback(windowId, winCurPosCallback);*/
-		GLContext.createFromCurrent();
+		GL.createCapabilities();
 	}
     
     
@@ -588,7 +622,7 @@ public class LevelScreen implements Runnable {
 		loadHighScores();
 		startGame();
 		//glfwSetInputMode(windowId, GLFW_STICKY_KEYS, 5);
-		glfwSetKeyCallback(windowId, winKeyCallback =  new SinglePlayerKeyListener(GAME_STATUS));
+		glfwSetKeyCallback(windowId, new SinglePlayerKeyListener(GAME_STATUS));
 	}
 	
 	
@@ -615,7 +649,7 @@ public class LevelScreen implements Runnable {
 	 */
 	private void initTextures() {
 		try {
-			GAME_FONT = new FontTT(Font.createFont(Font.TRUETYPE_FONT, getClass().getClassLoader().getResourceAsStream("resources/fonts/telegrama_raw.otf")), 36, 0);
+			GAME_FONT = new FontTT(Font.createFont(Font.TRUETYPE_FONT, getClass().getClassLoader().getResourceAsStream("fonts/telegrama_raw.otf")), 36, 0);
 		} catch (FontFormatException | IOException e) {
 			e.printStackTrace();
 		}
@@ -723,6 +757,7 @@ public class LevelScreen implements Runnable {
 		};
 		//GAME_STATUS.start();
 		
+
 		head = new PointCoordinates(0, 0);
 		random = new Random();
 		body = new ArrayList<PointCoordinates>();

@@ -1,4 +1,4 @@
-package com.thehshow.cnakes.tools;
+package lv.herbis.cnakes.tools;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;

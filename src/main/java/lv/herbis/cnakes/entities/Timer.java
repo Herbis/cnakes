@@ -1,4 +1,4 @@
-package com.thehshow.cnakes.entities;
+package lv.herbis.cnakes.entities;
 
 public class Timer {
 	

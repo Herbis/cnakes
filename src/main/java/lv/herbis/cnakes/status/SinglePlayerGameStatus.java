@@ -1,6 +1,6 @@
-package com.thehshow.cnakes.status;
+package lv.herbis.cnakes.status;
 
-import com.thehshow.cnakes.entities.Timer;
+import lv.herbis.cnakes.entities.Timer;
 
 public abstract class SinglePlayerGameStatus implements GameStatus {
 	private boolean isPLAYED, isPAUSED, justSTARTED;

@@ -1,4 +1,4 @@
-package com.thehshow.cnakes.save;
+package lv.herbis.cnakes.save;
 
 import java.io.Serializable;
 import java.util.Calendar;

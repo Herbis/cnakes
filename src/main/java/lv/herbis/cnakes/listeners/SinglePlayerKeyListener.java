@@ -1,9 +1,9 @@
-package com.thehshow.cnakes.listeners;
+package lv.herbis.cnakes.listeners;
 
 import org.lwjgl.glfw.GLFWKeyCallback;
 
-import com.thehshow.cnakes.staticaccess.MovingDirections;
-import com.thehshow.cnakes.status.GameStatus;
+import lv.herbis.cnakes.staticaccess.MovingDirections;
+import lv.herbis.cnakes.status.GameStatus;
 
 import static org.lwjgl.glfw.GLFW.*;
 
