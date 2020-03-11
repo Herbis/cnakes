@@ -170,19 +170,19 @@ public class LevelScreen implements Runnable {
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 		/* "Bugs Eaten" number */ //TODO got to make the coordinates and sizes more dynamic
-		GAME_FONT.drawText("" + GAME_STATUS.getBugsCollected(), 20, 25, 574, 0, Color4f.YELLOW, 0, 0, 0, false);
+		GAME_FONT.drawText("" + GAME_STATUS.getBugsCollected(), 20, 25, screenHeight - 26, 0, Color4f.YELLOW, 0, 0, 0, false);
 		
 		/* "Snake Length" number */ //TODO got to make the coordinates and sizes more dynamic
-		GAME_FONT.drawText("" + GAME_STATUS.getSnakeLength(), 20, 25, 554, 0, Color4f.YELLOW, 0, 0, 0, false);
+		GAME_FONT.drawText("" + GAME_STATUS.getSnakeLength(), 20, 25, screenHeight - 46, 0, Color4f.YELLOW, 0, 0, 0, false);
 
 		/* "Score" number */ //TODO got to make the coordinates and sizes more dynamic
-		GAME_FONT.drawText("" + GAME_STATUS.getScore(), 20, 25, 534, 0, Color4f.YELLOW, 0, 0, 0, false);
+		GAME_FONT.drawText("" + GAME_STATUS.getScore(), 20, 25, screenHeight - 66, 0, Color4f.YELLOW, 0, 0, 0, false);
 		
 		/* "Player name" text */ //TODO got to make the coordinates and sizes more dynamic
-		GAME_FONT.drawText("Player 1", 20, 10, 596, 0, Color4f.YELLOW, 0, 0, 0, false);
+		GAME_FONT.drawText("Player 1", 20, 10, screenHeight - 4, 0, Color4f.YELLOW, 0, 0, 0, false);
 		
 		if(GAME_STATUS.isPaused()) {
-			GAME_FONT.drawText("PAUSED", 40, gameBoundX / 2, 596, 0, Color4f.YELLOW, 0, 0, 0, true);
+			GAME_FONT.drawText("PAUSED", 40, gameBoundX / 2, screenHeight - 4, 0, Color4f.YELLOW, 0, 0, 0, true);
 		}
 		glDisable(GL_TEXTURE_2D);
 		
@@ -418,21 +418,21 @@ public class LevelScreen implements Runnable {
 		Timer currentTimer = GAME_STATUS.getTimer();
 		if(currentTimer == null) {
 			/* If the current Timer is null, the game was never started. */
-			GAME_FONT.drawText("Start the Game!", 40, gameBoundX / 2, 556, 0, Color4f.GREEN, 0, 0, 0, true);
+			GAME_FONT.drawText("Start the Game!", 40, gameBoundX / 2, screenHeight - 44, 0, Color4f.GREEN, 0, 0, 0, true); // TODO reduce calculations
 		} else {
 			if(GAME_STATUS.hasEnded()) {
 				/* If time left is equal to 0, the game has ended. */ 
-				GAME_FONT.drawText("Game Over", 40, gameBoundX / 2, 556, 0, Color4f.RED, 0, 0, 0, true);
+				GAME_FONT.drawText("Game Over", 40, gameBoundX / 2, screenHeight - 44, 0, Color4f.RED, 0, 0, 0, true); // TODO reduce calculations
 				HighScore topScore = highScores.getTopScore();
 				GAME_FONT.drawText("Top High Score: " + topScore.getScore() + " (" 
 									+ highScores.getTopScore().getUsername() + ") " 
 									+ HS_DATE_FORMAT.format(new Date(topScore.getTimestamp())), 
-									  20, gameBoundX / 2, 586, 0, Color4f.WHITE, 0, 0, 0, true);
+									  20, gameBoundX / 2, screenHeight - 14, 0, Color4f.WHITE, 0, 0, 0, true); // TODO reduce calculations
 
 			} else {
 				/* If time left has a value higher than zero, lets use it, to show how much time player has left. */
 				DATE_FOR_TIMER.setTime(GAME_STATUS.getTimer().getTimeLeft());
-				GAME_FONT.drawText("" + TIME_FORMAT.format(DATE_FOR_TIMER), 40, gameBoundX / 2, 556, 0, Color4f.RED, 0, 0, 0, true);
+				GAME_FONT.drawText("" + TIME_FORMAT.format(DATE_FOR_TIMER), 40, gameBoundX / 2, screenHeight - 44, 0, Color4f.RED, 0, 0, 0, true); // TODO reduce calculations
 			}
 		}
 		
@@ -615,7 +615,7 @@ public class LevelScreen implements Runnable {
 		
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();
-		glOrtho(0, 800, 0, 600, -1, 1);
+		glOrtho(0, screenWidth, 0, screenHeight, -1, 1);
 		glMatrixMode(GL_MODELVIEW);
 		
 		glClearColor(0, 0, 0, 1);
