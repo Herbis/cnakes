@@ -1,5 +1,7 @@
 video:
+  monitor: 1
   resolution:
     horizontal: 1280
     vertical: 720
-    fullScreen: false
+    fullScreen: true
+  scale: 10
