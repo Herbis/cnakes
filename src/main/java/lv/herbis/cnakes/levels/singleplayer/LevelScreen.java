@@ -49,6 +49,7 @@ public class LevelScreen implements Runnable {
 	private Configuration configuration;
 
 	private boolean fullScreen;
+	private Integer monitor;
 
 	private int screenWidth;
     private int screenHeight;
@@ -631,6 +632,7 @@ public class LevelScreen implements Runnable {
 		fullScreen = configuration.getVideo().getResolution().isFullScreen();
     	screenWidth = configuration.getVideo().getResolution().getHorizontal();
 		screenHeight = configuration.getVideo().getResolution().getVertical();
+		monitor = configuration.getVideo().getMonitor();
 		gameBoundX = screenWidth;
 		gameBoundY = screenHeight - SCOREBOARD_HEIGHT;
 	}
@@ -653,7 +655,15 @@ public class LevelScreen implements Runnable {
 		//glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE); // the window will stay hidden after creation
 		glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE); // the window will not be resizable
 
-		windowId = glfwCreateWindow(screenWidth, screenHeight, "Cnakes", fullScreen ? glfwGetPrimaryMonitor() : 0, NULL);
+		final long fullScreenMonitor;
+		if (fullScreen) {
+			fullScreenMonitor = monitor == null ? glfwGetPrimaryMonitor() : glfwGetMonitors().get(monitor);
+		} else {
+			fullScreenMonitor = NULL;
+		}
+
+
+		windowId = glfwCreateWindow(screenWidth, screenHeight, "Cnakes", fullScreenMonitor, NULL);
 		if ( windowId == NULL ) {
 			throw new RuntimeException("Failed to create the GLFW window");
 		}
@@ -665,9 +675,7 @@ public class LevelScreen implements Runnable {
 			(vidmode.width() - screenWidth) / 2,
 			(vidmode.height() - screenHeight) / 2
 		);
-		
 
-		
 		glfwMakeContextCurrent(windowId);
 		glfwSwapInterval(0);
 		/*glfwSetWindowSizeCallback(windowId, winSizeCallback);
