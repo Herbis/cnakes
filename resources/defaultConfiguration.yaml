@@ -1,0 +1,5 @@
+video:
+  resolution:
+    horizontal: 800
+    vertical: 600
+    fullScreen: false

@@ -5,3 +5,5 @@
 /target
 .vscode/settings.json
 .metadata/
+.idea
+*.iml

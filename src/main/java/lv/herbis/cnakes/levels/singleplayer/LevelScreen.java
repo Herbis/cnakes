@@ -15,6 +15,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
+import lv.herbis.cnakes.configuration.Configuration;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
@@ -36,19 +37,23 @@ public class LevelScreen implements Runnable {
 	
 	private static final String SAVE_FILE_PATH = "C:/Users/Herbis/Documents/cnakes/"; // TODO should not be hardcoded
 	private static final String HIGHSCORE_FILE = "classic.hs";
-	private HighScores highScores;
-	
-	private boolean fullscreen = true;
-
 	private static int GAME_LENGTH = 1;
-	
 	private static long windowId;
-	int WIDTH = 800;
-    int HEIGHT = 600;
-    int GAME_BOUND_X = WIDTH;
-    int GAME_BOUND_Y = HEIGHT - 100;
-    int SCALE = 10; // 10
-    int MOVE_EVERY_MS = 40; //40
+
+	private HighScores highScores;
+	private Configuration configuration;
+
+
+	private final int SCOREBOARD_HEIGHT = 100; // TODO should be scaled
+
+	private boolean fullScreen;
+
+	private int screenWidth;
+    private int screenHeight;
+	private int gameBoundX;
+	private int gameBoundY;
+	private int SCALE = 10; // 10
+	private int MOVE_EVERY_MS = 40; //40
     
     boolean halfCellReached = true;
     
@@ -76,6 +81,11 @@ public class LevelScreen implements Runnable {
 	/** The fonts to draw to the screen */
 	private FontTT GAME_FONT;
 
+	public LevelScreen(final Configuration configuration)
+	{
+		this.configuration = configuration;
+		initConfiguration();
+	}
     
 	/**
 	 * Cleans up (releases) the resources and destroys the window. 
@@ -117,14 +127,14 @@ public class LevelScreen implements Runnable {
 		glColor3f(0.22f, 0.29f, 0.15f);
 
 		glBegin(GL_LINES);
-		for(int i = SCALE; i <= WIDTH; i += SCALE){
+		for(int i = SCALE; i <= screenWidth; i += SCALE){
 			glVertex2f(i, 0);
-			glVertex2f(i, GAME_BOUND_Y);
+			glVertex2f(i, gameBoundY);
 		}		
 		
-		for(int i = SCALE; i <= GAME_BOUND_Y; i += SCALE){
+		for(int i = SCALE; i <= gameBoundY; i += SCALE){
 			glVertex2f(0, i);
-			glVertex2f(WIDTH, i);
+			glVertex2f(screenWidth, i);
 		}		
 
 		glEnd();				 
@@ -140,15 +150,15 @@ public class LevelScreen implements Runnable {
 		glBegin(GL_QUADS);
 			/* "Bugs Eaten" square */
 			glColor3f(0.25f, 0.73f, 0.31f);
-			drawFilledSquare(1, GAME_BOUND_Y / SCALE + 6);
+			drawFilledSquare(1, gameBoundY / SCALE + 6);
 			
 			/* "Snake Length" square */
 			glColor3f(0.55f, 0.01f, 0.31f);
-			drawFilledSquare(1, GAME_BOUND_Y / SCALE + 4);
+			drawFilledSquare(1, gameBoundY / SCALE + 4);
 			
 			/* "Score" square */
 			glColor3f(1.35f, 0.44f, 2.55f);
-			drawFilledSquare(1, GAME_BOUND_Y / SCALE + 2);
+			drawFilledSquare(1, gameBoundY / SCALE + 2);
 			
 
 		glEnd();
@@ -172,7 +182,7 @@ public class LevelScreen implements Runnable {
 		GAME_FONT.drawText("Player 1", 20, 10, 596, 0, Color4f.YELLOW, 0, 0, 0, false);
 		
 		if(GAME_STATUS.isPaused()) {
-			GAME_FONT.drawText("PAUSED", 40, GAME_BOUND_X / 2, 596, 0, Color4f.YELLOW, 0, 0, 0, true);
+			GAME_FONT.drawText("PAUSED", 40, gameBoundX / 2, 596, 0, Color4f.YELLOW, 0, 0, 0, true);
 		}
 		glDisable(GL_TEXTURE_2D);
 		
@@ -184,7 +194,7 @@ public class LevelScreen implements Runnable {
 	public void drawSmoothTheSnakeMovement(long pixelAmount) {
 		int direction = MovingDirections.getPreviousDirection(MovingDirections.PLAYER_1);
 
-		boolean drawExtraHeadBit = body.size() > 0 ? true : false; 
+		boolean drawExtraHeadBit = body.size() > 0;
 		
 		glColor3f(0.55f, 0.01f, 0.31f); //TODO probably make configurable / global
 		if(direction == MovingDirections.DOWN) {	
@@ -408,21 +418,21 @@ public class LevelScreen implements Runnable {
 		Timer currentTimer = GAME_STATUS.getTimer();
 		if(currentTimer == null) {
 			/* If the current Timer is null, the game was never started. */
-			GAME_FONT.drawText("Start the Game!", 40, GAME_BOUND_X / 2, 556, 0, Color4f.GREEN, 0, 0, 0, true);
+			GAME_FONT.drawText("Start the Game!", 40, gameBoundX / 2, 556, 0, Color4f.GREEN, 0, 0, 0, true);
 		} else {
 			if(GAME_STATUS.hasEnded()) {
 				/* If time left is equal to 0, the game has ended. */ 
-				GAME_FONT.drawText("Game Over", 40, GAME_BOUND_X / 2, 556, 0, Color4f.RED, 0, 0, 0, true);
+				GAME_FONT.drawText("Game Over", 40, gameBoundX / 2, 556, 0, Color4f.RED, 0, 0, 0, true);
 				HighScore topScore = highScores.getTopScore();
 				GAME_FONT.drawText("Top High Score: " + topScore.getScore() + " (" 
 									+ highScores.getTopScore().getUsername() + ") " 
 									+ HS_DATE_FORMAT.format(new Date(topScore.getTimestamp())), 
-									  20, GAME_BOUND_X / 2, 586, 0, Color4f.WHITE, 0, 0, 0, true);
+									  20, gameBoundX / 2, 586, 0, Color4f.WHITE, 0, 0, 0, true);
 
 			} else {
 				/* If time left has a value higher than zero, lets use it, to show how much time player has left. */
 				DATE_FOR_TIMER.setTime(GAME_STATUS.getTimer().getTimeLeft());
-				GAME_FONT.drawText("" + TIME_FORMAT.format(DATE_FOR_TIMER), 40, GAME_BOUND_X / 2, 556, 0, Color4f.RED, 0, 0, 0, true);
+				GAME_FONT.drawText("" + TIME_FORMAT.format(DATE_FOR_TIMER), 40, gameBoundX / 2, 556, 0, Color4f.RED, 0, 0, 0, true);
 			}
 		}
 		
@@ -535,6 +545,14 @@ public class LevelScreen implements Runnable {
 		}
 		return true;
 	}
+
+	private void initConfiguration() {
+		fullScreen = configuration.getVideo().getResolution().isFullScreen();
+    	screenWidth = configuration.getVideo().getResolution().getHorizontal();
+		screenHeight = configuration.getVideo().getResolution().getVertical();
+		gameBoundX = screenWidth;
+		gameBoundY = screenHeight - SCOREBOARD_HEIGHT;
+	}
 	
     
 	/**
@@ -554,7 +572,7 @@ public class LevelScreen implements Runnable {
 		//glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE); // the window will stay hidden after creation
 		glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE); // the window will not be resizable
 
-		windowId = glfwCreateWindow(WIDTH, HEIGHT, "Cnakes", fullscreen ? glfwGetPrimaryMonitor() : 0, NULL);
+		windowId = glfwCreateWindow(screenWidth, screenHeight, "Cnakes", fullScreen ? glfwGetPrimaryMonitor() : 0, NULL);
 		if ( windowId == NULL ) {
 			throw new RuntimeException("Failed to create the GLFW window");
 		}
@@ -563,8 +581,8 @@ public class LevelScreen implements Runnable {
 		GLFWVidMode vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
 		glfwSetWindowPos(
 			windowId,
-			(vidmode.width() - WIDTH) / 2,
-			(vidmode.height() - HEIGHT) / 2
+			(vidmode.width() - screenWidth) / 2,
+			(vidmode.height() - screenHeight) / 2
 		);
 		
 
@@ -650,12 +668,12 @@ public class LevelScreen implements Runnable {
 	public void newTarget() {
 		if(target == null) {
 			/* If we didn't have a target object already, create one. */
-			target = new PointCoordinates(random.nextInt(GAME_BOUND_X / SCALE), random.nextInt(GAME_BOUND_Y / SCALE));
+			target = new PointCoordinates(random.nextInt(gameBoundX / SCALE), random.nextInt(gameBoundY / SCALE));
 		} else {
 			/* Create a new target, but make sure it's not in the same spot as the old one. */
-			PointCoordinates newTarget = new PointCoordinates(random.nextInt(GAME_BOUND_X / SCALE), random.nextInt(GAME_BOUND_Y / SCALE));
+			PointCoordinates newTarget = new PointCoordinates(random.nextInt(gameBoundX / SCALE), random.nextInt(gameBoundY / SCALE));
 			while(newTarget.equals(target)) {
-				newTarget = new PointCoordinates(random.nextInt(GAME_BOUND_X / SCALE), random.nextInt(GAME_BOUND_Y / SCALE));
+				newTarget = new PointCoordinates(random.nextInt(gameBoundX / SCALE), random.nextInt(gameBoundY / SCALE));
 			}
 			
 			target.setLocation(newTarget.X, newTarget.Y);
@@ -682,6 +700,7 @@ public class LevelScreen implements Runnable {
      */
 	public void run() {
 		System.setProperty("org.lwjgl.librarypath", new File("native").getAbsolutePath());
+
 		
 		initDisplay();
 		initGL();
@@ -822,7 +841,7 @@ public class LevelScreen implements Runnable {
 
 			
 			if(direction == MovingDirections.RIGHT) { 
-				if(head.X + 1 < (GAME_BOUND_X / SCALE) && hitsTail(head.X + 1, head.Y)) { // maybe eliminate pointless game bound calculations?
+				if(head.X + 1 < (gameBoundX / SCALE) && hitsTail(head.X + 1, head.Y)) { // maybe eliminate pointless game bound calculations?
 					head = new PointCoordinates(head.X + 1, head.Y);
 					
 				} else {
@@ -852,7 +871,7 @@ public class LevelScreen implements Runnable {
 					MovingDirections.setDirection(MovingDirections.PLAYER_1, MovingDirections.UP);
 				}			
 			} else if(direction == MovingDirections.UP) { 
-				if(head.Y + 1 < (GAME_BOUND_Y / SCALE) && hitsTail(head.X, head.Y + 1)) {
+				if(head.Y + 1 < (gameBoundY / SCALE) && hitsTail(head.X, head.Y + 1)) {
 					head = new PointCoordinates(head.X, head.Y + 1);
 				} else {
 					GAME_STATUS.setInBonus(false);

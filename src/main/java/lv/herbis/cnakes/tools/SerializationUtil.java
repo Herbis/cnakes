@@ -15,13 +15,12 @@ import java.io.ObjectOutputStream;
  * @author hiteshgarg
  */
 public class SerializationUtil {
- 
+
     /**
      * deserialize to Object from given file. We use the general Object so as
      * that it can work for any Java Class.
      */
-    public static Object deserialize(String fileName) throws IOException,
-            ClassNotFoundException {
+    public static Object deserialize(String fileName) throws IOException, ClassNotFoundException {
         FileInputStream fis = new FileInputStream(fileName);
         BufferedInputStream bis = new BufferedInputStream(fis);
         ObjectInputStream ois = new ObjectInputStream(bis);
@@ -29,13 +28,12 @@ public class SerializationUtil {
         ois.close();
         return obj;
     }
- 
-    
+
+
     /**
      * serialize the given object and save it to given file
      */
-    public static void serialize(Object obj, String fileName)
-            throws IOException {
+    public static void serialize(Object obj, String fileName) throws IOException {
         FileOutputStream fos = new FileOutputStream(fileName);
         BufferedOutputStream bos = new BufferedOutputStream(fos);
         ObjectOutputStream oos = new ObjectOutputStream(bos);
