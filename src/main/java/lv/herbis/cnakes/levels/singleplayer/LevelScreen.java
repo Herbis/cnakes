@@ -32,10 +32,12 @@ import lv.herbis.cnakes.tools.SerializationUtil;
 import other.fontloader.Color4f;
 import other.fontloader.FontTT;
 
+import javax.swing.filechooser.FileSystemView;
+
 
 public class LevelScreen implements Runnable {
 	
-	private static final String SAVE_FILE_PATH = "C:/Users/Herbis/Documents/cnakes/"; // TODO should not be hardcoded
+	private static final String SAVE_FILE_PATH = FileSystemView.getFileSystemView().getDefaultDirectory().getPath() + "\\My Games\\cnakes\\";
 	private static final String HIGHSCORE_FILE = "classic.hs";
 	private static int GAME_LENGTH = 1;
 	private static long windowId;
@@ -646,7 +648,7 @@ public class LevelScreen implements Runnable {
 	 */
 	public void loadHighScores() {
 		try {
-			highScores = (HighScores) SerializationUtil.deserialize(SAVE_FILE_PATH + HIGHSCORE_FILE);
+			highScores = (HighScores) SerializationUtil.deserialize(SAVE_FILE_PATH, HIGHSCORE_FILE);
 		} catch (Exception e) {
 			highScores = new HighScores(10);
 		}
@@ -729,7 +731,7 @@ public class LevelScreen implements Runnable {
 				if(highScores.addHighScore(highScore)) {
 					System.out.println("Highscore added.");
 					try {
-						SerializationUtil.serialize(highScores, SAVE_FILE_PATH + HIGHSCORE_FILE);
+						SerializationUtil.serialize(highScores, SAVE_FILE_PATH, HIGHSCORE_FILE);
 					} catch (Exception e) {
 						System.out.println("Could not save high score file.");
 					}
