@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Random;
 
 import lv.herbis.cnakes.configuration.Configuration;
+import lv.herbis.cnakes.controls.Direction;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
@@ -42,11 +43,10 @@ public class LevelScreen implements Runnable {
 	private static int GAME_LENGTH = 1;
 	private static long windowId;
 
+	private final int SCOREBOARD_HEIGHT = 100; // TODO should be scaled
+
 	private HighScores highScores;
 	private Configuration configuration;
-
-
-	private final int SCOREBOARD_HEIGHT = 100; // TODO should be scaled
 
 	private boolean fullScreen;
 
@@ -54,7 +54,7 @@ public class LevelScreen implements Runnable {
     private int screenHeight;
 	private int gameBoundX;
 	private int gameBoundY;
-	private int SCALE = 10; // 10
+	private int SCALE = 20; // 10
 	private int MOVE_EVERY_MS = 40; //40
     
     boolean halfCellReached = true;
@@ -126,20 +126,99 @@ public class LevelScreen implements Runnable {
      */
 	private void drawPlayGrid() {
 
-		glColor3f(0.22f, 0.29f, 0.15f);
+		final long headXScaled = head.X * SCALE;
+		final long headXScaledPlus = headXScaled + SCALE;
+		final long headYScaled = head.Y * SCALE;
+		final long headYScaledPlus = headYScaled + SCALE;
+		int direction = MovingDirections.getPreviousDirection(MovingDirections.PLAYER_1);
+
+		resetToBasicPlayGridLineColor();
 
 		glBegin(GL_LINES);
-		for(int i = SCALE; i <= screenWidth; i += SCALE){
-			glVertex2f(i, 0);
-			glVertex2f(i, gameBoundY);
-		}		
-		
-		for(int i = SCALE; i <= gameBoundY; i += SCALE){
-			glVertex2f(0, i);
-			glVertex2f(screenWidth, i);
+
+		/* Vertical lines */
+		for (int x = SCALE; x <= gameBoundX; x += SCALE) {
+			if (headXScaled == x || headXScaledPlus == x) {
+				drawVerticalBrightPlayGridLineBasedOnDirection(x,0, gameBoundY, direction);
+				resetToBasicPlayGridLineColor();
+			} else {
+				drawPlayGridLine(x, x, 0, gameBoundY);
+			}
+		}
+
+		/* Horizontal lines */
+		for (int y = SCALE; y <= gameBoundY; y += SCALE) {
+			if (headYScaled == y || headYScaledPlus == y) {
+				drawHorizontalBrightPlayGridLineBasedOnDirection(0, gameBoundX, y, direction);
+				resetToBasicPlayGridLineColor();
+			} else {
+				drawPlayGridLine(0, gameBoundX, y, y);
+			}
 		}		
 
 		glEnd();				 
+	}
+
+
+	/**
+	 * Draws a horizontal bright play grid line based on the direction of player.
+	 * @param x1 x start coordinates
+	 * @param x2 x end coordinates
+	 * @param y y coordinates
+	 * @param direction player movement direction.
+	 */
+	private void drawHorizontalBrightPlayGridLineBasedOnDirection(float x1, float x2, float y, final int direction)
+	{
+		if (direction == Direction.DOWN || direction == Direction.UP) {
+			/* draw less brighter */
+			glColor3f(0.22f, 0.29f, 0.15f); // TODO configure colors elsewhere (config file?)
+			drawPlayGridLine(x1, x2, y, y);
+		} else {
+			/* draw brighter */
+			glColor3f(0.42f, 0.49f, 0.35f); // TODO configure colors elsewhere (config file?)
+			drawPlayGridLine(x1, x2, y, y);
+		}
+	}
+
+	/**
+	 * Draws a vertical bright play grid line based on the direction of player.
+	 * @param x x coordinates.
+	 * @param y1 y start coordinates.
+	 * @param y2 y end coordinates.
+	 * @param direction player movement direction.
+	 */
+	private void drawVerticalBrightPlayGridLineBasedOnDirection(float x, float y1, float y2, final int direction)
+	{
+		if (direction == Direction.DOWN || direction == Direction.UP) {
+			/* draw brighter */
+			glColor3f(0.42f, 0.49f, 0.35f); // TODO configure colors elsewhere (config file?)
+			drawPlayGridLine(x, x, y1, y2);
+		} else {
+			/* draw less brighter */
+			glColor3f(0.22f, 0.29f, 0.15f); // TODO configure colors elsewhere (config file?)
+			drawPlayGridLine(x, x, y1, y2);
+		}
+	}
+
+	/**
+	 * Reset color back to basic play grid line color.
+	 */
+	private void resetToBasicPlayGridLineColor()
+	{
+		glColor3f(0.22f, 0.29f, 0.15f); // TODO configure colors elsewhere (config file?)
+	}
+
+	/**
+	 * Draw a play grid line.
+	 * @param x1 x start coordinates.
+	 * @param x2 x end coordinates.
+	 * @param y1 y start coordinates.
+	 * @param y2 y end coordinates.
+	 */
+	private void drawPlayGridLine(float x1, float x2, float y1, float y2)
+	{
+		glVertex2f(x1, y1);
+		glVertex2f(x2, y2);
 	}
 	
 	/**
