@@ -4,8 +4,8 @@
   <groupId>lv.herbis</groupId>
   <artifactId>cnakes</artifactId>
   <name>cnakes</name>
-  <version>0.0.6-SNAPSHOT</version>
-  <url>http://www.example.com</url>
+  <version>0.0.6</version>
+  <url>https://github.com/Herbis/cnakes</url>
   <build>
     <sourceDirectory>src</sourceDirectory>
     <resources>
