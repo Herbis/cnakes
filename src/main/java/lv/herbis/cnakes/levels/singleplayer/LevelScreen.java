@@ -58,7 +58,7 @@ public class LevelScreen implements Runnable {
     private int screenHeight;
 	private int gameBoundX;
 	private int gameBoundY;
-	private int SCALE = 20; // 10
+	private int gameScale;
 	private int MOVE_EVERY_MS = 40; //40
     
     boolean halfCellReached = true;
@@ -107,10 +107,10 @@ public class LevelScreen implements Runnable {
 	 * Set colour and call glBegin(GL_QUADS) before calling this, and call glEnd afterwards.
 	 */
 	private void drawFilledSquare(long x, long y) {
-		glVertex2f(x * SCALE, y * SCALE + SCALE); // top left
-		glVertex2f(x * SCALE, y * SCALE); // bottom left 
-		glVertex2f((x * SCALE + SCALE), y * SCALE); // bottom right
-		glVertex2f((x * SCALE + SCALE), y * SCALE + SCALE); // top right
+		glVertex2f(x * gameScale, y * gameScale + gameScale); // top left
+		glVertex2f(x * gameScale, y * gameScale); // bottom left
+		glVertex2f((x * gameScale + gameScale), y * gameScale); // bottom right
+		glVertex2f((x * gameScale + gameScale), y * gameScale + gameScale); // top right
 	}
     
 	
@@ -130,10 +130,10 @@ public class LevelScreen implements Runnable {
      */
 	private void drawPlayGrid() {
 
-		final long headXScaled = head.X * SCALE;
-		final long headXScaledPlus = headXScaled + SCALE;
-		final long headYScaled = head.Y * SCALE;
-		final long headYScaledPlus = headYScaled + SCALE;
+		final long headXScaled = head.X * gameScale;
+		final long headXScaledPlus = headXScaled + gameScale;
+		final long headYScaled = head.Y * gameScale;
+		final long headYScaledPlus = headYScaled + gameScale;
 		int direction = MovingDirections.getPreviousDirection(MovingDirections.PLAYER_1);
 
 		resetToBasicPlayGridLineColor();
@@ -141,7 +141,7 @@ public class LevelScreen implements Runnable {
 		glBegin(GL_LINES);
 
 		/* Vertical lines */
-		for (int x = SCALE; x <= gameBoundX; x += SCALE) {
+		for (int x = gameScale; x <= gameBoundX; x += gameScale) {
 			if (headXScaled == x || headXScaledPlus == x) {
 				drawVerticalBrightPlayGridLineBasedOnDirection(x,0, gameBoundY, direction);
 				resetToBasicPlayGridLineColor();
@@ -151,7 +151,7 @@ public class LevelScreen implements Runnable {
 		}
 
 		/* Horizontal lines */
-		for (int y = SCALE; y <= gameBoundY; y += SCALE) {
+		for (int y = gameScale; y <= gameBoundY; y += gameScale) {
 			if (headYScaled == y || headYScaledPlus == y) {
 				drawHorizontalBrightPlayGridLineBasedOnDirection(0, gameBoundX, y, direction);
 				resetToBasicPlayGridLineColor();
@@ -235,15 +235,15 @@ public class LevelScreen implements Runnable {
 		glBegin(GL_QUADS);
 			/* "Bugs Eaten" square */
 			glColor3f(0.25f, 0.73f, 0.31f);
-			drawFilledSquare(1, gameBoundY / SCALE + 6);
+			drawFilledSquare(1, gameBoundY / gameScale + 6);
 			
 			/* "Snake Length" square */
 			glColor3f(0.55f, 0.01f, 0.31f);
-			drawFilledSquare(1, gameBoundY / SCALE + 4);
+			drawFilledSquare(1, gameBoundY / gameScale + 4);
 			
 			/* "Score" square */
 			glColor3f(1.35f, 0.44f, 2.55f);
-			drawFilledSquare(1, gameBoundY / SCALE + 2);
+			drawFilledSquare(1, gameBoundY / gameScale + 2);
 			
 
 		glEnd();
@@ -285,22 +285,22 @@ public class LevelScreen implements Runnable {
 		if(direction == MovingDirections.DOWN) {	
 			if(halfCellReached) {
 				/* Draw the head. */
-				drawUnfilledUnscaledSquare((head.X * SCALE), (head.X * SCALE) + SCALE, 
-						   (head.Y * SCALE) - pixelAmount + SCALE, (head.Y * SCALE) + SCALE - pixelAmount + SCALE, 3);
+				drawUnfilledUnscaledSquare((head.X * gameScale), (head.X * gameScale) + gameScale,
+						   (head.Y * gameScale) - pixelAmount + gameScale, (head.Y * gameScale) + gameScale - pixelAmount + gameScale, 3);
 				if(drawExtraHeadBit) {
 					glBegin(GL_QUADS); // Must 
 
-					drawFilledUnscaledSquare((head.X * SCALE), (head.X * SCALE) + SCALE, 
-							   (head.Y * SCALE) + SCALE - 1 - pixelAmount  + SCALE, (head.Y * SCALE) + (SCALE * 2));
+					drawFilledUnscaledSquare((head.X * gameScale), (head.X * gameScale) + gameScale,
+							   (head.Y * gameScale) + gameScale - 1 - pixelAmount  + gameScale, (head.Y * gameScale) + (gameScale * 2));
 					glEnd();
 				}
 			} else {
-				drawUnfilledUnscaledSquare((head.X * SCALE), (head.X * SCALE) + SCALE, 
-						   (head.Y * SCALE) - pixelAmount, (head.Y * SCALE) + SCALE - pixelAmount, 3);
+				drawUnfilledUnscaledSquare((head.X * gameScale), (head.X * gameScale) + gameScale,
+						   (head.Y * gameScale) - pixelAmount, (head.Y * gameScale) + gameScale - pixelAmount, 3);
 				if(drawExtraHeadBit) {
 					glBegin(GL_QUADS); // Must 
-					drawFilledUnscaledSquare((head.X * SCALE), (head.X * SCALE) + SCALE, 
-							   (head.Y * SCALE) + SCALE - 1 - pixelAmount, (head.Y * SCALE) + SCALE);
+					drawFilledUnscaledSquare((head.X * gameScale), (head.X * gameScale) + gameScale,
+							   (head.Y * gameScale) + gameScale - 1 - pixelAmount, (head.Y * gameScale) + gameScale);
 					glEnd();
 				}
 			}
@@ -309,22 +309,22 @@ public class LevelScreen implements Runnable {
 		} else if (direction == MovingDirections.LEFT) {
 			/* Draw the head. */
 			if(halfCellReached) {
-				drawUnfilledUnscaledSquare((head.X * SCALE) - pixelAmount + SCALE, (head.X * SCALE) + SCALE - pixelAmount + SCALE, 
-										   (head.Y * SCALE), (head.Y * SCALE) + SCALE, 3);
+				drawUnfilledUnscaledSquare((head.X * gameScale) - pixelAmount + gameScale, (head.X * gameScale) + gameScale - pixelAmount + gameScale,
+										   (head.Y * gameScale), (head.Y * gameScale) + gameScale, 3);
 				if(drawExtraHeadBit) {
 					glBegin(GL_QUADS); // Must 
-					drawFilledUnscaledSquare((head.X * SCALE) + SCALE - pixelAmount - 1 + SCALE, (head.X * SCALE) + SCALE + SCALE, 
-							   (head.Y * SCALE), (head.Y * SCALE) + SCALE);
+					drawFilledUnscaledSquare((head.X * gameScale) + gameScale - pixelAmount - 1 + gameScale, (head.X * gameScale) + gameScale + gameScale,
+							   (head.Y * gameScale), (head.Y * gameScale) + gameScale);
 					glEnd();
 				}
 			} else {
-				drawUnfilledUnscaledSquare((head.X * SCALE) - pixelAmount, (head.X * SCALE) + SCALE - pixelAmount, 
-						   (head.Y * SCALE), (head.Y * SCALE) + SCALE, 3);
+				drawUnfilledUnscaledSquare((head.X * gameScale) - pixelAmount, (head.X * gameScale) + gameScale - pixelAmount,
+						   (head.Y * gameScale), (head.Y * gameScale) + gameScale, 3);
 				
 				if(drawExtraHeadBit) {
 					glBegin(GL_QUADS); // Must 
-					drawFilledUnscaledSquare((head.X * SCALE) + SCALE - pixelAmount - 1, (head.X * SCALE) + SCALE , 
-							   (head.Y * SCALE), (head.Y * SCALE) + SCALE);
+					drawFilledUnscaledSquare((head.X * gameScale) + gameScale - pixelAmount - 1, (head.X * gameScale) + gameScale,
+							   (head.Y * gameScale), (head.Y * gameScale) + gameScale);
 					glEnd();
 				}
 			}
@@ -332,23 +332,23 @@ public class LevelScreen implements Runnable {
 		} else if (direction == MovingDirections.RIGHT) {
 			if(halfCellReached) {
 				/* Draw the head. */
-				drawUnfilledUnscaledSquare((head.X * SCALE) + pixelAmount - SCALE, (head.X * SCALE) + SCALE + pixelAmount - SCALE, 
-										   (head.Y * SCALE), (head.Y * SCALE) + SCALE, 3);
+				drawUnfilledUnscaledSquare((head.X * gameScale) + pixelAmount - gameScale, (head.X * gameScale) + gameScale + pixelAmount - gameScale,
+										   (head.Y * gameScale), (head.Y * gameScale) + gameScale, 3);
 				
 				if(drawExtraHeadBit) {
 					glBegin(GL_QUADS); // Must 
-					drawFilledUnscaledSquare((head.X * SCALE) - SCALE, (head.X * SCALE) + 1 + pixelAmount - SCALE, 
-							   (head.Y * SCALE), (head.Y * SCALE) + SCALE);
+					drawFilledUnscaledSquare((head.X * gameScale) - gameScale, (head.X * gameScale) + 1 + pixelAmount - gameScale,
+							   (head.Y * gameScale), (head.Y * gameScale) + gameScale);
 					glEnd();
 				}
 			} else {
 				/* Draw the head. */
-				drawUnfilledUnscaledSquare((head.X * SCALE) + pixelAmount, (head.X * SCALE) + SCALE + pixelAmount, 
-										   (head.Y * SCALE), (head.Y * SCALE) + SCALE, 3);
+				drawUnfilledUnscaledSquare((head.X * gameScale) + pixelAmount, (head.X * gameScale) + gameScale + pixelAmount,
+										   (head.Y * gameScale), (head.Y * gameScale) + gameScale, 3);
 				if(drawExtraHeadBit) {
 					glBegin(GL_QUADS); // Must 
-					drawFilledUnscaledSquare((head.X * SCALE), (head.X * SCALE) + 1 + pixelAmount, 
-							   (head.Y * SCALE), (head.Y * SCALE) + SCALE);
+					drawFilledUnscaledSquare((head.X * gameScale), (head.X * gameScale) + 1 + pixelAmount,
+							   (head.Y * gameScale), (head.Y * gameScale) + gameScale);
 					glEnd();
 				}
 			}
@@ -356,24 +356,24 @@ public class LevelScreen implements Runnable {
 		} else if (direction == MovingDirections.UP) {
 			if(halfCellReached) {
 				/* Draw the head. */
-				drawUnfilledUnscaledSquare((head.X * SCALE), (head.X * SCALE) + SCALE, 
-										   (head.Y * SCALE) + pixelAmount - SCALE, (head.Y * SCALE) + SCALE + pixelAmount - SCALE, 3);
+				drawUnfilledUnscaledSquare((head.X * gameScale), (head.X * gameScale) + gameScale,
+										   (head.Y * gameScale) + pixelAmount - gameScale, (head.Y * gameScale) + gameScale + pixelAmount - gameScale, 3);
 				
 				if(drawExtraHeadBit) {
 					glBegin(GL_QUADS); // Must 
-					drawFilledUnscaledSquare((head.X * SCALE), (head.X * SCALE) + SCALE, 
-							(head.Y * SCALE) - SCALE, (head.Y * SCALE) + 1 + pixelAmount - SCALE);
+					drawFilledUnscaledSquare((head.X * gameScale), (head.X * gameScale) + gameScale,
+							(head.Y * gameScale) - gameScale, (head.Y * gameScale) + 1 + pixelAmount - gameScale);
 					glEnd();
 				}
 			} else {
 				/* Draw the head. */
-				drawUnfilledUnscaledSquare((head.X * SCALE), (head.X * SCALE) + SCALE, 
-										   (head.Y * SCALE) + pixelAmount, (head.Y * SCALE) + SCALE + pixelAmount, 3);
+				drawUnfilledUnscaledSquare((head.X * gameScale), (head.X * gameScale) + gameScale,
+										   (head.Y * gameScale) + pixelAmount, (head.Y * gameScale) + gameScale + pixelAmount, 3);
 				
 				if(drawExtraHeadBit) {
 					glBegin(GL_QUADS); // Must 
-					drawFilledUnscaledSquare((head.X * SCALE), (head.X * SCALE) + SCALE, 
-							(head.Y * SCALE), (head.Y * SCALE) + 1 + pixelAmount);
+					drawFilledUnscaledSquare((head.X * gameScale), (head.X * gameScale) + gameScale,
+							(head.Y * gameScale), (head.Y * gameScale) + 1 + pixelAmount);
 					glEnd();
 				}
 			}
@@ -406,37 +406,37 @@ public class LevelScreen implements Runnable {
 			if(smoothTo.X - lastBodyPart.X != 0) { // Smooth on the X axis
 				if(smoothTo.X - lastBodyPart.X == 1) { // Smooth to left
 					if(halfCellReached) {
-						drawFilledUnscaledSquare((lastBodyPart.X * SCALE) + pixelAmount - SCALE, (lastBodyPart.X * SCALE) + SCALE,
-						  	(lastBodyPart.Y * SCALE), (lastBodyPart.Y * SCALE) + SCALE);
+						drawFilledUnscaledSquare((lastBodyPart.X * gameScale) + pixelAmount - gameScale, (lastBodyPart.X * gameScale) + gameScale,
+						  	(lastBodyPart.Y * gameScale), (lastBodyPart.Y * gameScale) + gameScale);
 					} else {
-						drawFilledUnscaledSquare((lastBodyPart.X * SCALE) + pixelAmount, (lastBodyPart.X * SCALE) + SCALE,
-							  	(lastBodyPart.Y * SCALE), (lastBodyPart.Y * SCALE) + SCALE);
+						drawFilledUnscaledSquare((lastBodyPart.X * gameScale) + pixelAmount, (lastBodyPart.X * gameScale) + gameScale,
+							  	(lastBodyPart.Y * gameScale), (lastBodyPart.Y * gameScale) + gameScale);
 					}
 				} else { // Smooth to right
 					if(halfCellReached) {
-						drawFilledUnscaledSquare((lastBodyPart.X * SCALE), (lastBodyPart.X * SCALE) + SCALE - pixelAmount + SCALE,
-					  		 (lastBodyPart.Y * SCALE), (lastBodyPart.Y * SCALE) + SCALE);
+						drawFilledUnscaledSquare((lastBodyPart.X * gameScale), (lastBodyPart.X * gameScale) + gameScale - pixelAmount + gameScale,
+					  		 (lastBodyPart.Y * gameScale), (lastBodyPart.Y * gameScale) + gameScale);
 					} else {
-						drawFilledUnscaledSquare((lastBodyPart.X * SCALE) - SCALE, (lastBodyPart.X * SCALE) + SCALE - pixelAmount,
-						  		 (lastBodyPart.Y * SCALE), (lastBodyPart.Y * SCALE) + SCALE);
+						drawFilledUnscaledSquare((lastBodyPart.X * gameScale) - gameScale, (lastBodyPart.X * gameScale) + gameScale - pixelAmount,
+						  		 (lastBodyPart.Y * gameScale), (lastBodyPart.Y * gameScale) + gameScale);
 					}
 				}
 			} else if (smoothTo.Y - lastBodyPart.Y != 0) { // Smooth on the Y axis 
 				if(smoothTo.Y - lastBodyPart.Y == 1) { // Smooth up
 					if(halfCellReached) {
-						drawFilledUnscaledSquare((lastBodyPart.X * SCALE), (lastBodyPart.X * SCALE) + SCALE,
-					  		 (lastBodyPart.Y * SCALE) + pixelAmount - SCALE, (lastBodyPart.Y * SCALE) + SCALE );
+						drawFilledUnscaledSquare((lastBodyPart.X * gameScale), (lastBodyPart.X * gameScale) + gameScale,
+					  		 (lastBodyPart.Y * gameScale) + pixelAmount - gameScale, (lastBodyPart.Y * gameScale) + gameScale);
 					} else {
-						drawFilledUnscaledSquare((lastBodyPart.X * SCALE), (lastBodyPart.X * SCALE) + SCALE,
-						  		 (lastBodyPart.Y * SCALE) + pixelAmount, (lastBodyPart.Y * SCALE) + SCALE);
+						drawFilledUnscaledSquare((lastBodyPart.X * gameScale), (lastBodyPart.X * gameScale) + gameScale,
+						  		 (lastBodyPart.Y * gameScale) + pixelAmount, (lastBodyPart.Y * gameScale) + gameScale);
 					}
 				} else { // Smooth down
 					if(halfCellReached) {
-						drawFilledUnscaledSquare((lastBodyPart.X * SCALE), (lastBodyPart.X * SCALE) + SCALE,
-					  		 (lastBodyPart.Y * SCALE) - SCALE, (lastBodyPart.Y * SCALE) + SCALE - pixelAmount + SCALE);
+						drawFilledUnscaledSquare((lastBodyPart.X * gameScale), (lastBodyPart.X * gameScale) + gameScale,
+					  		 (lastBodyPart.Y * gameScale) - gameScale, (lastBodyPart.Y * gameScale) + gameScale - pixelAmount + gameScale);
 					} else {
-						drawFilledUnscaledSquare((lastBodyPart.X * SCALE), (lastBodyPart.X * SCALE) + SCALE,
-						  		 (lastBodyPart.Y * SCALE) , (lastBodyPart.Y * SCALE) + SCALE - pixelAmount);
+						drawFilledUnscaledSquare((lastBodyPart.X * gameScale), (lastBodyPart.X * gameScale) + gameScale,
+						  		 (lastBodyPart.Y * gameScale) , (lastBodyPart.Y * gameScale) + gameScale - pixelAmount);
 					}
 				}
 			}
@@ -471,10 +471,10 @@ public class LevelScreen implements Runnable {
 		glColor3f(0.55f, 0.11f, 0.15f);
 		
 		glBegin(GL_QUADS);
-			glVertex2f(5 * SCALE, 40 * SCALE); // top left
-			glVertex2f(5* SCALE, 39 * SCALE); // bottom left 
-			glVertex2f(6 * SCALE, 39 * SCALE); // bottom right
-			glVertex2f(6 * SCALE, 40 * SCALE); // top right
+			glVertex2f(5 * gameScale, 40 * gameScale); // top left
+			glVertex2f(5* gameScale, 39 * gameScale); // bottom left
+			glVertex2f(6 * gameScale, 39 * gameScale); // bottom right
+			glVertex2f(6 * gameScale, 40 * gameScale); // top right
 		glEnd();
 	}
 	
@@ -532,11 +532,11 @@ public class LevelScreen implements Runnable {
 	private void drawUnfilledSquare(long x, long y, int thickness) {
 		glBegin(GL_LINE_STRIP);
 		for(int lap = 1; lap <= thickness; lap++) {
-			glVertex2f((x * SCALE) + lap , (y * SCALE) + SCALE - lap); // top left
-			glVertex2f((x * SCALE) + lap, (y * SCALE) + (lap - 1) ); // bottom left 
-			glVertex2f((x * SCALE) + SCALE - lap, y * SCALE + lap); // bottom right
-			glVertex2f((x * SCALE) + SCALE - lap, (y * SCALE) + SCALE - lap); // top right
-			glVertex2f((x * SCALE) + lap , (y * SCALE) + SCALE - lap); // top left
+			glVertex2f((x * gameScale) + lap , (y * gameScale) + gameScale - lap); // top left
+			glVertex2f((x * gameScale) + lap, (y * gameScale) + (lap - 1) ); // bottom left
+			glVertex2f((x * gameScale) + gameScale - lap, y * gameScale + lap); // bottom right
+			glVertex2f((x * gameScale) + gameScale - lap, (y * gameScale) + gameScale - lap); // top right
+			glVertex2f((x * gameScale) + lap , (y * gameScale) + gameScale - lap); // top left
 		}
 		glEnd();
 	}
@@ -636,6 +636,7 @@ public class LevelScreen implements Runnable {
     	screenWidth = configuration.getVideo().getResolution().getHorizontal();
 		screenHeight = configuration.getVideo().getResolution().getVertical();
 		monitor = configuration.getVideo().getMonitor();
+		gameScale = configuration.getVideo().getScale();
 		gameBoundX = screenWidth;
 		gameBoundY = screenHeight - SCOREBOARD_HEIGHT;
 	}
@@ -760,12 +761,12 @@ public class LevelScreen implements Runnable {
 	public void newTarget() {
 		if(target == null) {
 			/* If we didn't have a target object already, create one. */
-			target = new PointCoordinates(random.nextInt(gameBoundX / SCALE), random.nextInt(gameBoundY / SCALE));
+			target = new PointCoordinates(random.nextInt(gameBoundX / gameScale), random.nextInt(gameBoundY / gameScale));
 		} else {
 			/* Create a new target, but make sure it's not in the same spot as the old one. */
-			PointCoordinates newTarget = new PointCoordinates(random.nextInt(gameBoundX / SCALE), random.nextInt(gameBoundY / SCALE));
+			PointCoordinates newTarget = new PointCoordinates(random.nextInt(gameBoundX / gameScale), random.nextInt(gameBoundY / gameScale));
 			while(newTarget.equals(target)) {
-				newTarget = new PointCoordinates(random.nextInt(gameBoundX / SCALE), random.nextInt(gameBoundY / SCALE));
+				newTarget = new PointCoordinates(random.nextInt(gameBoundX / gameScale), random.nextInt(gameBoundY / gameScale));
 			}
 			
 			target.setLocation(newTarget.X, newTarget.Y);
@@ -880,7 +881,7 @@ public class LevelScreen implements Runnable {
 				halfCellReached = true;
 			}
 			/* Calculate how much in the cell we should move. */ // 10(lastDelta) * 10(scale) / 40 (move_every_ms) = 2.5
-			drawSmoothTheSnakeMovement(lastDelta * SCALE / MOVE_EVERY_MS);
+			drawSmoothTheSnakeMovement(lastDelta * gameScale / MOVE_EVERY_MS);
 		} else {
 			drawSnake();
 
@@ -933,7 +934,7 @@ public class LevelScreen implements Runnable {
 
 			
 			if(direction == MovingDirections.RIGHT) { 
-				if(head.X + 1 < (gameBoundX / SCALE) && hitsTail(head.X + 1, head.Y)) { // maybe eliminate pointless game bound calculations?
+				if(head.X + 1 < (gameBoundX / gameScale) && hitsTail(head.X + 1, head.Y)) { // maybe eliminate pointless game bound calculations?
 					head = new PointCoordinates(head.X + 1, head.Y);
 					
 				} else {
@@ -963,7 +964,7 @@ public class LevelScreen implements Runnable {
 					MovingDirections.setDirection(MovingDirections.PLAYER_1, MovingDirections.UP);
 				}			
 			} else if(direction == MovingDirections.UP) { 
-				if(head.Y + 1 < (gameBoundY / SCALE) && hitsTail(head.X, head.Y + 1)) {
+				if(head.Y + 1 < (gameBoundY / gameScale) && hitsTail(head.X, head.Y + 1)) {
 					head = new PointCoordinates(head.X, head.Y + 1);
 				} else {
 					GAME_STATUS.setInBonus(false);
