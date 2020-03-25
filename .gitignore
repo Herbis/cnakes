@@ -3,6 +3,7 @@
 .project
 .settings/
 /target
+/logs
 .vscode/settings.json
 .metadata/
 .idea

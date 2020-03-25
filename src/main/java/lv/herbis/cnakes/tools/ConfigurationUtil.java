@@ -1,6 +1,6 @@
 package lv.herbis.cnakes.tools;
 
-import lv.herbis.cnakes.configuration.Configuration;
+import lv.herbis.cnakes.configuration.CnakesConfiguration;
 import lv.herbis.cnakes.configuration.ConfigurationException;
 import org.yaml.snakeyaml.Yaml;
 
@@ -14,7 +14,7 @@ public class ConfigurationUtil {
         // Only static access
     }
 
-    public static Configuration readConfiguration() throws ConfigurationException {
+    public static CnakesConfiguration readConfiguration() throws ConfigurationException {
         final Yaml yaml = new Yaml();
         final InputStream inputStream = getResourceInputStream(DEFAULT_CONFIG_FILE_NAME);
 
@@ -22,7 +22,7 @@ public class ConfigurationUtil {
             throw new ConfigurationException("Configuration could not be read.");
         } else {
             try {
-                return yaml.loadAs(inputStream, Configuration.class);
+                return yaml.loadAs(inputStream, CnakesConfiguration.class);
             } catch (final Exception e) {
                 e.printStackTrace();
                 throw new ConfigurationException(e.getMessage());

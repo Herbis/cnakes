@@ -15,8 +15,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
-import lv.herbis.cnakes.configuration.Configuration;
+import lv.herbis.cnakes.configuration.CnakesConfiguration;
 import lv.herbis.cnakes.controls.Direction;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
@@ -37,7 +39,8 @@ import javax.swing.filechooser.FileSystemView;
 
 
 public class LevelScreen implements Runnable {
-	
+	private static final Logger LOG = LogManager.getLogger(LevelScreen.class);
+
 	private static final String SAVE_FILE_PATH = FileSystemView.getFileSystemView().getDefaultDirectory().getPath() + "\\My Games\\cnakes\\";
 	private static final String HIGHSCORE_FILE = "classic.hs";
 	private static int GAME_LENGTH = 1;
@@ -46,7 +49,7 @@ public class LevelScreen implements Runnable {
 	private final int SCOREBOARD_HEIGHT = 100; // TODO should be scaled
 
 	private HighScores highScores;
-	private Configuration configuration;
+	private CnakesConfiguration configuration;
 
 	private boolean fullScreen;
 	private Integer monitor;
@@ -84,7 +87,7 @@ public class LevelScreen implements Runnable {
 	/** The fonts to draw to the screen */
 	private FontTT GAME_FONT;
 
-	public LevelScreen(final Configuration configuration)
+	public LevelScreen(final CnakesConfiguration configuration)
 	{
 		this.configuration = configuration;
 		initConfiguration();
@@ -810,7 +813,7 @@ public class LevelScreen implements Runnable {
 	public void startGame(){
 		MovingDirections.resetDirection(MovingDirections.PLAYER_1);
 		
-		GAME_STATUS = new SinglePlayerGameStatus(Timer.minutesToMiliseconds(GAME_LENGTH)){
+		GAME_STATUS = new SinglePlayerGameStatus(Timer.minutesToMiliseconds(GAME_LENGTH)) {
 			@Override
 			public void afterEnd() {
 				System.out.println("End of the game.");
@@ -832,7 +835,7 @@ public class LevelScreen implements Runnable {
 
 		head = new PointCoordinates(0, 0);
 		random = new Random();
-		body = new ArrayList<PointCoordinates>();
+		body = new ArrayList<>();
 		newTarget();
 		
 	}

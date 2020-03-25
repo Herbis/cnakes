@@ -1,6 +1,6 @@
 package lv.herbis.cnakes.configuration;
 
-public class Configuration {
+public class CnakesConfiguration {
     private VideoConfiguration video;
 
     public VideoConfiguration getVideo() {
