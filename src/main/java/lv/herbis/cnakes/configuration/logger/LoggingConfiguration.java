@@ -1,5 +1,6 @@
 package lv.herbis.cnakes.configuration.logger;
 
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.appender.RollingFileAppender;
@@ -10,7 +11,9 @@ import org.apache.logging.log4j.core.appender.rolling.action.DeleteAction;
 import org.apache.logging.log4j.core.appender.rolling.action.IfAccumulatedFileCount;
 import org.apache.logging.log4j.core.appender.rolling.action.PathCondition;
 import org.apache.logging.log4j.core.config.Configuration;
+import org.apache.logging.log4j.core.config.Configurator;
 import org.apache.logging.log4j.core.config.LoggerConfig;
+import org.apache.logging.log4j.core.layout.PatternLayout;
 
 import java.util.zip.Deflater;
 
@@ -30,7 +33,7 @@ public class LoggingConfiguration {
         // Only static access.
     }
 
-    public static void configureLogging() {
+    public static void configureLogging(final boolean debug) {
         final LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
         final Configuration config = ctx.getConfiguration();
 
@@ -50,8 +53,12 @@ public class LoggingConfiguration {
                 .withCompressionLevelStr(LOG_COMPRESSION)
                 .build();
 
-        final RollingFileAppender appender = RollingFileAppender.newBuilder().setConfiguration(config)
+        final PatternLayout pl = PatternLayout.newBuilder().withPattern("%d %p %C - %m%n").build();
+
+        final RollingFileAppender appender = RollingFileAppender.newBuilder()
+                .setConfiguration(config)
                 .setName("rolling")
+                .setLayout(pl)
                 .withFileName(LOG_PATH + LOG_FILE_NAME)
                 .withFilePattern(LOG_PATH + LOG_ROLLED_FILE_NAME)
                 .withPolicy(SizeBasedTriggeringPolicy.createPolicy(MAX_ROLLING_FILE_SIZE))
@@ -62,7 +69,7 @@ public class LoggingConfiguration {
         config.addAppender(appender);
 
         final LoggerConfig loggerConfig = config.getRootLogger();
-        //loggerConfig.setLevel(Level.toLevel(buddyConfig.getOption("log", "verbose").toUpperCase()));
-        loggerConfig.addAppender(appender, null, null);
+        loggerConfig.addAppender(appender, debug ? Level.DEBUG : Level.WARN, null);
+        Configurator.setRootLevel(debug ? Level.DEBUG : Level.WARN);
     }
 }

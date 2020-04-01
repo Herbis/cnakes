@@ -8,14 +8,21 @@ import lv.herbis.cnakes.tools.ConfigurationUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.Arrays;
+
 
 public class StartScreen {
 
     private static final Logger LOG = LogManager.getLogger(StartScreen.class);
 
     public static void main(final String[] args) {
-        LoggingConfiguration.configureLogging();
-        LOG.info("Game launched.");
+        if (args.length > 0 && Arrays.asList(args).contains("-debug")) {
+            LoggingConfiguration.configureLogging(true);
+        } else {
+            LoggingConfiguration.configureLogging(false);
+        }
+
+        LOG.debug("Game launched.");
         try {
             loadGame(ConfigurationUtil.readConfiguration());
         } catch (final ConfigurationException e) {

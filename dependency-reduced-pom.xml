@@ -4,7 +4,7 @@
   <groupId>lv.herbis</groupId>
   <artifactId>cnakes</artifactId>
   <name>cnakes</name>
-  <version>0.1.0</version>
+  <version>0.1.1-SNAPSHOT</version>
   <url>https://github.com/Herbis/cnakes</url>
   <build>
     <sourceDirectory>src</sourceDirectory>
@@ -31,6 +31,9 @@
               <transformers>
                 <transformer>
                   <mainClass>${project.groupId}.${project.artifactId}.${class}</mainClass>
+                  <manifestEntries>
+                    <Multi-Release>true</Multi-Release>
+                  </manifestEntries>
                 </transformer>
               </transformers>
               <finalName>${project.artifactId}-${project.version}</finalName>
