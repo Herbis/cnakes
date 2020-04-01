@@ -5,3 +5,5 @@ video:
     vertical: 720
     fullScreen: false
   scale: 10
+gameplay:
+  brightenYourLine: true
