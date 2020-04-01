@@ -1,4 +1,5 @@
 # cnakes
+[![Build Status](https://travis-ci.org/Herbis/cnakes.svg?branch=master)](https://travis-ci.org/Herbis/cnakes)
 
 ##Requirements
 Apache Maven https://maven.apache.org 
