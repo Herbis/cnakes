@@ -1,5 +1,7 @@
 package lv.herbis.cnakes.entities;
 
+import java.util.Objects;
+
 public class PointCoordinates {
 	public long X = 0;
 	public long Y = 0; 
@@ -22,5 +24,10 @@ public class PointCoordinates {
 		} else {
 			return false;
 		}
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(X, Y);
 	}
 }
