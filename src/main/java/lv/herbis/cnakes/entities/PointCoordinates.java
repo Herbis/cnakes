@@ -14,8 +14,13 @@ public class PointCoordinates {
 		this.Y = y;
 	}
 
-	public boolean equals(PointCoordinates object) {
-		
-		return this.X == object.X && this.Y == object.Y;
+	@Override
+	public boolean equals(Object object) {
+		if (object instanceof PointCoordinates) {
+			final PointCoordinates pc = (PointCoordinates) object;
+			return this.X == pc.X && this.Y == pc.Y;
+		} else {
+			return false;
+		}
 	}
 }

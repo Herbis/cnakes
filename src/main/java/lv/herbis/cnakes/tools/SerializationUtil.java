@@ -15,27 +15,26 @@ public class SerializationUtil {
      * that it can work for any Java Class.
      */
     public static Object deserialize(final String path, final String fileName) throws IOException, ClassNotFoundException {
-        File file = new File(path);
+        final File file = new File(path);
         file.mkdirs();
-        FileInputStream fis = new FileInputStream(path + fileName);
-        BufferedInputStream bis = new BufferedInputStream(fis);
-        ObjectInputStream ois = new ObjectInputStream(bis);
-        Object obj = ois.readObject();
-        ois.close();
-        return obj;
+        final FileInputStream fis = new FileInputStream(path + fileName);
+        final BufferedInputStream bis = new BufferedInputStream(fis);
+        try (final ObjectInputStream ois = new ObjectInputStream(bis)) {
+            return ois.readObject();
+        }
     }
 
 
     /**
      * serialize the given object and save it to given file
      */
-    public static void serialize(Object obj, final String path, final String fileName) throws IOException {
-        File file = new File(path);
+    public static void serialize(final Object obj, final String path, final String fileName) throws IOException {
+        final File file = new File(path);
         file.mkdirs();
-        FileOutputStream fos = new FileOutputStream(path + fileName);
-        BufferedOutputStream bos = new BufferedOutputStream(fos);
-        ObjectOutputStream oos = new ObjectOutputStream(bos);
-        oos.writeObject(obj);
-        oos.close();
+        final FileOutputStream fos = new FileOutputStream(path + fileName);
+        final BufferedOutputStream bos = new BufferedOutputStream(fos);
+        try (final ObjectOutputStream oos = new ObjectOutputStream(bos)) {
+            oos.writeObject(obj);
+        }
     }
 }
