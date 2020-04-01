@@ -174,8 +174,7 @@ public class LevelScreen implements Runnable {
 	private void drawHorizontalBrightPlayGridLineBasedOnDirection(float x1, float x2, float y, final int direction)
 	{
 		if (direction == Direction.DOWN || direction == Direction.UP) {
-			/* draw less brighter */
-			glColor3f(0.22f, 0.29f, 0.15f); // TODO configure colors elsewhere (config file?)
+			/* draw regular line */
 			drawPlayGridLine(x1, x2, y, y);
 		} else {
 			/* draw brighter */
@@ -198,8 +197,7 @@ public class LevelScreen implements Runnable {
 			glColor3f(0.42f, 0.49f, 0.35f); // TODO configure colors elsewhere (config file?)
 			drawPlayGridLine(x, x, y1, y2);
 		} else {
-			/* draw less brighter */
-			glColor3f(0.22f, 0.29f, 0.15f); // TODO configure colors elsewhere (config file?)
+			/* draw regular line */
 			drawPlayGridLine(x, x, y1, y2);
 		}
 	}
