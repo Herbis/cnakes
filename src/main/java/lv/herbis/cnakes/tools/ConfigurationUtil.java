@@ -3,6 +3,8 @@ package lv.herbis.cnakes.tools;
 import lv.herbis.cnakes.configuration.CnakesConfiguration;
 import lv.herbis.cnakes.configuration.ConfigurationException;
 import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.constructor.Constructor;
+import org.yaml.snakeyaml.representer.Representer;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,7 +17,11 @@ public class ConfigurationUtil {
     }
 
     public static CnakesConfiguration readConfiguration() throws ConfigurationException {
-        final Yaml yaml = new Yaml();
+        final Representer representer = new Representer();
+        representer.getPropertyUtils().setSkipMissingProperties(true);
+
+        final Yaml yaml = new Yaml(new Constructor(CnakesConfiguration.class), representer);
+
         final InputStream inputStream = getResourceInputStream(DEFAULT_CONFIG_FILE_NAME);
 
         if (inputStream == null) {
