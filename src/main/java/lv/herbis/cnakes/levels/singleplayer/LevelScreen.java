@@ -370,7 +370,8 @@ public class LevelScreen implements Runnable {
                 halfCellReached = true;
             }
             /* Calculate how much in the cell we should move. */ // 10(lastDelta) * 10(scale) / 40 (move_every_ms) = 2.5
-            drawing.drawSnakeInMovement(head, body, lastDelta * gameScale / MOVE_EVERY_MS, halfCellReached);
+            final int direction = MovingDirections.getPreviousDirection(MovingDirections.PLAYER_1);
+            drawing.drawSnakeInMovement(head, body, direction, lastDelta * gameScale / MOVE_EVERY_MS, halfCellReached);
         } else {
             drawing.drawSnake(head, body);
 
