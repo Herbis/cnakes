@@ -6,4 +6,4 @@ video:
     fullScreen: false
   scale: 10
 gameplay:
-  brightenYourLine: true
+  brightenMovementLine: false

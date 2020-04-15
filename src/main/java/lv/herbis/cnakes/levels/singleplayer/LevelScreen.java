@@ -145,7 +145,7 @@ public class LevelScreen implements Runnable {
 
         /* Vertical lines */
         for (int x = gameScale; x <= gameBoundX; x += gameScale) {
-            if (headXScaled == x || headXScaledPlus == x) {
+            if (configuration.getGameplay().isBrightenMovementLine() && (headXScaled == x || headXScaledPlus == x)) {
                 drawVerticalBrightPlayGridLineBasedOnDirection(x, 0, gameBoundY, direction);
                 resetToBasicPlayGridLineColor();
             } else {
@@ -155,7 +155,7 @@ public class LevelScreen implements Runnable {
 
         /* Horizontal lines */
         for (int y = gameScale; y <= gameBoundY; y += gameScale) {
-            if (headYScaled == y || headYScaledPlus == y) {
+            if (configuration.getGameplay().isBrightenMovementLine() && (headYScaled == y || headYScaledPlus == y)) {
                 drawHorizontalBrightPlayGridLineBasedOnDirection(0, gameBoundX, y, direction);
                 resetToBasicPlayGridLineColor();
             } else {
