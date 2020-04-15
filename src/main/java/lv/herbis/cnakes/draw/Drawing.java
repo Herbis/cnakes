@@ -234,107 +234,164 @@ public class Drawing {
                                          final long pixelAmount, final boolean halfCellReached, 
                                          final boolean drawExtraHeadBit)
     {
+        glColor3f(0.55f, 0.01f, 0.31f);
+        switch (direction) {
+            case MovingDirections.DOWN:
+                drawSnakeHeadInMovementToBottom(head, pixelAmount, halfCellReached, drawExtraHeadBit);
+                break;
+            case MovingDirections.UP:
+                drawSnakeHeadInMovementToTop(head, pixelAmount, halfCellReached, drawExtraHeadBit);
+                break;
+            case MovingDirections.LEFT:
+                drawSnakeHeadInMovementToLeft(head, pixelAmount, halfCellReached, drawExtraHeadBit);
+                break;
+            case MovingDirections.RIGHT:
+                drawSnakeHeadInMovementToRight(head, pixelAmount, halfCellReached, drawExtraHeadBit);
+                break;
+            default:
+                LOG.warn("Unknown direction {}, doing nothing.", direction);
+        }
+    }
+
+    private void drawSnakeHeadInMovementToLeft(final PointCoordinates head, final long pixelAmount, final boolean halfCellReached,
+                                              final boolean includeNeck) {
         final float gameScaleF = gameScale;
-        final float headXLeftScaled = head.X * gameScaleF; 
-        final float headXRightScaled = headXLeftScaled + gameScaleF; 
+        final float headXLeftScaled = head.X * gameScaleF;
+        final float headXRightScaled = headXLeftScaled + gameScaleF;
         final float headYBottomScaled = head.Y * gameScaleF;
         final float headYTopScaled = headYBottomScaled + gameScaleF;
 
-        glColor3f(0.55f, 0.01f, 0.31f);
-        if (direction == MovingDirections.DOWN) {
-            if (halfCellReached) {
-                /* Draw the head. */
-                drawUnfilledUnscaledSquare(headXLeftScaled, headXRightScaled,
-                        headYBottomScaled- pixelAmount + gameScaleF, headYTopScaled - pixelAmount + gameScaleF, headThickness);
-                if (drawExtraHeadBit) {
-                    glBegin(GL_QUADS); // Must
+        float headLeft;
+        float headRight;
+        float headNeckLeft;
+        float headNeckRight;
+        if (halfCellReached) {
+            headLeft = headXLeftScaled - pixelAmount + gameScaleF;
+            headRight = headXRightScaled - pixelAmount + gameScaleF;
+            headNeckRight = headXRightScaled + gameScaleF;
+        } else {
+            headLeft = headXLeftScaled - pixelAmount;
+            headRight = headXRightScaled - pixelAmount;
+            headNeckRight = headXRightScaled;
+        }
+        headNeckLeft = headRight - 1;
 
-                    drawFilledUnscaledSquare(headXLeftScaled, headXRightScaled,
-                            headYTopScaled - 1 - pixelAmount + gameScaleF, headYBottomScaled+ (gameScaleF * 2));
-                    glEnd();
-                }
-            } else {
-                drawUnfilledUnscaledSquare(headXLeftScaled, headXRightScaled,
-                        headYBottomScaled- pixelAmount, headYTopScaled - pixelAmount, headThickness);
-                if (drawExtraHeadBit) {
-                    glBegin(GL_QUADS); // Must
-                    drawFilledUnscaledSquare(headXLeftScaled, headXRightScaled,
-                            headYTopScaled - 1 - pixelAmount, headYTopScaled);
-                    glEnd();
-                }
-            }
+        /* Draw the head. */
+        drawUnfilledUnscaledSquare(headLeft, headRight, headYBottomScaled, headYTopScaled, headThickness);
 
-        } else if (direction == MovingDirections.LEFT) {
-            /* Draw the head. */
-            if (halfCellReached) {
-                drawUnfilledUnscaledSquare(headXLeftScaled - pixelAmount + gameScaleF, headXRightScaled - pixelAmount + gameScaleF,
-                        (head.Y * gameScaleF), headYTopScaled, headThickness);
-                if (drawExtraHeadBit) {
-                    glBegin(GL_QUADS); // Must
-                    drawFilledUnscaledSquare(headXRightScaled - pixelAmount - 1 + gameScaleF, headXRightScaled + gameScaleF,
-                            (head.Y * gameScaleF), headYTopScaled);
-                    glEnd();
-                }
-            } else {
-                drawUnfilledUnscaledSquare(headXLeftScaled - pixelAmount, headXRightScaled - pixelAmount,
-                        (head.Y * gameScaleF), headYTopScaled, headThickness);
+        /* Draw the bit between the head and the body (neck). */
+        if (includeNeck) {
+            glBegin(GL_QUADS); // Must
+            drawFilledUnscaledSquare(headNeckLeft, headNeckRight, headYBottomScaled, headYTopScaled);
+            glEnd();
+        }
+    }
 
-                if (drawExtraHeadBit) {
-                    glBegin(GL_QUADS); // Must
-                    drawFilledUnscaledSquare(headXRightScaled - pixelAmount - 1, headXRightScaled,
-                            (head.Y * gameScaleF), headYTopScaled);
-                    glEnd();
-                }
-            }
+    private void drawSnakeHeadInMovementToRight(final PointCoordinates head, final long pixelAmount, final boolean halfCellReached,
+                                               final boolean includeNeck) {
+        final float gameScaleF = gameScale;
+        final float headXLeftScaled = head.X * gameScaleF;
+        final float headXRightScaled = headXLeftScaled + gameScaleF;
+        final float headYBottomScaled = head.Y * gameScaleF;
+        final float headYTopScaled = headYBottomScaled + gameScaleF;
 
-        } else if (direction == MovingDirections.RIGHT) {
-            if (halfCellReached) {
-                /* Draw the head. */
-                drawUnfilledUnscaledSquare(headXLeftScaled + pixelAmount - gameScaleF, headXRightScaled + pixelAmount - gameScaleF,
-                        (head.Y * gameScaleF), headYTopScaled, headThickness);
+        float headLeft;
+        float headRight;
+        float headNeckLeft;
+        float headNeckRight;
 
-                if (drawExtraHeadBit) {
-                    glBegin(GL_QUADS); // Must
-                    drawFilledUnscaledSquare(headXLeftScaled - gameScaleF, headXLeftScaled + 1 + pixelAmount - gameScaleF,
-                            (head.Y * gameScaleF), headYTopScaled);
-                    glEnd();
-                }
-            } else {
-                /* Draw the head. */
-                drawUnfilledUnscaledSquare(headXLeftScaled + pixelAmount, headXRightScaled + pixelAmount,
-                        (head.Y * gameScaleF), headYTopScaled, headThickness);
-                if (drawExtraHeadBit) {
-                    glBegin(GL_QUADS); // Must
-                    drawFilledUnscaledSquare(headXLeftScaled, headXLeftScaled + 1 + pixelAmount,
-                            (head.Y * gameScaleF), headYTopScaled);
-                    glEnd();
-                }
-            }
+        if (halfCellReached) {
+            headLeft = headXLeftScaled + pixelAmount - gameScaleF;
+            headRight = headXRightScaled + pixelAmount - gameScaleF;
+            headNeckLeft = headLeft - pixelAmount;
+        } else {
+            headLeft = headXLeftScaled + pixelAmount;
+            headRight = headXRightScaled + pixelAmount;
+            headNeckLeft = headXLeftScaled;
+        }
+        headNeckRight = headLeft + 1;
 
-        } else if (direction == MovingDirections.UP) {
-            if (halfCellReached) {
-                /* Draw the head. */
-                drawUnfilledUnscaledSquare(headXLeftScaled, headXRightScaled,
-                        headYBottomScaled+ pixelAmount - gameScaleF, headYTopScaled + pixelAmount - gameScaleF, headThickness);
 
-                if (drawExtraHeadBit) {
-                    glBegin(GL_QUADS); // Must
-                    drawFilledUnscaledSquare(headXLeftScaled, headXRightScaled,
-                            headYBottomScaled- gameScaleF, headYBottomScaled+ 1 + pixelAmount - gameScaleF);
-                    glEnd();
-                }
-            } else {
-                /* Draw the head. */
-                drawUnfilledUnscaledSquare(headXLeftScaled, headXRightScaled,
-                        headYBottomScaled+ pixelAmount, headYTopScaled + pixelAmount, headThickness);
+        /* Draw the head. */
+        drawUnfilledUnscaledSquare(headLeft, headRight, headYBottomScaled, headYTopScaled, headThickness);
 
-                if (drawExtraHeadBit) {
-                    glBegin(GL_QUADS); // Must
-                    drawFilledUnscaledSquare(headXLeftScaled, headXRightScaled,
-                            (head.Y * gameScaleF), headYBottomScaled+ 1 + pixelAmount);
-                    glEnd();
-                }
-            }
+        /* Draw the bit between the head and the body (neck). */
+        if (includeNeck) {
+            glBegin(GL_QUADS); // Must
+            drawFilledUnscaledSquare(headNeckLeft, headNeckRight, headYBottomScaled, headYTopScaled);
+            glEnd();
+        }
+    }
+
+    private void drawSnakeHeadInMovementToTop(final PointCoordinates head, final long pixelAmount, final boolean halfCellReached,
+                                                final boolean includeNeck) {
+        final float gameScaleF = gameScale;
+        final float headXLeftScaled = head.X * gameScaleF;
+        final float headXRightScaled = headXLeftScaled + gameScaleF;
+        final float headYBottomScaled = head.Y * gameScaleF;
+        final float headYTopScaled = headYBottomScaled + gameScaleF;
+
+        float headTop;
+        float headBottom;
+        float headNeckBottom;
+        float headNeckTop;
+
+        if (halfCellReached) {
+            headBottom = headYBottomScaled + pixelAmount - gameScaleF;
+            headTop = headYTopScaled + pixelAmount - gameScaleF;
+            headNeckBottom = headYBottomScaled - gameScaleF;
+        } else {
+            headBottom = headYBottomScaled + pixelAmount;
+            headTop = headYTopScaled + pixelAmount;
+            headNeckBottom = headYBottomScaled;
+        }
+        headNeckTop = headBottom + 1;
+
+
+        /* Draw the head. */
+        drawUnfilledUnscaledSquare(headXLeftScaled, headXRightScaled, headBottom, headTop, headThickness);
+
+        /* Draw the bit between the head and the body (neck). */
+        if (includeNeck) {
+            glBegin(GL_QUADS); // Must
+            drawFilledUnscaledSquare(headXLeftScaled, headXRightScaled, headNeckBottom, headNeckTop);
+            glEnd();
+        }
+    }
+
+    private void drawSnakeHeadInMovementToBottom(final PointCoordinates head, final long pixelAmount, final boolean halfCellReached,
+                                                final boolean includeNeck) {
+        final float gameScaleF = gameScale;
+        final float headXLeftScaled = head.X * gameScaleF;
+        final float headXRightScaled = headXLeftScaled + gameScaleF;
+        final float headYBottomScaled = head.Y * gameScaleF;
+        final float headYTopScaled = headYBottomScaled + gameScaleF;
+
+        float headTop;
+        float headBottom;
+        float headNeckBottom;
+        float headNeckTop;
+
+
+        if (halfCellReached) {
+            headBottom = headYBottomScaled - pixelAmount + gameScaleF;
+            headTop = headYTopScaled - pixelAmount + gameScaleF;
+            headNeckTop = headYTopScaled + gameScaleF;
+        } else {
+            headBottom = headYBottomScaled - pixelAmount;
+            headTop = headYTopScaled - pixelAmount;
+            headNeckTop = headYTopScaled;
+        }
+        headNeckBottom = headTop - 1;
+
+
+        /* Draw the head. */
+        drawUnfilledUnscaledSquare(headXLeftScaled, headXRightScaled, headBottom, headTop, headThickness);
+        /* Draw the bit between the head and the body (neck). */
+        if (includeNeck) {
+            glBegin(GL_QUADS); // Must
+            drawFilledUnscaledSquare(headXLeftScaled, headXRightScaled, headNeckBottom, headNeckTop);
+            glEnd();
         }
     }
 
