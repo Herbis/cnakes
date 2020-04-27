@@ -7,7 +7,7 @@ public class GameplayConfiguration {
         return brightenMovementLine;
     }
 
-    public void setBrightenMovementLine(boolean brightenMovementLine) {
+    public void setBrightenMovementLine(final boolean brightenMovementLine) {
         this.brightenMovementLine = brightenMovementLine;
     }
 }

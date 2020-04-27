@@ -4,9 +4,9 @@ import lv.herbis.cnakes.configuration.CnakesConfiguration;
 import lv.herbis.cnakes.controls.Direction;
 import lv.herbis.cnakes.entities.PointCoordinates;
 import lv.herbis.cnakes.entities.Timer;
+import lv.herbis.cnakes.movement.MovingDirections;
 import lv.herbis.cnakes.save.HighScore;
 import lv.herbis.cnakes.save.HighScores;
-import lv.herbis.cnakes.staticaccess.MovingDirections;
 import lv.herbis.cnakes.status.SinglePlayerGameStatus;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -68,10 +68,10 @@ public class Drawing {
      * Set colour and call glBegin(GL_QUADS) before calling this, and call glEnd afterwards.
      */
     private void drawFilledSquare(final float x, final float y) {
-        float xLeft = x * gameScale;
-        float xRight = xLeft + gameScale;
-        float yBottom = y * gameScale;
-        float yTop = yBottom + gameScale;
+        final float xLeft = x * gameScale;
+        final float xRight = xLeft + gameScale;
+        final float yBottom = y * gameScale;
+        final float yTop = yBottom + gameScale;
 
         glVertex2f(xLeft, yTop); // top left
         glVertex2f(xLeft, yBottom); // bottom left
@@ -229,11 +229,10 @@ public class Drawing {
         }
         glEnd();
     }
-    
+
     private void drawSnakeHeadInMovement(final PointCoordinates head, final int direction,
-                                         final long pixelAmount, final boolean halfCellReached, 
-                                         final boolean drawExtraHeadBit)
-    {
+                                         final long pixelAmount, final boolean halfCellReached,
+                                         final boolean drawExtraHeadBit) {
         glColor3f(0.55f, 0.01f, 0.31f);
         switch (direction) {
             case MovingDirections.DOWN:
@@ -254,17 +253,17 @@ public class Drawing {
     }
 
     private void drawSnakeHeadInMovementToLeft(final PointCoordinates head, final long pixelAmount, final boolean halfCellReached,
-                                              final boolean includeNeck) {
+                                               final boolean includeNeck) {
         final float gameScaleF = gameScale;
         final float headXLeftScaled = head.getX() * gameScaleF;
         final float headXRightScaled = headXLeftScaled + gameScaleF;
         final float headYBottomScaled = head.getY() * gameScaleF;
         final float headYTopScaled = headYBottomScaled + gameScaleF;
 
-        float headLeft;
-        float headRight;
-        float headNeckLeft;
-        float headNeckRight;
+        final float headLeft;
+        final float headRight;
+        final float headNeckLeft;
+        final float headNeckRight;
         if (halfCellReached) {
             headLeft = headXLeftScaled - pixelAmount + gameScaleF;
             headRight = headXRightScaled - pixelAmount + gameScaleF;
@@ -288,17 +287,17 @@ public class Drawing {
     }
 
     private void drawSnakeHeadInMovementToRight(final PointCoordinates head, final long pixelAmount, final boolean halfCellReached,
-                                               final boolean includeNeck) {
+                                                final boolean includeNeck) {
         final float gameScaleF = gameScale;
         final float headXLeftScaled = head.getX() * gameScaleF;
         final float headXRightScaled = headXLeftScaled + gameScaleF;
         final float headYBottomScaled = head.getY() * gameScaleF;
         final float headYTopScaled = headYBottomScaled + gameScaleF;
 
-        float headLeft;
-        float headRight;
-        float headNeckLeft;
-        float headNeckRight;
+        final float headLeft;
+        final float headRight;
+        final float headNeckLeft;
+        final float headNeckRight;
 
         if (halfCellReached) {
             headLeft = headXLeftScaled + pixelAmount - gameScaleF;
@@ -324,17 +323,17 @@ public class Drawing {
     }
 
     private void drawSnakeHeadInMovementToTop(final PointCoordinates head, final long pixelAmount, final boolean halfCellReached,
-                                                final boolean includeNeck) {
+                                              final boolean includeNeck) {
         final float gameScaleF = gameScale;
         final float headXLeftScaled = head.getX() * gameScaleF;
         final float headXRightScaled = headXLeftScaled + gameScaleF;
         final float headYBottomScaled = head.getY() * gameScaleF;
         final float headYTopScaled = headYBottomScaled + gameScaleF;
 
-        float headTop;
-        float headBottom;
-        float headNeckBottom;
-        float headNeckTop;
+        final float headTop;
+        final float headBottom;
+        final float headNeckBottom;
+        final float headNeckTop;
 
         if (halfCellReached) {
             headBottom = headYBottomScaled + pixelAmount - gameScaleF;
@@ -360,17 +359,17 @@ public class Drawing {
     }
 
     private void drawSnakeHeadInMovementToBottom(final PointCoordinates head, final long pixelAmount, final boolean halfCellReached,
-                                                final boolean includeNeck) {
+                                                 final boolean includeNeck) {
         final float gameScaleF = gameScale;
         final float headXLeftScaled = head.getX() * gameScaleF;
         final float headXRightScaled = headXLeftScaled + gameScaleF;
         final float headYBottomScaled = head.getY() * gameScaleF;
         final float headYTopScaled = headYBottomScaled + gameScaleF;
 
-        float headTop;
-        float headBottom;
-        float headNeckBottom;
-        float headNeckTop;
+        final float headTop;
+        final float headBottom;
+        final float headNeckBottom;
+        final float headNeckTop;
 
 
         if (halfCellReached) {

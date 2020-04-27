@@ -10,7 +10,7 @@ public class VideoConfiguration {
         return resolution;
     }
 
-    public void setResolution(ResolutionConfiguration resolution) {
+    public void setResolution(final ResolutionConfiguration resolution) {
         this.resolution = resolution;
     }
 
@@ -18,7 +18,7 @@ public class VideoConfiguration {
         return scale;
     }
 
-    public void setScale(int scale) {
+    public void setScale(final int scale) {
         this.scale = scale;
     }
 
@@ -26,7 +26,7 @@ public class VideoConfiguration {
         return monitor;
     }
 
-    public void setMonitor(Integer monitor) {
+    public void setMonitor(final Integer monitor) {
         this.monitor = monitor;
     }
 }

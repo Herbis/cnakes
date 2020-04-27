@@ -9,7 +9,7 @@ public class CnakesConfiguration {
         return video;
     }
 
-    public void setVideo(VideoConfiguration video) {
+    public void setVideo(final VideoConfiguration video) {
         this.video = video;
     }
 
@@ -17,7 +17,7 @@ public class CnakesConfiguration {
         return gameplay;
     }
 
-    public void setGameplay(GameplayConfiguration gameplay) {
+    public void setGameplay(final GameplayConfiguration gameplay) {
         this.gameplay = gameplay;
     }
 }

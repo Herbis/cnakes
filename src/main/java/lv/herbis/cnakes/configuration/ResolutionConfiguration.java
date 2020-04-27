@@ -9,7 +9,7 @@ public class ResolutionConfiguration {
         return horizontal;
     }
 
-    public void setHorizontal(int horizontal) {
+    public void setHorizontal(final int horizontal) {
         this.horizontal = horizontal;
     }
 
@@ -17,7 +17,7 @@ public class ResolutionConfiguration {
         return vertical;
     }
 
-    public void setVertical(int vertical) {
+    public void setVertical(final int vertical) {
         this.vertical = vertical;
     }
 
@@ -25,7 +25,7 @@ public class ResolutionConfiguration {
         return fullScreen;
     }
 
-    public void setFullScreen(boolean fullScreen) {
+    public void setFullScreen(final boolean fullScreen) {
         this.fullScreen = fullScreen;
     }
 }
