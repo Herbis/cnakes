@@ -116,9 +116,9 @@ public class Drawing {
      */
     public void drawPlayGrid(final PointCoordinates head) {
 
-        final long headXScaled = head.X * gameScale;
+        final long headXScaled = head.getX() * gameScale;
         final long headXScaledPlus = headXScaled + gameScale;
-        final long headYScaled = head.Y * gameScale;
+        final long headYScaled = head.getY() * gameScale;
         final long headYScaledPlus = headYScaled + gameScale;
         final int direction = MovingDirections.getPreviousDirection(MovingDirections.PLAYER_1);
 
@@ -220,12 +220,12 @@ public class Drawing {
         glColor3f(0.55f, 0.01f, 0.31f);
 
         /* Draw the head. */
-        drawUnfilledSquare(head.X, head.Y, headThickness);
+        drawUnfilledSquare(head.getX(), head.getY(), headThickness);
 
         /* Draw the body. */
         glBegin(GL_QUADS); // Must
         for (final PointCoordinates bodyPart : body) {
-            drawFilledSquare(bodyPart.X, bodyPart.Y);
+            drawFilledSquare(bodyPart.getX(), bodyPart.getY());
         }
         glEnd();
     }
@@ -256,9 +256,9 @@ public class Drawing {
     private void drawSnakeHeadInMovementToLeft(final PointCoordinates head, final long pixelAmount, final boolean halfCellReached,
                                               final boolean includeNeck) {
         final float gameScaleF = gameScale;
-        final float headXLeftScaled = head.X * gameScaleF;
+        final float headXLeftScaled = head.getX() * gameScaleF;
         final float headXRightScaled = headXLeftScaled + gameScaleF;
-        final float headYBottomScaled = head.Y * gameScaleF;
+        final float headYBottomScaled = head.getY() * gameScaleF;
         final float headYTopScaled = headYBottomScaled + gameScaleF;
 
         float headLeft;
@@ -290,9 +290,9 @@ public class Drawing {
     private void drawSnakeHeadInMovementToRight(final PointCoordinates head, final long pixelAmount, final boolean halfCellReached,
                                                final boolean includeNeck) {
         final float gameScaleF = gameScale;
-        final float headXLeftScaled = head.X * gameScaleF;
+        final float headXLeftScaled = head.getX() * gameScaleF;
         final float headXRightScaled = headXLeftScaled + gameScaleF;
-        final float headYBottomScaled = head.Y * gameScaleF;
+        final float headYBottomScaled = head.getY() * gameScaleF;
         final float headYTopScaled = headYBottomScaled + gameScaleF;
 
         float headLeft;
@@ -326,9 +326,9 @@ public class Drawing {
     private void drawSnakeHeadInMovementToTop(final PointCoordinates head, final long pixelAmount, final boolean halfCellReached,
                                                 final boolean includeNeck) {
         final float gameScaleF = gameScale;
-        final float headXLeftScaled = head.X * gameScaleF;
+        final float headXLeftScaled = head.getX() * gameScaleF;
         final float headXRightScaled = headXLeftScaled + gameScaleF;
-        final float headYBottomScaled = head.Y * gameScaleF;
+        final float headYBottomScaled = head.getY() * gameScaleF;
         final float headYTopScaled = headYBottomScaled + gameScaleF;
 
         float headTop;
@@ -362,9 +362,9 @@ public class Drawing {
     private void drawSnakeHeadInMovementToBottom(final PointCoordinates head, final long pixelAmount, final boolean halfCellReached,
                                                 final boolean includeNeck) {
         final float gameScaleF = gameScale;
-        final float headXLeftScaled = head.X * gameScaleF;
+        final float headXLeftScaled = head.getX() * gameScaleF;
         final float headXRightScaled = headXLeftScaled + gameScaleF;
-        final float headYBottomScaled = head.Y * gameScaleF;
+        final float headYBottomScaled = head.getY() * gameScaleF;
         final float headYTopScaled = headYBottomScaled + gameScaleF;
 
         float headTop;
@@ -416,7 +416,7 @@ public class Drawing {
                 }
                 for (int i = 1; i < bodySize; i++) {
                     final PointCoordinates bodyPart = body.get(i);
-                    drawFilledSquare(bodyPart.X, bodyPart.Y);
+                    drawFilledSquare(bodyPart.getX(), bodyPart.getY());
                 }
 
             } else {
@@ -426,40 +426,40 @@ public class Drawing {
 
 
             glBegin(GL_QUADS); // Must
-            if (smoothTo.X - lastBodyPart.X != 0) { // Smooth on the X axis
-                if (smoothTo.X - lastBodyPart.X == 1) { // Smooth to left
+            if (smoothTo.getX() - lastBodyPart.getX() != 0) { // Smooth on the X axis
+                if (smoothTo.getX() - lastBodyPart.getX() == 1) { // Smooth to left
                     if (halfCellReached) {
-                        drawFilledUnscaledSquare((lastBodyPart.X * gameScaleF) + pixelAmount - gameScaleF, (lastBodyPart.X * gameScaleF) + gameScaleF,
-                                (lastBodyPart.Y * gameScaleF), (lastBodyPart.Y * gameScaleF) + gameScaleF);
+                        drawFilledUnscaledSquare((lastBodyPart.getX() * gameScaleF) + pixelAmount - gameScaleF, (lastBodyPart.getX() * gameScaleF) + gameScaleF,
+                                (lastBodyPart.getY() * gameScaleF), (lastBodyPart.getY() * gameScaleF) + gameScaleF);
                     } else {
-                        drawFilledUnscaledSquare((lastBodyPart.X * gameScaleF) + pixelAmount, (lastBodyPart.X * gameScaleF) + gameScaleF,
-                                (lastBodyPart.Y * gameScaleF), (lastBodyPart.Y * gameScaleF) + gameScaleF);
+                        drawFilledUnscaledSquare((lastBodyPart.getX() * gameScaleF) + pixelAmount, (lastBodyPart.getX() * gameScaleF) + gameScaleF,
+                                (lastBodyPart.getY() * gameScaleF), (lastBodyPart.getY() * gameScaleF) + gameScaleF);
                     }
                 } else { // Smooth to right
                     if (halfCellReached) {
-                        drawFilledUnscaledSquare((lastBodyPart.X * gameScaleF), (lastBodyPart.X * gameScaleF) + gameScaleF - pixelAmount + gameScaleF,
-                                (lastBodyPart.Y * gameScaleF), (lastBodyPart.Y * gameScaleF) + gameScaleF);
+                        drawFilledUnscaledSquare((lastBodyPart.getX() * gameScaleF), (lastBodyPart.getX() * gameScaleF) + gameScaleF - pixelAmount + gameScaleF,
+                                (lastBodyPart.getY() * gameScaleF), (lastBodyPart.getY() * gameScaleF) + gameScaleF);
                     } else {
-                        drawFilledUnscaledSquare((lastBodyPart.X * gameScaleF) - gameScaleF, (lastBodyPart.X * gameScaleF) + gameScaleF - pixelAmount,
-                                (lastBodyPart.Y * gameScaleF), (lastBodyPart.Y * gameScaleF) + gameScaleF);
+                        drawFilledUnscaledSquare((lastBodyPart.getX() * gameScaleF) - gameScaleF, (lastBodyPart.getX() * gameScaleF) + gameScaleF - pixelAmount,
+                                (lastBodyPart.getY() * gameScaleF), (lastBodyPart.getY() * gameScaleF) + gameScaleF);
                     }
                 }
-            } else if (smoothTo.Y - lastBodyPart.Y != 0) { // Smooth on the Y axis
-                if (smoothTo.Y - lastBodyPart.Y == 1) { // Smooth up
+            } else if (smoothTo.getY() - lastBodyPart.getY() != 0) { // Smooth on the Y axis
+                if (smoothTo.getY() - lastBodyPart.getY() == 1) { // Smooth up
                     if (halfCellReached) {
-                        drawFilledUnscaledSquare((lastBodyPart.X * gameScaleF), (lastBodyPart.X * gameScaleF) + gameScaleF,
-                                (lastBodyPart.Y * gameScaleF) + pixelAmount - gameScaleF, (lastBodyPart.Y * gameScaleF) + gameScaleF);
+                        drawFilledUnscaledSquare((lastBodyPart.getX() * gameScaleF), (lastBodyPart.getX() * gameScaleF) + gameScaleF,
+                                (lastBodyPart.getY() * gameScaleF) + pixelAmount - gameScaleF, (lastBodyPart.getY() * gameScaleF) + gameScaleF);
                     } else {
-                        drawFilledUnscaledSquare((lastBodyPart.X * gameScaleF), (lastBodyPart.X * gameScaleF) + gameScaleF,
-                                (lastBodyPart.Y * gameScaleF) + pixelAmount, (lastBodyPart.Y * gameScaleF) + gameScaleF);
+                        drawFilledUnscaledSquare((lastBodyPart.getX() * gameScaleF), (lastBodyPart.getX() * gameScaleF) + gameScaleF,
+                                (lastBodyPart.getY() * gameScaleF) + pixelAmount, (lastBodyPart.getY() * gameScaleF) + gameScaleF);
                     }
                 } else { // Smooth down
                     if (halfCellReached) {
-                        drawFilledUnscaledSquare((lastBodyPart.X * gameScaleF), (lastBodyPart.X * gameScaleF) + gameScaleF,
-                                (lastBodyPart.Y * gameScaleF) - gameScaleF, (lastBodyPart.Y * gameScaleF) + gameScaleF - pixelAmount + gameScaleF);
+                        drawFilledUnscaledSquare((lastBodyPart.getX() * gameScaleF), (lastBodyPart.getX() * gameScaleF) + gameScaleF,
+                                (lastBodyPart.getY() * gameScaleF) - gameScaleF, (lastBodyPart.getY() * gameScaleF) + gameScaleF - pixelAmount + gameScaleF);
                     } else {
-                        drawFilledUnscaledSquare((lastBodyPart.X * gameScaleF), (lastBodyPart.X * gameScaleF) + gameScaleF,
-                                (lastBodyPart.Y * gameScaleF), (lastBodyPart.Y * gameScaleF) + gameScaleF - pixelAmount);
+                        drawFilledUnscaledSquare((lastBodyPart.getX() * gameScaleF), (lastBodyPart.getX() * gameScaleF) + gameScaleF,
+                                (lastBodyPart.getY() * gameScaleF), (lastBodyPart.getY() * gameScaleF) + gameScaleF - pixelAmount);
                     }
                 }
             }
@@ -474,7 +474,7 @@ public class Drawing {
     public void drawTarget(final PointCoordinates target) {
         glColor3f(0.25f, 0.73f, 0.31f);
         glBegin(GL_QUADS);
-        drawFilledSquare(target.X, target.Y);
+        drawFilledSquare(target.getX(), target.getY());
         glEnd();
     }
 

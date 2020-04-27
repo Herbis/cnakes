@@ -284,7 +284,7 @@ public class LevelScreen implements Runnable {
                 newTarget = new PointCoordinates(random.nextInt(gameBoundX / gameScale), random.nextInt(gameBoundY / gameScale));
             }
 
-            target.setLocation(newTarget.X, newTarget.Y);
+            target.setLocation(newTarget.getX(), newTarget.getY());
         }
     }
 
@@ -402,15 +402,15 @@ public class LevelScreen implements Runnable {
         if (head != null) {
             direction = MovingDirections.getDirection(MovingDirections.PLAYER_1);
 
-            body.add(new PointCoordinates(head.X, head.Y));
+            body.add(new PointCoordinates(head.getX(), head.getY()));
 
             if (body.size() > gameStatus.getSnakeLength()) {
                 body.remove(0);
             }
 
             if (direction == MovingDirections.RIGHT) {
-                if (head.X + 1 < (gameBoundX / gameScale) && hitsTail(head.X + 1, head.Y)) { // maybe eliminate pointless game bound calculations?
-                    head = new PointCoordinates(head.X + 1, head.Y);
+                if (head.getX() + 1 < (gameBoundX / gameScale) && hitsTail(head.getX() + 1, head.getY())) { // maybe eliminate pointless game bound calculations?
+                    head = new PointCoordinates(head.getX() + 1, head.getY());
 
                 } else {
                     gameStatus.setInBonus(false);
@@ -419,8 +419,8 @@ public class LevelScreen implements Runnable {
                     MovingDirections.setDirection(MovingDirections.PLAYER_1, MovingDirections.LEFT);
                 }
             } else if (direction == MovingDirections.LEFT) {
-                if (head.X - 1 >= 0 && hitsTail(head.X - 1, head.Y)) {
-                    head = new PointCoordinates(head.X - 1, head.Y);
+                if (head.getX() - 1 >= 0 && hitsTail(head.getX() - 1, head.getY())) {
+                    head = new PointCoordinates(head.getX() - 1, head.getY());
                 } else {
                     gameStatus.setInBonus(false);
 
@@ -428,9 +428,9 @@ public class LevelScreen implements Runnable {
                     MovingDirections.setDirection(MovingDirections.PLAYER_1, MovingDirections.RIGHT);
                 }
             } else if (direction == MovingDirections.DOWN) {
-                if (head.Y - 1 >= 0 && hitsTail(head.X, head.Y - 1)) {
+                if (head.getY() - 1 >= 0 && hitsTail(head.getX(), head.getY() - 1)) {
 
-                    head = new PointCoordinates(head.X, head.Y - 1);
+                    head = new PointCoordinates(head.getX(), head.getY() - 1);
                 } else {
                     gameStatus.setInBonus(false);
 
@@ -438,8 +438,8 @@ public class LevelScreen implements Runnable {
                     MovingDirections.setDirection(MovingDirections.PLAYER_1, MovingDirections.UP);
                 }
             } else if (direction == MovingDirections.UP) {
-                if (head.Y + 1 < (gameBoundY / gameScale) && hitsTail(head.X, head.Y + 1)) {
-                    head = new PointCoordinates(head.X, head.Y + 1);
+                if (head.getY() + 1 < (gameBoundY / gameScale) && hitsTail(head.getX(), head.getY() + 1)) {
+                    head = new PointCoordinates(head.getX(), head.getY() + 1);
                 } else {
                     gameStatus.setInBonus(false);
 

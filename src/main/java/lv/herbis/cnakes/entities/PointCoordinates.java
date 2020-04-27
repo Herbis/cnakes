@@ -3,31 +3,39 @@ package lv.herbis.cnakes.entities;
 import java.util.Objects;
 
 public class PointCoordinates {
-	public long X = 0;
-	public long Y = 0; 
+	private long x = 0;
+	private long y = 0;
 	
 	public PointCoordinates(long x, long y) {
-		this.X = x;
-		this.Y = y;
+		this.x = x;
+		this.y = y;
 	}
 	
 	public void setLocation(long x, long y) {
-		this.X = x;
-		this.Y = y;
+		this.x = x;
+		this.y = y;
+	}
+
+	public long getX() {
+		return x;
+	}
+
+	public long getY() {
+		return y;
 	}
 
 	@Override
 	public boolean equals(Object object) {
 		if (object instanceof PointCoordinates) {
 			final PointCoordinates pc = (PointCoordinates) object;
-			return this.X == pc.X && this.Y == pc.Y;
+			return this.x == pc.x && this.y == pc.y;
 		} else {
 			return false;
 		}
-	}
+}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(X, Y);
+		return Objects.hash(x, y);
 	}
 }
