@@ -1,23 +1,23 @@
 package lv.herbis.cnakes.configuration;
 
 public class CnakesConfiguration {
-    private VideoConfiguration video;
+	private VideoConfiguration video;
 
-    private GameplayConfiguration gameplay;
+	private GameplayConfiguration gameplay;
 
-    public VideoConfiguration getVideo() {
-        return video;
-    }
+	public VideoConfiguration getVideo() {
+		return video;
+	}
 
-    public void setVideo(final VideoConfiguration video) {
-        this.video = video;
-    }
+	public void setVideo(final VideoConfiguration video) {
+		this.video = video;
+	}
 
-    public GameplayConfiguration getGameplay() {
-        return gameplay;
-    }
+	public GameplayConfiguration getGameplay() {
+		return gameplay;
+	}
 
-    public void setGameplay(final GameplayConfiguration gameplay) {
-        this.gameplay = gameplay;
-    }
+	public void setGameplay(final GameplayConfiguration gameplay) {
+		this.gameplay = gameplay;
+	}
 }

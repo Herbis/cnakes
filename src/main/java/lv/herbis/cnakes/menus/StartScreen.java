@@ -13,27 +13,27 @@ import java.util.Arrays;
 
 public class StartScreen {
 
-    private static final Logger LOG = LogManager.getLogger(StartScreen.class);
+	private static final Logger LOG = LogManager.getLogger(StartScreen.class);
 
-    public static void main(final String[] args) {
-        if (args.length > 0 && Arrays.asList(args).contains("-debug")) {
-            LoggingConfiguration.configureLogging(true);
-        } else {
-            LoggingConfiguration.configureLogging(false);
-        }
+	public static void main(final String[] args) {
+		if (args.length > 0 && Arrays.asList(args).contains("-debug")) {
+			LoggingConfiguration.configureLogging(true);
+		} else {
+			LoggingConfiguration.configureLogging(false);
+		}
 
-        LOG.debug("Game launched.");
-        try {
-            loadGame(ConfigurationUtil.readConfiguration());
-        } catch (final ConfigurationException e) {
-            LOG.error("Could not launch the game, configuration error.", e);
-            System.exit(1);
-        }
-    }
+		LOG.debug("Game launched.");
+		try {
+			loadGame(ConfigurationUtil.readConfiguration());
+		} catch (final ConfigurationException e) {
+			LOG.error("Could not launch the game, configuration error.", e);
+			System.exit(1);
+		}
+	}
 
-    public static void loadGame(final CnakesConfiguration configuration) {
-        final LevelScreen ls = new LevelScreen(configuration);
-        final Thread lsThread = new Thread(ls);
-        lsThread.start();
-    }
+	public static void loadGame(final CnakesConfiguration configuration) {
+		final LevelScreen ls = new LevelScreen(configuration);
+		final Thread lsThread = new Thread(ls);
+		lsThread.start();
+	}
 }

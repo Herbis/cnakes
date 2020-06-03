@@ -2,20 +2,20 @@ package lv.herbis.cnakes.status;
 
 public interface GameStatus {
 
-    void start();
+	void start();
 
-    void pause();
+	void pause();
 
-    boolean isPaused();
+	boolean isPaused();
 
-    boolean isPlayed();
+	boolean isPlayed();
 
-    boolean hasJustStarted();
+	boolean hasJustStarted();
 
-    void end();
+	void end();
 
-    boolean hasEnded();
+	boolean hasEnded();
 
-    void reset();
+	void reset();
 
 }

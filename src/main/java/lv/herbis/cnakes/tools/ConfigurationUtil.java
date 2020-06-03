@@ -10,39 +10,39 @@ import java.io.IOException;
 import java.io.InputStream;
 
 public class ConfigurationUtil {
-    private static final String DEFAULT_CONFIG_FILE_NAME = "defaultConfiguration.yaml";
+	private static final String DEFAULT_CONFIG_FILE_NAME = "defaultConfiguration.yaml";
 
-    private ConfigurationUtil() {
-        // Only static access
-    }
+	private ConfigurationUtil() {
+		// Only static access
+	}
 
-    public static CnakesConfiguration readConfiguration() throws ConfigurationException {
-        final Representer representer = new Representer();
-        representer.getPropertyUtils().setSkipMissingProperties(true);
+	public static CnakesConfiguration readConfiguration() throws ConfigurationException {
+		final Representer representer = new Representer();
+		representer.getPropertyUtils().setSkipMissingProperties(true);
 
-        final Yaml yaml = new Yaml(new Constructor(CnakesConfiguration.class), representer);
+		final Yaml yaml = new Yaml(new Constructor(CnakesConfiguration.class), representer);
 
-        final InputStream inputStream = getResourceInputStream(DEFAULT_CONFIG_FILE_NAME);
+		final InputStream inputStream = getResourceInputStream(DEFAULT_CONFIG_FILE_NAME);
 
-        if (inputStream == null) {
-            throw new ConfigurationException("Configuration could not be read.");
-        } else {
-            try {
-                return yaml.loadAs(inputStream, CnakesConfiguration.class);
-            } catch (final Exception e) {
-                e.printStackTrace();
-                throw new ConfigurationException(e.getMessage());
-            } finally {
-                try {
-                    inputStream.close();
-                } catch (final IOException e) {
-                    System.out.println("Can't close config input stream. " + e.getMessage());
-                }
-            }
-        }
-    }
+		if (inputStream == null) {
+			throw new ConfigurationException("Configuration could not be read.");
+		} else {
+			try {
+				return yaml.loadAs(inputStream, CnakesConfiguration.class);
+			} catch (final Exception e) {
+				e.printStackTrace();
+				throw new ConfigurationException(e.getMessage());
+			} finally {
+				try {
+					inputStream.close();
+				} catch (final IOException e) {
+					System.out.println("Can't close config input stream. " + e.getMessage());
+				}
+			}
+		}
+	}
 
-    private static InputStream getResourceInputStream(final String resourceName) {
-        return ConfigurationUtil.class.getClassLoader().getResourceAsStream(resourceName);
-    }
+	private static InputStream getResourceInputStream(final String resourceName) {
+		return ConfigurationUtil.class.getClassLoader().getResourceAsStream(resourceName);
+	}
 }
