@@ -1,5 +1,7 @@
 package other.fontloader;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
@@ -21,6 +23,8 @@ import java.util.HashMap;
  * texture coordinates appropriately.
  */
 public class FontTT {
+	private static final Logger LOG = LogManager.getLogger(FontTT.class);
+
 
 	private Texture[] charactersp, characterso;
 	private final HashMap<String, IntObject> charlistp = new HashMap<>();
@@ -34,7 +38,7 @@ public class FontTT {
 	 * Need a special class to hold character information in the hasmaps
 	 */
 	private class IntObject {
-		private int charnum;
+		private final int charnum;
 
 		IntObject(final int charnumpass) {
 			charnum = charnumpass;
@@ -203,8 +207,7 @@ public class FontTT {
 				fontImage = null;
 			}
 		} catch (final IOException e) {
-			System.out.println("FAILED!!!");
-			e.printStackTrace();
+			LOG.error("Failed to create plain set.", e);
 		}
 
 
@@ -230,8 +233,7 @@ public class FontTT {
 				fontImage = null;
 			}
 		} catch (final IOException e) {
-			System.out.println("FAILED!!!");
-			e.printStackTrace();
+			LOG.error("Failed to create outline set.", e);
 		}
 
 

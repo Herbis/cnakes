@@ -15,12 +15,9 @@ public class StartScreen {
 
 	private static final Logger LOG = LogManager.getLogger(StartScreen.class);
 
+	@SuppressWarnings("java:S4823")
 	public static void main(final String[] args) {
-		if (args.length > 0 && Arrays.asList(args).contains("-debug")) {
-			LoggingConfiguration.configureLogging(true);
-		} else {
-			LoggingConfiguration.configureLogging(false);
-		}
+		LoggingConfiguration.configureLogging(args.length > 0 && Arrays.asList(args).contains("-debug"));
 
 		LOG.debug("Game launched.");
 		try {

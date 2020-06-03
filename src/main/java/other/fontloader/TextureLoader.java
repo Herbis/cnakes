@@ -49,7 +49,6 @@ public class TextureLoader {
 
 	private final int target = GL11.GL_TEXTURE_2D;
 	private final int dstPixelFormat = GL11.GL_RGBA;
-	//private int dstPixelFormat = GL13.GL_COMPRESSED_RGBA;
 	private final int minFilter = GL11.GL_LINEAR_MIPMAP_NEAREST;
 	private final int magFilter = GL11.GL_LINEAR;
 
@@ -60,8 +59,6 @@ public class TextureLoader {
 	 * Create a new texture loader based on the game panel
 	 */
 	public TextureLoader() {
-		//dstPixelFormat = 4;
-
 		glAlphaColorModel = new ComponentColorModel(ColorSpace.getInstance(ColorSpace.CS_sRGB),
 				new int[]{8, 8, 8, 8},
 				true,
@@ -163,19 +160,6 @@ public class TextureLoader {
 			GL11.glTexParameteri(target, GL11.GL_TEXTURE_MIN_FILTER, minFilter);
 			GL11.glTexParameteri(target, GL11.GL_TEXTURE_MAG_FILTER, magFilter);
 		}
-
-		// produce a texture from the byte buffer
-		/*
-		GL11.glTexImage2D(target, 
-				0, 
-				dstPixelFormat, 
-				get2Fold(bufferedImage.getWidth()), 
-				get2Fold(bufferedImage.getHeight()), 
-				0, 
-				srcPixelFormat, 
-				GL11.GL_UNSIGNED_BYTE, 
-				textureBuffer ); 
-		 */
 
 		gluBuild2DMipmaps(target, dstPixelFormat, get2Fold(bufferedImage.getWidth()),
 				get2Fold(bufferedImage.getHeight()), srcPixelFormat, GL11.GL_UNSIGNED_BYTE, textureBuffer);
@@ -407,7 +391,6 @@ public class TextureLoader {
 	 * @param minFilter      The minimising filter
 	 * @param magFilter      The magnification filter
 	 * @return The loaded texture
-	 * @throws IOException Indicates a failure to access the resource
 	 */
 	public Texture getNMMTexture(final BufferedImage bufferedImage, final int target, final int dstPixelFormat,
 								 final int minFilter, final int magFilter) {
@@ -677,7 +660,8 @@ public class TextureLoader {
 		final float sy;
 		final int sizein;
 		final int sizeout;
-		int rowstride, rowlen;
+		int rowstride;
+		int rowlen;
 
 		// temp image data
 		tempIn = new float[widthIn * heightIn * components];

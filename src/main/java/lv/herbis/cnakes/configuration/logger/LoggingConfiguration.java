@@ -66,10 +66,10 @@ public class LoggingConfiguration {
 				.build();
 
 		appender.start();
-		config.addAppender(appender);
+		config.addAppender(appender); // NOSONAR
 
 		final LoggerConfig loggerConfig = config.getRootLogger();
-		loggerConfig.addAppender(appender, debug ? Level.DEBUG : Level.WARN, null);
-		Configurator.setRootLevel(debug ? Level.DEBUG : Level.WARN);
+		loggerConfig.addAppender(appender, debug ? Level.DEBUG : Level.WARN, null); // NOSONAR
+		Configurator.setRootLevel(debug ? Level.DEBUG : Level.WARN); // NOSONAR
 	}
 }

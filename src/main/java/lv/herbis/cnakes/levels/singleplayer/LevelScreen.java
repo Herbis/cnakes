@@ -19,6 +19,7 @@ import org.lwjgl.opengl.GL;
 
 import javax.swing.filechooser.FileSystemView;
 import java.io.File;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -332,7 +333,7 @@ public class LevelScreen implements Runnable {
 		};
 
 		head = new PointCoordinates(0, 0);
-		random = new Random();
+		random = new SecureRandom();
 		body = new ArrayList<>();
 		newTarget();
 	}

@@ -2,6 +2,8 @@ package lv.herbis.cnakes.tools;
 
 import lv.herbis.cnakes.configuration.CnakesConfiguration;
 import lv.herbis.cnakes.configuration.ConfigurationException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 import org.yaml.snakeyaml.representer.Representer;
@@ -10,6 +12,8 @@ import java.io.IOException;
 import java.io.InputStream;
 
 public class ConfigurationUtil {
+	private static final Logger LOG = LogManager.getLogger(ConfigurationUtil.class);
+
 	private static final String DEFAULT_CONFIG_FILE_NAME = "defaultConfiguration.yaml";
 
 	private ConfigurationUtil() {
@@ -30,13 +34,14 @@ public class ConfigurationUtil {
 			try {
 				return yaml.loadAs(inputStream, CnakesConfiguration.class);
 			} catch (final Exception e) {
-				e.printStackTrace();
+				LOG.error("Error occurred while loading Configuration.", e);
 				throw new ConfigurationException(e.getMessage());
 			} finally {
 				try {
 					inputStream.close();
 				} catch (final IOException e) {
-					System.out.println("Can't close config input stream. " + e.getMessage());
+					LOG.error("Can't close config input stream. {}", e.getMessage());
+					LOG.debug("Stacktrace: ", e);
 				}
 			}
 		}
