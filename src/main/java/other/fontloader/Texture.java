@@ -13,11 +13,11 @@ public class Texture {
 	/**
 	 * The GL target type
 	 */
-	public int target;
+	private int target;
 	/**
 	 * The GL texture ID
 	 */
-	public int textureID;
+	private int textureID;
 	/**
 	 * The height of the image
 	 */
@@ -57,7 +57,6 @@ public class Texture {
 	/**
 	 * Bind the specified GL context to a texture
 	 *
-	 * @param gl The GL context to bind to
 	 */
 	public void bind() {
 		GL11.glBindTexture(target, textureID);

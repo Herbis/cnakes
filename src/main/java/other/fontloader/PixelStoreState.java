@@ -44,14 +44,14 @@ import static org.lwjgl.opengl.GL11.*;
  */
 class PixelStoreState {
 
-	public int unpackRowLength;
-	public int unpackAlignment;
-	public int unpackSkipRows;
-	public int unpackSkipPixels;
-	public int packRowLength;
-	public int packAlignment;
-	public int packSkipRows;
-	public int packSkipPixels;
+	private int unpackRowLength;
+	private int unpackAlignment;
+	private int unpackSkipRows;
+	private int unpackSkipPixels;
+	private int packRowLength;
+	private int packAlignment;
+	private int packSkipRows;
+	private int packSkipPixels;
 
 	/**
 	 * Constructor for PixelStoreState.
@@ -82,4 +82,35 @@ class PixelStoreState {
 		glPixelStorei(GL_PACK_SKIP_PIXELS, packSkipPixels);
 	}
 
+	public int getUnpackRowLength() {
+		return unpackRowLength;
+	}
+
+	public int getUnpackAlignment() {
+		return unpackAlignment;
+	}
+
+	public int getUnpackSkipRows() {
+		return unpackSkipRows;
+	}
+
+	public int getUnpackSkipPixels() {
+		return unpackSkipPixels;
+	}
+
+	public int getPackRowLength() {
+		return packRowLength;
+	}
+
+	public int getPackAlignment() {
+		return packAlignment;
+	}
+
+	public int getPackSkipRows() {
+		return packSkipRows;
+	}
+
+	public int getPackSkipPixels() {
+		return packSkipPixels;
+	}
 }

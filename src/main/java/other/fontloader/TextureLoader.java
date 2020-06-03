@@ -40,7 +40,7 @@ public class TextureLoader {
 	/**
 	 * The colour model including alpha for the GL image
 	 */
-	public ColorModel glAlphaColorModel;
+	private ColorModel glAlphaColorModel;
 
 	/**
 	 * The colour model for the GL image
@@ -711,16 +711,16 @@ public class TextureLoader {
 		final PixelStoreState pss = new PixelStoreState();
 
 		//Unpack the pixel data and convert to floating point
-		if (pss.unpackRowLength > 0) {
-			rowlen = pss.unpackRowLength;
+		if (pss.getUnpackRowLength() > 0) {
+			rowlen = pss.getUnpackRowLength();
 		} else {
 			rowlen = widthIn;
 		}
 
-		if (sizein >= pss.unpackAlignment) {
+		if (sizein >= pss.getUnpackAlignment()) {
 			rowstride = components * rowlen;
 		} else {
-			rowstride = pss.unpackAlignment / sizein * ceil(components * rowlen * sizein, pss.unpackAlignment);
+			rowstride = pss.getUnpackAlignment() / sizein * ceil(components * rowlen * sizein, pss.getUnpackAlignment());
 		}
 
 		switch (typein) {
@@ -728,7 +728,7 @@ public class TextureLoader {
 				k = 0;
 				dataIn.rewind();
 				for (i = 0; i < heightIn; i++) {
-					int ubptr = i * rowstride + pss.unpackSkipRows * rowstride + pss.unpackSkipPixels * components;
+					int ubptr = i * rowstride + pss.getUnpackSkipRows() * rowstride + pss.getUnpackSkipPixels() * components;
 					for (j = 0; j < widthIn * components; j++) {
 						tempIn[k++] = dataIn.get(ubptr++) & 0xff;
 					}
@@ -738,7 +738,7 @@ public class TextureLoader {
 				k = 0;
 				dataIn.rewind();
 				for (i = 0; i < heightIn; i++) {
-					int fptr = 4 * (i * rowstride + pss.unpackSkipRows * rowstride + pss.unpackSkipPixels * components);
+					int fptr = 4 * (i * rowstride + pss.getUnpackSkipRows() * rowstride + pss.getUnpackSkipPixels() * components);
 					for (j = 0; j < widthIn * components; j++) {
 						tempIn[k++] = dataIn.getFloat(fptr);
 						fptr += 4;
@@ -754,7 +754,8 @@ public class TextureLoader {
 		sy = (float) heightIn / (float) heightOut;
 
 		final float[] c = new float[components];
-		int src, dst;
+		int src;
+		int dst;
 
 		for (int iy = 0; iy < heightOut; iy++) {
 			for (int ix = 0; ix < widthOut; ix++) {
@@ -804,23 +805,23 @@ public class TextureLoader {
 
 
 		// Convert temp output
-		if (pss.packRowLength > 0) {
-			rowlen = pss.packRowLength;
+		if (pss.getPackRowLength() > 0) {
+			rowlen = pss.getPackRowLength();
 		} else {
 			rowlen = widthOut;
 		}
 
-		if (sizeout >= pss.packAlignment) {
+		if (sizeout >= pss.getPackAlignment()) {
 			rowstride = components * rowlen;
 		} else {
-			rowstride = pss.packAlignment / sizeout * ceil(components * rowlen * sizeout, pss.packAlignment);
+			rowstride = pss.getPackAlignment() / sizeout * ceil(components * rowlen * sizeout, pss.getPackAlignment());
 		}
 
 		switch (typeOut) {
 			case GL_UNSIGNED_BYTE:
 				k = 0;
 				for (i = 0; i < heightOut; i++) {
-					int ubptr = i * rowstride + pss.packSkipRows * rowstride + pss.packSkipPixels * components;
+					int ubptr = i * rowstride + pss.getPackSkipRows() * rowstride + pss.getPackSkipPixels() * components;
 
 					for (j = 0; j < widthOut * components; j++) {
 						dataOut.put(ubptr++, (byte) tempOut[k++]);
@@ -830,7 +831,7 @@ public class TextureLoader {
 			case GL_FLOAT:
 				k = 0;
 				for (i = 0; i < heightOut; i++) {
-					int fptr = 4 * (i * rowstride + pss.unpackSkipRows * rowstride + pss.unpackSkipPixels * components);
+					int fptr = 4 * (i * rowstride + pss.getPackSkipRows() * rowstride + pss.getPackSkipPixels() * components);
 
 					for (j = 0; j < widthOut * components; j++) {
 						dataOut.putFloat(fptr, tempOut[k++]);
@@ -853,7 +854,7 @@ public class TextureLoader {
 	 */
 	protected static int glGetIntegerv(final int what) {
 		scratch.rewind();
-		GL11.glGetIntegerv(what, scratch);//glGetInteger(what);//glGetInteger(what, scratch);
+		GL11.glGetIntegerv(what, scratch);
 		return scratch.get();
 	}
 

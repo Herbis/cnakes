@@ -34,10 +34,14 @@ public class FontTT {
 	 * Need a special class to hold character information in the hasmaps
 	 */
 	private class IntObject {
-		public int charnum;
+		private int charnum;
 
 		IntObject(final int charnumpass) {
 			charnum = charnumpass;
+		}
+
+		public int getCharnum() {
+			return charnum;
 		}
 	}
 
@@ -267,7 +271,7 @@ public class FontTT {
 		}
 		for (int i = 0; i < whatchars.length(); i++) {
 			final String tempstr = whatchars.substring(i, i + 1);
-			k = ((charlistp.get(tempstr))).charnum;
+			k = charlistp.get(tempstr).getCharnum();
 			drawtexture(charactersp[k], fontsizeratio, totalwidth, 0, color, rotxpass, rotypass, rotzpass);
 			totalwidth += (charactersp[k].getImageWidth() * fontsizeratio + tempkerneling);
 		}
@@ -331,10 +335,10 @@ public class FontTT {
 		}
 		for (int i = 0; i < whatchars.length(); i++) {
 			final String tempstr = whatchars.substring(i, i + 1);
-			ko = ((charlisto.get(tempstr))).charnum;
+			ko = charlisto.get(tempstr).getCharnum();
 			drawtexture(characterso[ko], fontsizeratio, totalwidth, 0, outlinecolor, rotxpass, rotypass, rotzpass);
 
-			k = ((charlistp.get(tempstr))).charnum;
+			k = charlistp.get(tempstr).getCharnum();
 			xoffset = (characterso[k].getImageWidth() - charactersp[k].getImageWidth()) * fontsizeratio / 2f;
 			yoffset = (characterso[k].getImageHeight() - charactersp[k].getImageHeight()) * fontsizeratio / 2f;
 			drawtexture(charactersp[k], fontsizeratio, totalwidth + xoffset, yoffset, color, rotxpass, rotypass, rotzpass);
@@ -397,10 +401,10 @@ public class FontTT {
 		for (int i = 0; i < whatchars.length(); i++) {
 			final String tempstr = whatchars.substring(i, i + 1);
 			if (outlined) {
-				k = ((charlisto.get(tempstr))).charnum;
+				k = charlisto.get(tempstr).getCharnum();
 				totalwidth += (characterso[k].getImageWidth() * fontsizeratio) + tempkerneling;
 			} else {
-				k = ((charlistp.get(tempstr))).charnum;
+				k = charlistp.get(tempstr).getCharnum();
 				totalwidth += (charactersp[k].getImageWidth() * fontsizeratio) + tempkerneling;
 			}
 		}
