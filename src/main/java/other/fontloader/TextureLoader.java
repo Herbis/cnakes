@@ -87,8 +87,7 @@ public class TextureLoader {
         try {
             GL11.glGenTextures(tmp);
         } catch (final NullPointerException e) {
-            e.printStackTrace();
-            //Sys.alert("Error","Your system is not capable of running this game.\nPlease make sure your video drivers are current.");
+            LOG.fatal("Your system is not capable of running this game.\nPlease make sure your video drivers are current.", e);
             System.exit(0);
         }
         return tmp.get(0);

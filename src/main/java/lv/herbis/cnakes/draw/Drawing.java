@@ -3,9 +3,7 @@ package lv.herbis.cnakes.draw;
 import lv.herbis.cnakes.configuration.CnakesConfiguration;
 import lv.herbis.cnakes.controls.Direction;
 import lv.herbis.cnakes.entities.PointCoordinates;
-import lv.herbis.cnakes.entities.Timer;
 import lv.herbis.cnakes.movement.MovingDirections;
-import lv.herbis.cnakes.save.HighScore;
 import lv.herbis.cnakes.save.HighScores;
 import lv.herbis.cnakes.status.SinglePlayerGameStatus;
 import org.apache.logging.log4j.LogManager;
@@ -15,8 +13,6 @@ import other.fontloader.FontTT;
 
 import java.awt.*;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 import static org.lwjgl.opengl.GL11.*;
@@ -24,7 +20,6 @@ import static org.lwjgl.opengl.GL11.*;
 public class Drawing {
 
     private static final Logger LOG = LogManager.getLogger(Drawing.class);
-    private static final int SCOREBOARD_HEIGHT = 100;
 
     private final CnakesConfiguration configuration;
     private int screenWidth;
@@ -32,13 +27,14 @@ public class Drawing {
     private int gameBoundX;
     private int gameBoundY;
     private int gameScale;
-    int headThickness;
+    private int scoreboardHeight;
+    private int headThickness;
 
+    private int playAreaXEndPoint;
+    private int playAreaYEndPoint;
+
+    private ScoreboardDrawing scoreboardDrawing;
     private FontTT gameFont;
-
-    private final Date dateForTimer = new Date();
-    private final SimpleDateFormat timeFormat = new SimpleDateFormat("mm:ss.SSS");
-    private final SimpleDateFormat hsDateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 
 
     public Drawing(final CnakesConfiguration configuration) {
@@ -51,13 +47,18 @@ public class Drawing {
         screenHeight = configuration.getVideo().getResolution().getVertical();
         gameScale = configuration.getVideo().getScale();
         gameBoundX = screenWidth;
-        gameBoundY = screenHeight - SCOREBOARD_HEIGHT;
+        scoreboardHeight = gameScale * 5;
+        gameBoundY = screenHeight - scoreboardHeight;
         headThickness = gameScale / 3;
+        playAreaXEndPoint = gameBoundX / gameScale;
+        playAreaYEndPoint = gameBoundY / gameScale;
+
+        scoreboardDrawing = new ScoreboardDrawing(this);
     }
 
     public void initFont(final String fontLocation) {
         try {
-            gameFont = new FontTT(Font.createFont(Font.TRUETYPE_FONT, getClass().getClassLoader().getResourceAsStream(fontLocation)), 36, 0);
+            gameFont = new FontTT(Font.createFont(Font.TRUETYPE_FONT, getClass().getClassLoader().getResourceAsStream(fontLocation)), gameScale * 2, 0);
         } catch (final FontFormatException | IOException e) {
             LOG.error("Something went wrong while loading textures", e);
         }
@@ -67,7 +68,7 @@ public class Drawing {
      * Draws a filled square based on given coordinates.
      * Set colour and call glBegin(GL_QUADS) before calling this, and call glEnd afterwards.
      */
-    private void drawFilledSquare(final float x, final float y) {
+    void drawFilledSquare(final float x, final float y) {
         final float xLeft = x * gameScale;
         final float xRight = xLeft + gameScale;
         final float yBottom = y * gameScale;
@@ -162,53 +163,10 @@ public class Drawing {
         glVertex2f(x2, y2);
     }
 
-    /**
-     * Draws scoreboard on the screen.
-     */
     public void drawScoreboard(final SinglePlayerGameStatus gameStatus, final HighScores highScores) {
-        /* Draw score icons */
-        glBegin(GL_QUADS);
-        /* "Bugs Eaten" square */
-        glColor3f(0.25f, 0.73f, 0.31f);
-        drawFilledSquare(1, (float) gameBoundY / gameScale + 6);
-
-        /* "Snake Length" square */
-        glColor3f(0.55f, 0.01f, 0.31f);
-        drawFilledSquare(1, (float) gameBoundY / gameScale + 4);
-
-        /* "Score" square */
-        glColor3f(1.35f, 0.44f, 2.55f);
-        drawFilledSquare(1, (float) gameBoundY / gameScale + 2);
-
-
-        glEnd();
-
-        /* Draw numbers */
-        glEnable(GL_TEXTURE_2D);
-        glEnable(GL_ALPHA);
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-        /* "Bugs Eaten" number */
-        gameFont.drawText("" + gameStatus.getBugsCollected(), 20, 25, screenHeight - 26.0f, 0, Color4f.YELLOW, 0, 0, 0, false);
-
-        /* "Snake Length" number */
-        gameFont.drawText("" + gameStatus.getSnakeLength(), 20, 25, screenHeight - 46.0f, 0, Color4f.YELLOW, 0, 0, 0, false);
-
-        /* "Score" number */
-        gameFont.drawText("" + gameStatus.getScore(), 20, 25, screenHeight - 66.0f, 0, Color4f.YELLOW, 0, 0, 0, false);
-
-        /* "Player name" text */
-        gameFont.drawText("Player 1", 20, 10, screenHeight - 4.0f, 0, Color4f.YELLOW, 0, 0, 0, false);
-
-        if (gameStatus.isPaused()) {
-            gameFont.drawText("PAUSED", 40, gameBoundX / 2.0f, screenHeight - 4.0f, 0, Color4f.YELLOW, 0, 0, 0, true);
-        }
-        glDisable(GL_TEXTURE_2D);
-
-
-        drawTime(gameStatus, highScores);
+        scoreboardDrawing.drawScoreboard(gameStatus, highScores);
     }
+
 
     /**
      * Draws the Snake on the screen.
@@ -478,38 +436,8 @@ public class Drawing {
     }
 
 
-    /**
-     * Draws Game Time left on the screen.
-     */
-    public void drawTime(final SinglePlayerGameStatus gameStatus, final HighScores highScores) {
-        /* Draw numbers */
-        glEnable(GL_TEXTURE_2D);
-        glEnable(GL_ALPHA);
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-        final Timer currentTimer = gameStatus.getTimer();
-        if (currentTimer == null) {
-            /* If the current Timer is null, the game was never started. */
-            gameFont.drawText("Start the Game!", 40, gameBoundX / 2.0f, screenHeight - 44.0f, 0, Color4f.GREEN, 0, 0, 0, true);
-        } else {
-            if (gameStatus.hasEnded()) {
-                /* If time left is equal to 0, the game has ended. */
-                gameFont.drawText("Game Over", 40, gameBoundX / 2.0f, screenHeight - 44.0f, 0, Color4f.RED, 0, 0, 0, true);
-                final HighScore topScore = highScores.getTopScore();
-                gameFont.drawText("Top High Score: " + topScore.getScore() + " ("
-                                + highScores.getTopScore().getUsername() + ") "
-                                + hsDateFormat.format(new Date(topScore.getTimestamp())),
-                        20, gameBoundX / 2.0f, screenHeight - 14.0f, 0, Color4f.WHITE, 0, 0, 0, true);
-
-            } else {
-                /* If time left has a value higher than zero, lets use it, to show how much time player has left. */
-                dateForTimer.setTime(gameStatus.getTimer().getTimeLeft());
-                gameFont.drawText("" + timeFormat.format(dateForTimer), 40, gameBoundX / 2.0f, screenHeight - 44.0f, 0, Color4f.RED, 0, 0, 0, true);
-            }
-        }
-
-        glDisable(GL_TEXTURE_2D);
+    public void drawText(final String text, final float size, final float x, final float y, final Color4f color, final boolean centered) {
+        gameFont.drawText(text, gameScale * size, x * gameScale, y * gameScale, 0, color, 0, 0, 0, centered);
     }
 
 
@@ -564,10 +492,46 @@ public class Drawing {
         }
     }
 
+    public int getPlayAreaXEndPoint() {
+        return playAreaXEndPoint;
+    }
+
+    public int getPlayAreaYEndPoint() {
+        return playAreaYEndPoint;
+    }
+
     /**
      * Reset color back to basic play grid line color.
      */
     private void resetToBasicPlayGridLineColor() {
         glColor3f(0.22f, 0.29f, 0.15f);
+    }
+
+    int getScreenWidth() {
+        return screenWidth;
+    }
+
+    int getScreenHeight() {
+        return screenHeight;
+    }
+
+    int getGameBoundX() {
+        return gameBoundX;
+    }
+
+    int getGameBoundY() {
+        return gameBoundY;
+    }
+
+    int getGameScale() {
+        return gameScale;
+    }
+
+    int getScoreboardHeight() {
+        return scoreboardHeight;
+    }
+
+    FontTT getGameFont() {
+        return gameFont;
     }
 }

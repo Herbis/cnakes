@@ -36,8 +36,6 @@ public class LevelScreen implements Runnable {
     private static final String HIGHSCORE_FILE = "classic.hs";
     private static final int GAME_LENGTH = 1;
 
-    private static final int SCOREBOARD_HEIGHT = 100;
-
     private HighScores highScores;
     private final CnakesConfiguration configuration;
 
@@ -47,8 +45,6 @@ public class LevelScreen implements Runnable {
     private long windowId;
     private int screenWidth;
     private int screenHeight;
-    private int gameBoundX;
-    private int gameBoundY;
     private int gameScale;
     private static final int MOVE_EVERY_MS = 40; //40
 
@@ -174,9 +170,6 @@ public class LevelScreen implements Runnable {
         screenHeight = configuration.getVideo().getResolution().getVertical();
         monitor = configuration.getVideo().getMonitor();
         gameScale = configuration.getVideo().getScale();
-        gameBoundX = screenWidth;
-        gameBoundY = screenHeight - SCOREBOARD_HEIGHT;
-
     }
 
 
@@ -276,12 +269,12 @@ public class LevelScreen implements Runnable {
     public void newTarget() {
         if (target == null) {
             /* If we didn't have a target object already, create one. */
-            target = new PointCoordinates(random.nextInt(gameBoundX / gameScale), random.nextInt(gameBoundY / gameScale));
+            target = new PointCoordinates(random.nextInt(drawing.getPlayAreaXEndPoint()), random.nextInt(drawing.getPlayAreaYEndPoint()));
         } else {
             /* Create a new target, but make sure it's not in the same spot as the old one. */
-            PointCoordinates newTarget = new PointCoordinates(random.nextInt(gameBoundX / gameScale), random.nextInt(gameBoundY / gameScale));
+            PointCoordinates newTarget = new PointCoordinates(random.nextInt(drawing.getPlayAreaXEndPoint()), random.nextInt(drawing.getPlayAreaYEndPoint()));
             while (newTarget.equals(target)) {
-                newTarget = new PointCoordinates(random.nextInt(gameBoundX / gameScale), random.nextInt(gameBoundY / gameScale));
+                newTarget = new PointCoordinates(random.nextInt(drawing.getPlayAreaXEndPoint()), random.nextInt(drawing.getPlayAreaYEndPoint()));
             }
 
             target.setLocation(newTarget.getX(), newTarget.getY());
@@ -309,7 +302,7 @@ public class LevelScreen implements Runnable {
         initDisplay();
         initGL();
         initGame();
-        this.drawing.initFont("fonts/telegrama_raw.otf");
+        this.drawing.initFont("fonts/trs-million_rg.ttf");
         gameLoop();
         cleanUp();
     }
@@ -409,7 +402,7 @@ public class LevelScreen implements Runnable {
             }
 
             if (direction == MovingDirections.RIGHT) {
-                if (head.getX() + 1 < (gameBoundX / gameScale) && hitsTail(head.getX() + 1, head.getY())) { // maybe eliminate pointless game bound calculations?
+                if (head.getX() + 1 < (drawing.getPlayAreaXEndPoint()) && hitsTail(head.getX() + 1, head.getY())) { // maybe eliminate pointless game bound calculations?
                     head = new PointCoordinates(head.getX() + 1, head.getY());
 
                 } else {
@@ -438,7 +431,7 @@ public class LevelScreen implements Runnable {
                     MovingDirections.setDirection(MovingDirections.PLAYER_1, MovingDirections.UP);
                 }
             } else if (direction == MovingDirections.UP) {
-                if (head.getY() + 1 < (gameBoundY / gameScale) && hitsTail(head.getX(), head.getY() + 1)) {
+                if (head.getY() + 1 < (drawing.getPlayAreaYEndPoint()) && hitsTail(head.getX(), head.getY() + 1)) {
                     head = new PointCoordinates(head.getX(), head.getY() + 1);
                 } else {
                     gameStatus.setInBonus(false);
