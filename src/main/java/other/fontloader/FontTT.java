@@ -32,7 +32,7 @@ public class FontTT {
 	private final Font font;
 
 	/*
-	 * Need a special class to hold character information in the hasmaps
+	 * Need a special class to hold character information in the hashMaps
 	 */
 	private static class IntObject {
 		private final int charNum;
@@ -48,7 +48,7 @@ public class FontTT {
 
 
 	/*
-	 * Pass in the preloaded truetype font, the resolution at which
+	 * Pass in the preloaded TrueType font, the resolution at which
 	 * you wish the initial texture to be rendered at, and any extra
 	 * kerneling you want in-between characters
 	 */
@@ -64,7 +64,7 @@ public class FontTT {
 	}
 
 	/*
-	 * Create a standard Java2D bufferedimage to later be transferred into a texture
+	 * Create a standard Java2D BufferedImage to later be transferred into a texture
 	 */
 	private BufferedImage getFontImage(final char ch) {
 		final Font tempFont = this.font.deriveFont((float) this.fontSize);
@@ -106,7 +106,7 @@ public class FontTT {
 	}
 
 	/*
-	 * Create a standard Java2D bufferedimage for the font outline to later be
+	 * Create a standard Java2D BufferedImage for the font outline to later be
 	 * converted into a texture
 	 */
 	private BufferedImage getOutlineFontImage(final char ch) {
@@ -204,7 +204,7 @@ public class FontTT {
 	 * size = size of the font (does not change resolution)
 	 * x,y,z = position to draw at
 	 * color = color of font to draw
-	 * rotx, roty, rotz = how much to rotate the font on each axis
+	 * rotX, rotY, rotZ = how much to rotate the font on each axis
 	 * centered = center the font at the given location, or left justify
 	 *
 	 */
@@ -232,7 +232,7 @@ public class FontTT {
 		for (int i = 0; i < content.length(); i++) {
 			final String tempstr = content.substring(i, i + 1);
 			final int k = this.charListP.get(tempstr).getCharNum();
-			drawtexture(this.charactersP[k], fontSizeRatio, totalwidth, 0, color);
+			drawTexture(this.charactersP[k], fontSizeRatio, totalwidth, 0, color);
 			totalwidth += (this.charactersP[k].getImageWidth() * fontSizeRatio + this.kerneling);
 		}
 		if (isLightingOn) {
@@ -248,8 +248,8 @@ public class FontTT {
 	 * size = size of the font (does not change resolution)
 	 * x,y,z = position to draw at
 	 * color = color of font to draw
-	 * shadowcolor = color of the drop shadow
-	 * rotx, roty, rotz = how much to rotate the font on each axis
+	 * shadowColor = color of the drop shadow
+	 * rotX, rotY, rotZ = how much to rotate the font on each axis
 	 * centered = center the font at the given location, or left justify
 	 *
 	 */
@@ -266,8 +266,8 @@ public class FontTT {
 	 * size = size of the font (does not change resolution)
 	 * x,y,z = position to draw at
 	 * color = color of font to draw
-	 * outlinecolor = color of the font's outline
-	 * rotx, roty, rotz = how much to rotate the font on each axis
+	 * outlineColor = color of the font's outline
+	 * rotX, rotY, rotZ = how much to rotate the font on each axis
 	 * centered = center the font at the given location, or left justify
 	 *
 	 */
@@ -297,13 +297,13 @@ public class FontTT {
 		for (int i = 0; i < content.length(); i++) {
 			final String tempStr = content.substring(i, i + 1);
 			final int ko = this.charListO.get(tempStr).getCharNum();
-			drawtexture(this.charactersO[ko], fontSizeRatio, totalWidth, 0, outlineColor);
+			drawTexture(this.charactersO[ko], fontSizeRatio, totalWidth, 0, outlineColor);
 
 			final int k = this.charListP.get(tempStr).getCharNum();
 			xOffset = (this.charactersO[k].getImageWidth() - this.charactersP[k].getImageWidth()) * fontSizeRatio / 2f;
 			yOffset = (this.charactersO[k].getImageHeight() - this.charactersP[k]
 					.getImageHeight()) * fontSizeRatio / 2f;
-			drawtexture(this.charactersP[k], fontSizeRatio, totalWidth + xOffset, yOffset, color);
+			drawTexture(this.charactersP[k], fontSizeRatio, totalWidth + xOffset, yOffset, color);
 			totalWidth += ((this.charactersO[k].getImageWidth() * fontSizeRatio) + this.kerneling);
 		}
 		if (isLightingOn) {
@@ -316,7 +316,7 @@ public class FontTT {
 	/*
 	 * Draw the actual quad with character texture
 	 */
-	private void drawtexture(final Texture texture, final float ratio, final float x, final float y,
+	private void drawTexture(final Texture texture, final float ratio, final float x, final float y,
 							 final Color4f color) {
 		// Get the appropriate measurements from the texture itself
 		final float imgWidth = texture.getImageWidth() * ratio;
@@ -354,7 +354,6 @@ public class FontTT {
 	 * Returns the width in pixels of the given string, size, outlined or not
 	 * used for determining how to position the string, either for the user
 	 * or for this object
-	 *
 	 */
 	public float getWidth(final String whatchars, final float size, final boolean outlined) {
 		final float fontSizeRatio = size / (float) this.fontSize;
