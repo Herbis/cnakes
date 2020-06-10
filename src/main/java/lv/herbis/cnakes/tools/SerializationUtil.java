@@ -10,6 +10,10 @@ import java.io.*;
  */
 public class SerializationUtil {
 
+	private SerializationUtil() {
+		// Only static access
+	}
+
 	/**
 	 * deserialize to Object from given file. We use the general Object so as
 	 * that it can work for any Java Class.
