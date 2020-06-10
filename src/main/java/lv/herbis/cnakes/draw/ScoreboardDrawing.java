@@ -13,7 +13,7 @@ import static org.lwjgl.opengl.GL11.*;
 
 public class ScoreboardDrawing {
 
-	private final DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("mm:ss.SSS");
+	private final DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("mm:ss.S");
 	private final DateTimeFormatter hsDateFormat = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
 	private final Drawing drawing;
