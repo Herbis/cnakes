@@ -22,7 +22,7 @@ public class SinglePlayerKeyListener extends GLFWKeyCallback {
 			return;
 		}
 
-		if (GAME_STATUS.isPlayed() && !GAME_STATUS.hasEnded() && !GAME_STATUS.isPaused()) {
+		if (GAME_STATUS.isBeingPlayed() && !GAME_STATUS.hasEnded() && !GAME_STATUS.isPaused()) {
 			/* Actions allowed only when the game has not been started or has not ended or is not paused. */
 
 			if (key == GLFW_KEY_LEFT) {
@@ -57,7 +57,7 @@ public class SinglePlayerKeyListener extends GLFWKeyCallback {
 			return;
 		} else if (key == GLFW_KEY_ENTER) {
 			/* Only allow to start the game if the game is not being played or has ended. */
-			if (!GAME_STATUS.isPlayed() || GAME_STATUS.hasEnded()) {
+			if (!GAME_STATUS.isBeingPlayed() || GAME_STATUS.hasEnded()) {
 				GAME_STATUS.start();
 			}
 			return;

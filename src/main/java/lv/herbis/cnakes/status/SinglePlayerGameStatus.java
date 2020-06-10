@@ -3,14 +3,16 @@ package lv.herbis.cnakes.status;
 import lv.herbis.cnakes.entities.Timer;
 
 public abstract class SinglePlayerGameStatus implements GameStatus {
-	private boolean isPLAYED, isPAUSED, justSTARTED;
-	private boolean hasENDED = false;
+	private boolean beingPlayed;
+	private boolean paused;
+	private boolean justStarted;
+	private boolean ended = false;
 
-	private long SCORE = 0;
-	private long SNAKE_LENGTH = 5;
-	private long BUGS_COLLECTED = 0;
-	private boolean IN_BONUS = false;
-	private Timer GAME_TIMER;
+	private long score = 0;
+	private long snakeLength = 5;
+	private long bugsCollected = 0;
+	private boolean inBonus = false;
+	private Timer gameTimer;
 	private long gameLength = 0;
 
 	public SinglePlayerGameStatus(final long gameLength) {
@@ -20,86 +22,86 @@ public abstract class SinglePlayerGameStatus implements GameStatus {
 	@Override
 	public void start() {
 		reset();
-		isPLAYED = true;
-		justSTARTED = true;
-		GAME_TIMER.start();
+		beingPlayed = true;
+		justStarted = true;
+		gameTimer.start();
 	}
 
 
 	public long getScore() {
-		return SCORE;
+		return score;
 	}
 
 
 	public long getSnakeLength() {
-		return SNAKE_LENGTH;
+		return snakeLength;
 	}
 
 
 	public long getBugsCollected() {
-		return BUGS_COLLECTED;
+		return bugsCollected;
 	}
 
 
 	public void setBugsCollected(final long bugsCollected) {
-		BUGS_COLLECTED = bugsCollected;
+		this.bugsCollected = bugsCollected;
 	}
 
 
 	public void collectBug() {
-		BUGS_COLLECTED++;
-		SNAKE_LENGTH++;
+		bugsCollected++;
+		snakeLength++;
 	}
 
 	public void setSnakeLength(final long length) {
-		SNAKE_LENGTH = length;
+		snakeLength = length;
 	}
 
 	public void setScore(final long score) {
-		SCORE = score;
+		this.score = score;
 	}
 
 
 	public long addScore(final long add) {
-		return SCORE += add;
+		return score += add;
 	}
 
 
 	@Override
 	public void pause() {
 		/* Only attempt to pause if the game is being played. */
-		if (isPlayed()) {
-			isPAUSED = !isPAUSED;
+		if (isBeingPlayed()) {
+			paused = !paused;
 
-			GAME_TIMER.pause();
+			gameTimer.pause();
 		}
 	}
 
 
 	@Override
 	public boolean isPaused() {
-		return isPAUSED;
+		return paused;
 	}
 
 	@Override
-	public boolean isPlayed() {
-		return isPLAYED;
+	public boolean isBeingPlayed() {
+		return beingPlayed;
 	}
 
 
 	public boolean inBonus() {
-		return IN_BONUS;
+		return inBonus;
 	}
 
 
 	public void setInBonus(final boolean inBonus) {
-		IN_BONUS = inBonus;
+		this.inBonus = inBonus;
 	}
 
 	@Override
 	public void end() {
-		hasENDED = true;
-		isPLAYED = false;
+		ended = true;
+		beingPlayed = false;
 		afterEnd();
 	}
 
@@ -108,11 +110,11 @@ public abstract class SinglePlayerGameStatus implements GameStatus {
 
 	@Override
 	public boolean hasEnded() {
-		if (hasENDED) {
+		if (ended) {
 			return true;
 		} else {
-			if (GAME_TIMER != null) {
-				if (GAME_TIMER.getTimeLeft() <= 0) {
+			if (gameTimer != null) {
+				if (gameTimer.getTimeLeft() <= 0) {
 					end();
 					return true;
 				} else {
@@ -126,20 +128,20 @@ public abstract class SinglePlayerGameStatus implements GameStatus {
 
 	@Override
 	public void reset() {
-		SCORE = 0;
-		SNAKE_LENGTH = 5;
-		BUGS_COLLECTED = 0;
-		IN_BONUS = false;
-		hasENDED = false;
-		isPAUSED = false;
-		isPLAYED = false;
-		justSTARTED = false;
+		score = 0;
+		snakeLength = 5;
+		bugsCollected = 0;
+		inBonus = false;
+		ended = false;
+		paused = false;
+		beingPlayed = false;
+		justStarted = false;
 
-		GAME_TIMER = new Timer(gameLength);
+		gameTimer = new Timer(gameLength);
 	}
 
 	public Timer getTimer() {
-		return GAME_TIMER;
+		return gameTimer;
 	}
 
 	/**
@@ -147,8 +149,8 @@ public abstract class SinglePlayerGameStatus implements GameStatus {
 	 */
 	@Override
 	public boolean hasJustStarted() {
-		if (justSTARTED) {
-			justSTARTED = false;
+		if (justStarted) {
+			justStarted = false;
 			return true;
 		} else {
 			return false;

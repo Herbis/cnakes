@@ -12,15 +12,15 @@ public class Timer {
 
 
 	/**
-	 * Pass time in miliseconds
+	 * Pass time in milliseconds
 	 *
-	 * @param goalTimeMs
+	 * @param goalTimeMs time in milliseconds.
 	 */
 	public Timer(final long goalTimeMs) {
 		this.goalTime = goalTimeMs * 1000000;
 	}
 
-	public static long minutesToMiliseconds(final long minutes) {
+	public static long minutesToMilliseconds(final long minutes) {
 		return minutes * 60000;
 	}
 
@@ -29,22 +29,28 @@ public class Timer {
 		startTime = System.nanoTime();
 	}
 
+	/**
+	 * Get time left.
+	 * @return time left in milliseconds.
+	 */
 	public long getTimeLeft() {
 		if (stopped) {
 			return timeLeftAtPause;
 		} else {
 			final long timePassed = System.nanoTime() - (startTime + totalPausedTime);
 			final long timeLeft = goalTime - timePassed;
-			return timeLeft < 0 ? 0 : timeLeft / 1000000; // when time left is less than 0, then result = 0;
+			return timeLeft < 0 ? 0 : timeLeft / 1000000; // when time left is less than 0, then result is 0.
 		}
 	}
 
+	/**
+	 * Pause the timer.
+	 */
 	public void pause() {
 		if (stopped) {
 			totalPausedTime += System.nanoTime() - pauseTime; // time we spent in pause mode.
 			pauseTime = 0;
 			stopped = false;
-			//TODO calculate time passed
 		} else {
 			/* Record the time pause was pressed. */
 			pauseTime = System.nanoTime();

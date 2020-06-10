@@ -4,18 +4,17 @@ import lv.herbis.cnakes.entities.Timer;
 import lv.herbis.cnakes.save.HighScore;
 import lv.herbis.cnakes.save.HighScores;
 import lv.herbis.cnakes.status.SinglePlayerGameStatus;
+import lv.herbis.cnakes.tools.ConversionUtil;
 import other.fontloader.Color4f;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.format.DateTimeFormatter;
 
 import static org.lwjgl.opengl.GL11.*;
 
 public class ScoreboardDrawing {
 
-	private final Date dateForTimer = new Date();
-	private final SimpleDateFormat timeFormat = new SimpleDateFormat("mm:ss.SSS");
-	private final SimpleDateFormat hsDateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+	private final DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("mm:ss.SSS");
+	private final DateTimeFormatter hsDateFormat = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
 	private final Drawing drawing;
 
@@ -46,6 +45,10 @@ public class ScoreboardDrawing {
 
 	private final float timerXLocation;
 	private final float timerYLocation;
+
+	private HighScore topHighScore;
+	private String topHighScoreFormatted;
+
 
 	public ScoreboardDrawing(final Drawing drawing) {
 		this.drawing = drawing;
@@ -86,7 +89,7 @@ public class ScoreboardDrawing {
 	/**
 	 * Draws scoreboard on the screen.
 	 */
-	public void drawScoreboard(final SinglePlayerGameStatus gameStatus, final HighScores highScores) {
+	public void drawScoreboard(final SinglePlayerGameStatus gameStatus) {
 		/* Draw score icons */
 		glBegin(GL_QUADS);
 		/* "Bugs Eaten" square */
@@ -127,14 +130,14 @@ public class ScoreboardDrawing {
 		}
 		glDisable(GL_TEXTURE_2D);
 
-		drawTime(gameStatus, highScores);
+		drawTime(gameStatus);
 	}
 
 
 	/**
 	 * Draws Game Time left on the screen.
 	 */
-	public void drawTime(final SinglePlayerGameStatus gameStatus, final HighScores highScores) {
+	public void drawTime(final SinglePlayerGameStatus gameStatus) {
 		/* Draw numbers */
 		glEnable(GL_TEXTURE_2D);
 		glEnable(GL_ALPHA);
@@ -145,21 +148,24 @@ public class ScoreboardDrawing {
 		if (currentTimer == null) {
 			/* If the current Timer is null, the game was never started. */
 			drawing.drawText("Start the Game!", 2f, startGameXLocation, startGameYLocation, Color4f.GREEN, true);
-			//drawText("Start the Game!", 2, gameBoundX / 2.0f, gameBoundY + (gameScale * 3f), Color4f.GREEN, true);
 		} else {
 			if (gameStatus.hasEnded()) {
-				/* If time left is equal to 0, the game has ended. */
-				final HighScore topScore = highScores.getTopScore();
-				drawing.drawText(String.format("Top High Scorre: %d (%s) %s", topScore.getScore(), highScores.getTopScore().getUsername(),
-						hsDateFormat.format(new Date(topScore.getTimestamp()))), 1f, highScoreXLocation, highScoreYLocation, Color4f.WHITE, true);
+				if (topHighScore == null) {
+					drawing.drawText("High score cannot be displayed.", 1f, highScoreXLocation, highScoreYLocation, Color4f.WHITE, true);
+				} else {
+					drawing.drawText(String.format("Top High Score: %d (%s) %s", topHighScore.getScore(), topHighScore.getUsername(), this.topHighScoreFormatted), 1f, highScoreXLocation, highScoreYLocation, Color4f.WHITE, true);
+				}
 			} else {
-				/* If time left has a value higher than zero, lets use it, to show how much time player has left. */
-				dateForTimer.setTime(gameStatus.getTimer().getTimeLeft());
-				drawing.drawText(timeFormat.format(dateForTimer), 2f, timerXLocation, timerYLocation, Color4f.RED, true);
+				drawing.drawText(timeFormat.format(ConversionUtil.millisecondsToLocalDateTime(gameStatus.getTimer().getTimeLeft())), 2f, timerXLocation, timerYLocation, Color4f.RED, true);
 			}
 		}
 
 		glDisable(GL_TEXTURE_2D);
+	}
+
+	public void updateHighScores(final HighScores highScores) {
+		this.topHighScore = highScores.getTopScore();
+		this.topHighScoreFormatted = hsDateFormat.format(ConversionUtil.millisecondsToLocalDateTime(this.topHighScore.getTimestamp()));
 	}
 
 }

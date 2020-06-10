@@ -163,8 +163,8 @@ public class Drawing {
 		glVertex2f(x2, y2);
 	}
 
-	public void drawScoreboard(final SinglePlayerGameStatus gameStatus, final HighScores highScores) {
-		scoreboardDrawing.drawScoreboard(gameStatus, highScores);
+	public void drawScoreboard(final SinglePlayerGameStatus gameStatus) {
+		scoreboardDrawing.drawScoreboard(gameStatus);
 	}
 
 
@@ -533,5 +533,9 @@ public class Drawing {
 
 	FontTT getGameFont() {
 		return gameFont;
+	}
+
+	public void updateHighScores(final HighScores highScores) {
+		this.scoreboardDrawing.updateHighScores(highScores);
 	}
 }

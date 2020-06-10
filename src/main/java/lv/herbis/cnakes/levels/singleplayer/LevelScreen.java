@@ -252,6 +252,8 @@ public class LevelScreen implements Runnable {
 		} catch (final Exception e) {
 			highScores = new HighScores(10);
 		}
+
+		this.drawing.updateHighScores(highScores);
 	}
 
 
@@ -289,7 +291,7 @@ public class LevelScreen implements Runnable {
 	private void render() {
 		drawing.drawTarget(target);
 		drawing.drawPlayGrid(head);
-		drawing.drawScoreboard(gameStatus, highScores);
+		drawing.drawScoreboard(gameStatus);
 	}
 
 
@@ -314,7 +316,7 @@ public class LevelScreen implements Runnable {
 	public void startGame() {
 		MovingDirections.resetDirection(MovingDirections.PLAYER_1);
 
-		gameStatus = new SinglePlayerGameStatus(Timer.minutesToMiliseconds(GAME_LENGTH)) {
+		gameStatus = new SinglePlayerGameStatus(Timer.minutesToMilliseconds(GAME_LENGTH)) {
 			@Override
 			public void afterEnd() {
 				LOG.info("End of the game.");
@@ -326,6 +328,8 @@ public class LevelScreen implements Runnable {
 					} catch (final Exception e) {
 						LOG.error("Could not save high-score file.", e);
 					}
+
+					drawing.updateHighScores(highScores);
 				} else {
 					LOG.debug("High-score was not added.");
 				}
@@ -351,7 +355,7 @@ public class LevelScreen implements Runnable {
 			newTarget();
 		}
 
-		if (!gameStatus.isPaused() && gameStatus.isPlayed() && !gameStatus.hasEnded()) {
+		if (!gameStatus.isPaused() && gameStatus.isBeingPlayed() && !gameStatus.hasEnded()) {
 
 			/* Update only every few miliseconds. */
 			if (lastDelta > MOVE_EVERY_MS) {

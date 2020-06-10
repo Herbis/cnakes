@@ -8,7 +8,7 @@ public interface GameStatus {
 
 	boolean isPaused();
 
-	boolean isPlayed();
+	boolean isBeingPlayed();
 
 	boolean hasJustStarted();
 
