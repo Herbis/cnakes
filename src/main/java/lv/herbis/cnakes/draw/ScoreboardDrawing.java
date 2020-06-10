@@ -37,6 +37,10 @@ public class ScoreboardDrawing {
 	private final float gamePausedXLocation;
 	private final float gamePausedYLocation;
 
+	private final float gameOverXLocation;
+	private final float gameOverYLocation;
+
+
 	private final float highScoreXLocation;
 	private final float highScoreYLocation;
 
@@ -75,6 +79,8 @@ public class ScoreboardDrawing {
 		playerNameYLocation = drawing.getPlayAreaYEndPoint() + 5.1f;
 		gamePausedXLocation = xMiddle;
 		gamePausedYLocation = yMiddle;
+		gameOverXLocation = xMiddle;
+		gameOverYLocation = drawing.getPlayAreaYEndPoint() + 3.1f;
 
 		highScoreXLocation = xMiddle;
 		highScoreYLocation = drawing.getPlayAreaYEndPoint() + 4.1f;
@@ -150,6 +156,7 @@ public class ScoreboardDrawing {
 			drawing.drawText("Start the Game!", 2f, startGameXLocation, startGameYLocation, Color4f.GREEN, true);
 		} else {
 			if (gameStatus.hasEnded()) {
+				drawing.drawText("Game Over", 2f, gameOverXLocation, gameOverYLocation, Color4f.RED, true);
 				if (topHighScore == null) {
 					drawing.drawText("High score cannot be displayed.", 1f, highScoreXLocation, highScoreYLocation, Color4f.WHITE, true);
 				} else {
