@@ -13,12 +13,15 @@ import java.awt.image.*;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.IntBuffer;
 import java.util.HashMap;
 import java.util.Hashtable;
 
+import static java.awt.Transparency.OPAQUE;
+import static java.awt.Transparency.TRANSLUCENT;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL12.GL_BGR;
 import static org.lwjgl.opengl.GL12.GL_BGRA;
@@ -31,6 +34,11 @@ import static org.lwjgl.opengl.GL12.GL_BGRA;
  */
 public class TextureLoader {
 	private static final Logger LOG = LogManager.getLogger(TextureLoader.class);
+	private static final int TARGET = GL11.GL_TEXTURE_2D;
+	private static final int DST_PIXEL_FORMAT = GL11.GL_RGBA;
+	private static final int MIN_FILTER = GL11.GL_LINEAR_MIPMAP_NEAREST;
+	private static final int MAG_FILTER = GL11.GL_LINEAR;
+	private static final IntBuffer scratch = BufferUtils.createIntBuffer(16);
 
 	/**
 	 * The table of textures that have been loaded in this loader
@@ -40,20 +48,13 @@ public class TextureLoader {
 	/**
 	 * The colour model including alpha for the GL image
 	 */
-	private ColorModel glAlphaColorModel;
+	private final ColorModel glAlphaColorModel;
 
 	/**
 	 * The colour model for the GL image
 	 */
 	private final ColorModel glColorModel;
 
-	private final int target = GL11.GL_TEXTURE_2D;
-	private final int dstPixelFormat = GL11.GL_RGBA;
-	private final int minFilter = GL11.GL_LINEAR_MIPMAP_NEAREST;
-	private final int magFilter = GL11.GL_LINEAR;
-
-
-	private static final IntBuffer scratch = BufferUtils.createIntBuffer(16);
 
 	/**
 	 * Create a new texture loader based on the game panel
@@ -63,14 +64,14 @@ public class TextureLoader {
 				new int[]{8, 8, 8, 8},
 				true,
 				false,
-				ComponentColorModel.TRANSLUCENT,
+				TRANSLUCENT,
 				DataBuffer.TYPE_BYTE);
 
 		glColorModel = new ComponentColorModel(ColorSpace.getInstance(ColorSpace.CS_sRGB),
 				new int[]{8, 8, 8, 0},
 				false,
 				false,
-				ComponentColorModel.OPAQUE,
+				OPAQUE,
 				DataBuffer.TYPE_BYTE);
 	}
 
@@ -105,10 +106,10 @@ public class TextureLoader {
 		}
 
 		tex = getTexture(resourceName, injar,
-				target, // target
-				dstPixelFormat,     // dst pixel format
-				minFilter, // min filter (unused)
-				magFilter);
+				TARGET, // target
+				DST_PIXEL_FORMAT,     // dst pixel format
+				MIN_FILTER, // min filter (unused)
+				MAG_FILTER);
 
 		table.put(resourceName, tex);
 
@@ -132,7 +133,6 @@ public class TextureLoader {
 							  final int dstPixelFormat,
 							  final int minFilter,
 							  final int magFilter) throws IOException {
-		int srcPixelFormat = 0;
 
 		// create the texture ID for this texture
 		final int textureID = createTextureID();
@@ -144,6 +144,8 @@ public class TextureLoader {
 		final BufferedImage bufferedImage = loadImage(resourceName, injar);
 		texture.setWidth(bufferedImage.getWidth());
 		texture.setHeight(bufferedImage.getHeight());
+
+		final int srcPixelFormat;
 
 		if (bufferedImage.getColorModel().hasAlpha()) {
 			srcPixelFormat = GL11.GL_RGBA;
@@ -190,7 +192,6 @@ public class TextureLoader {
 	 * @return A buffer containing the data
 	 */
 	private ByteBuffer convertImageData(final BufferedImage bufferedImage, final Texture texture) {
-		ByteBuffer imageBuffer = null;
 		final WritableRaster raster;
 		final BufferedImage texImage;
 
@@ -213,10 +214,10 @@ public class TextureLoader {
 		// for a texture
 		if (bufferedImage.getColorModel().hasAlpha()) {
 			raster = Raster.createInterleavedRaster(DataBuffer.TYPE_BYTE, texWidth, texHeight, 4, null);
-			texImage = new BufferedImage(glAlphaColorModel, raster, false, new Hashtable());
+			texImage = new BufferedImage(glAlphaColorModel, raster, false, new Hashtable<>());
 		} else {
 			raster = Raster.createInterleavedRaster(DataBuffer.TYPE_BYTE, texWidth, texHeight, 3, null);
-			texImage = new BufferedImage(glColorModel, raster, false, new Hashtable());
+			texImage = new BufferedImage(glColorModel, raster, false, new Hashtable<>());
 		}
 
 		// copy the source image into the produced image
@@ -229,7 +230,7 @@ public class TextureLoader {
 		// that be used by OpenGL to produce a texture.
 		final byte[] data = ((DataBufferByte) texImage.getRaster().getDataBuffer()).getData();
 
-		imageBuffer = ByteBuffer.allocateDirect(data.length);
+		final ByteBuffer imageBuffer = ByteBuffer.allocateDirect(data.length);
 		imageBuffer.order(ByteOrder.nativeOrder());
 		imageBuffer.put(data, 0, data.length);
 		imageBuffer.flip();
@@ -246,7 +247,12 @@ public class TextureLoader {
 	 */
 	private BufferedImage loadImage(final String ref, final boolean inJar) throws IOException {
 		if (inJar) {
-			return ImageIO.read(new BufferedInputStream(getClass().getClassLoader().getResourceAsStream(ref)));
+			final InputStream inputStream = getClass().getClassLoader().getResourceAsStream(ref);
+			if (inputStream == null) {
+				throw new FontException("Could not load image: " + ref);
+			} else {
+				return ImageIO.read(new BufferedInputStream(inputStream));
+			}
 		} else {
 			final File file = new File(ref);
 			return ImageIO.read(file);
@@ -277,9 +283,8 @@ public class TextureLoader {
 	 *
 	 * @param resourceName The location of the resource to load
 	 * @return The loaded texture
-	 * @throws IOException Indicates a failure to access the resource
 	 */
-	public Texture getTexture(final String resourceName, final BufferedImage resourceImage) throws IOException {
+	public Texture getTexture(final String resourceName, final BufferedImage resourceImage) {
 		Texture tex = table.get(resourceName);
 
 		if (tex != null) {
@@ -287,10 +292,10 @@ public class TextureLoader {
 		}
 
 		tex = getTexture(resourceImage,
-				target, // target
-				dstPixelFormat,     // dst pixel format
-				minFilter, // min filter (unused)
-				magFilter);
+				TARGET, // target
+				DST_PIXEL_FORMAT,     // dst pixel format
+				MIN_FILTER, // min filter (unused)
+				MAG_FILTER);
 
 		table.put(resourceName, tex);
 
@@ -306,14 +311,9 @@ public class TextureLoader {
 	 * @param minFilter      The minimising filter
 	 * @param magFilter      The magnification filter
 	 * @return The loaded texture
-	 * @throws IOException Indicates a failure to access the resource
 	 */
-	public Texture getTexture(final BufferedImage bufferedImage,
-							  final int target,
-							  final int dstPixelFormat,
-							  final int minFilter,
-							  final int magFilter) throws IOException {
-		int srcPixelFormat = 0;
+	public Texture getTexture(final BufferedImage bufferedImage, final int target, final int dstPixelFormat,
+							  final int minFilter, final int magFilter) {
 
 		// create the texture ID for this texture
 		final int textureID = createTextureID();
@@ -325,6 +325,7 @@ public class TextureLoader {
 		texture.setWidth(bufferedImage.getWidth());
 		texture.setHeight(bufferedImage.getHeight());
 
+		final int srcPixelFormat;
 		if (bufferedImage.getColorModel().hasAlpha()) {
 			srcPixelFormat = GL11.GL_RGBA;
 		} else {
@@ -362,7 +363,6 @@ public class TextureLoader {
 	 *
 	 * @param resourceName The location of the resource to load
 	 * @return The loaded texture
-	 * @throws IOException Indicates a failure to access the resource
 	 */
 	public Texture getNMMTexture(final String resourceName, final BufferedImage resourceImage) {
 		Texture tex = table.get(resourceName);
@@ -372,8 +372,8 @@ public class TextureLoader {
 		}
 
 		tex = getNMMTexture(resourceImage,
-				target, // target
-				dstPixelFormat,     // dst pixel format
+				TARGET, // target
+				DST_PIXEL_FORMAT,     // dst pixel format
 				GL11.GL_NEAREST, // min filter (unused)
 				GL11.GL_LINEAR);
 
@@ -394,8 +394,6 @@ public class TextureLoader {
 	 */
 	public Texture getNMMTexture(final BufferedImage bufferedImage, final int target, final int dstPixelFormat,
 								 final int minFilter, final int magFilter) {
-		int srcPixelFormat = 0;
-
 		// create the texture ID for this texture
 		final int textureID = createTextureID();
 		final Texture texture = new Texture(target, textureID);
@@ -406,6 +404,7 @@ public class TextureLoader {
 		texture.setWidth(bufferedImage.getWidth());
 		texture.setHeight(bufferedImage.getHeight());
 
+		final int srcPixelFormat;
 		if (bufferedImage.getColorModel().hasAlpha()) {
 			srcPixelFormat = GL11.GL_RGBA;
 		} else {
@@ -440,20 +439,7 @@ public class TextureLoader {
 	//////////////////////////////////////////////////////////////////
 	//////////////////////////////////////////////////////////////////
 
-	/**
-	 * Method gluBuild2DMipmaps
-	 *
-	 * @param target
-	 * @param components
-	 * @param width
-	 * @param height
-	 * @param format
-	 * @param type
-	 * @param data
-	 * @return int
-	 */
-	public static int gluBuild2DMipmaps(final int target,
-										final int components, final int width, final int height,
+	public static int gluBuild2DMipmaps(final int target, final int components, final int width, final int height,
 										final int format, final int type, final ByteBuffer data) {
 		if (width < 1 || height < 1) {
 			return 100901; //GLU_INVALID_VALUE
@@ -561,13 +547,6 @@ public class TextureLoader {
 		return retVal;
 	}
 
-	/**
-	 * Method bytesPerPixel.
-	 *
-	 * @param format
-	 * @param type
-	 * @return int
-	 */
 	protected static int bytesPerPixel(final int format, final int type) {
 		final int n;
 		final int m;
@@ -600,26 +579,16 @@ public class TextureLoader {
 
 		switch (type) {
 			case GL_UNSIGNED_BYTE:
-				m = 1;
-				break;
 			case GL_BYTE:
-				m = 1;
-				break;
 			case GL_BITMAP:
 				m = 1;
 				break;
 			case GL_UNSIGNED_SHORT:
-				m = 2;
-				break;
 			case GL_SHORT:
 				m = 2;
 				break;
 			case GL_UNSIGNED_INT:
-				m = 4;
-				break;
 			case GL_INT:
-				m = 4;
-				break;
 			case GL_FLOAT:
 				m = 4;
 				break;
@@ -630,30 +599,18 @@ public class TextureLoader {
 		return n * m;
 	}
 
-	/**
-	 * Method gluScaleImage.
-	 *
-	 * @param format
-	 * @param widthIn
-	 * @param heightIn
-	 * @param typein
-	 * @param dataIn
-	 * @param widthOut
-	 * @param heightOut
-	 * @param typeOut
-	 * @param dataOut
-	 * @return int
-	 */
-	public static int gluScaleImage(final int format,
-									final int widthIn, final int heightIn, final int typein, final ByteBuffer dataIn,
-									final int widthOut, final int heightOut, final int typeOut, final ByteBuffer dataOut) {
+	public static int gluScaleImage(final int format, final int widthIn, final int heightIn, final int typein,
+									final ByteBuffer dataIn, final int widthOut, final int heightOut,
+									final int typeOut, final ByteBuffer dataOut) {
 
 		final int components = compPerPix(format);
 		if (components == -1) {
 			return 100900; //GLU_INVALID_ENUM
 		}
 
-		int i, j, k;
+		int i;
+		int j;
+		int k;
 		final float[] tempIn;
 		final float[] tempOut;
 		final float sx;
@@ -832,9 +789,6 @@ public class TextureLoader {
 
 	/**
 	 * Convenience method for returning an int, rather than getting it out of a buffer yourself.
-	 *
-	 * @param what
-	 * @return int
 	 */
 	protected static int glGetIntegerv(final int what) {
 		scratch.rewind();
@@ -843,12 +797,6 @@ public class TextureLoader {
 	}
 
 
-	/**
-	 * Method compPerPix.
-	 *
-	 * @param format
-	 * @return int
-	 */
 	protected static int compPerPix(final int format) {
 		/* Determine number of components per pixel */
 		switch (format) {
@@ -876,10 +824,6 @@ public class TextureLoader {
 
 	/**
 	 * Return ceiling of integer division
-	 *
-	 * @param a
-	 * @param b
-	 * @return int
 	 */
 	protected static int ceil(final int a, final int b) {
 		return (a % b == 0 ? a / b : a / b + 1);
@@ -890,7 +834,6 @@ public class TextureLoader {
 	 * <p/>
 	 * Compute the nearest power of 2 number.  This algorithm is a little strange, but it works quite well.
 	 *
-	 * @param value
 	 * @return int
 	 */
 	protected static int nearestPower(int value) {
