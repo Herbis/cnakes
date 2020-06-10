@@ -1,7 +1,5 @@
 package other.fontloader;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
@@ -9,7 +7,6 @@ import java.awt.image.BufferedImage;
 import java.awt.image.BufferedImageOp;
 import java.awt.image.ConvolveOp;
 import java.awt.image.Kernel;
-import java.io.IOException;
 import java.util.HashMap;
 
 /**
@@ -23,29 +20,29 @@ import java.util.HashMap;
  * texture coordinates appropriately.
  */
 public class FontTT {
-	private static final Logger LOG = LogManager.getLogger(FontTT.class);
 
 
-	private Texture[] charactersp, characterso;
-	private final HashMap<String, IntObject> charlistp = new HashMap<>();
-	private final HashMap<String, IntObject> charlisto = new HashMap<>();
+	private Texture[] charactersP;
+	private Texture[] charactersO;
+	private final HashMap<String, IntObject> charListP = new HashMap<>();
+	private final HashMap<String, IntObject> charListO = new HashMap<>();
 	private final TextureLoader textureloader;
 	private final int kerneling;
-	private int fontsize = 32;
+	private final int fontSize;
 	private final Font font;
 
 	/*
 	 * Need a special class to hold character information in the hasmaps
 	 */
-	private class IntObject {
-		private final int charnum;
+	private static class IntObject {
+		private final int charNum;
 
-		IntObject(final int charnumpass) {
-			charnum = charnumpass;
+		IntObject(final int charNum) {
+			this.charNum = charNum;
 		}
 
-		public int getCharnum() {
-			return charnum;
+		public int getCharNum() {
+			return this.charNum;
 		}
 	}
 
@@ -53,14 +50,14 @@ public class FontTT {
 	/*
 	 * Pass in the preloaded truetype font, the resolution at which
 	 * you wish the initial texture to be rendered at, and any extra
-	 * kerneling you want inbetween characters
+	 * kerneling you want in-between characters
 	 */
-	public FontTT(final Font font, final int fontresolution, final int extrakerneling) {
+	public FontTT(final Font font, final int fontResolution, final int extraKerneling) {
 
-		textureloader = new TextureLoader();
-		this.kerneling = extrakerneling;
+		this.textureloader = new TextureLoader();
+		this.kerneling = extraKerneling;
 		this.font = font;
-		fontsize = fontresolution;
+		this.fontSize = fontResolution;
 
 		createPlainSet();
 		createOutlineSet();
@@ -70,46 +67,39 @@ public class FontTT {
 	 * Create a standard Java2D bufferedimage to later be transferred into a texture
 	 */
 	private BufferedImage getFontImage(final char ch) {
-		final Font tempfont;
-		tempfont = font.deriveFont((float) fontsize);
+		final Font tempFont = this.font.deriveFont((float) this.fontSize);
 		//Create a temporary image to extract font size
-		final BufferedImage tempfontImage = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
-		final Graphics2D g = (Graphics2D) tempfontImage.getGraphics();
+		final BufferedImage tempFontImage = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
+		final Graphics2D g = (Graphics2D) tempFontImage.getGraphics();
 		//// Add AntiAliasing /////
-		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-				RenderingHints.VALUE_ANTIALIAS_ON);
+		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		///////////////////////////
-		g.setFont(tempfont);
+		g.setFont(tempFont);
 		final FontMetrics fm = g.getFontMetrics();
-		int charwidth = fm.charWidth(ch);
+		int charWidth = fm.charWidth(ch);
 
-		if (charwidth <= 0) {
-			charwidth = 1;
+		if (charWidth <= 0) {
+			charWidth = 1;
 		}
-		int charheight = fm.getHeight();
-		if (charheight <= 0) {
-			charheight = fontsize;
+		int charHeight = fm.getHeight();
+		if (charHeight <= 0) {
+			charHeight = this.fontSize;
 		}
 
-		//Create another image for texture creation
+		// Create another image for texture creation
 		final BufferedImage fontImage;
-		fontImage = new BufferedImage(charwidth, charheight, BufferedImage.TYPE_INT_ARGB);
+		fontImage = new BufferedImage(charWidth, charHeight, BufferedImage.TYPE_INT_ARGB);
 		final Graphics2D gt = (Graphics2D) fontImage.getGraphics();
 		//// Add AntiAliasing /////
-		gt.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-				RenderingHints.VALUE_ANTIALIAS_ON);
+		gt.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		///////////////////////////
-		gt.setFont(tempfont);
+		gt.setFont(tempFont);
 
-		//// Uncomment these to fill in the texture with a background color
-		//// (used for debugging)
-		//gt.setColor(Color.RED);
-		//gt.fillRect(0, 0, charwidth, fontsize);
-
-		gt.setColor(new java.awt.Color(Color4f.WHITE.getRed(), Color4f.WHITE.getGreen(), Color4f.WHITE.getBlue(), Color4f.WHITE.getAlpha()));
-		final int charx = 0;
-		final int chary = 0;
-		gt.drawString(String.valueOf(ch), (charx), (chary) + fm.getAscent());
+		gt.setColor(new java.awt.Color(Color4f.WHITE.getRed(), Color4f.WHITE.getGreen(), Color4f.WHITE.getBlue(),
+									   Color4f.WHITE.getAlpha()));
+		final int charX = 0;
+		final int charY = 0;
+		gt.drawString(String.valueOf(ch), (charX), (charY) + fm.getAscent());
 
 		return fontImage;
 
@@ -120,70 +110,56 @@ public class FontTT {
 	 * converted into a texture
 	 */
 	private BufferedImage getOutlineFontImage(final char ch) {
-		final Font tempfont;
-		tempfont = font.deriveFont((float) fontsize);
+		final Font tempFont = this.font.deriveFont((float) this.fontSize);
 
-		//Create a temporary image to extract font size
-		final BufferedImage tempfontImage = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
-		final Graphics2D g = (Graphics2D) tempfontImage.getGraphics();
+		// Create a temporary image to extract font size
+		final BufferedImage tempFontImage = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
+		final Graphics2D g = (Graphics2D) tempFontImage.getGraphics();
 		//// Add AntiAliasing /////
-		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-				RenderingHints.VALUE_ANTIALIAS_ON);
+		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		///////////////////////////
-		g.setFont(tempfont);
+		g.setFont(tempFont);
 		final FontMetrics fm = g.getFontMetrics();
-		int charwidth = fm.charWidth(ch);
+		int charWidth = fm.charWidth(ch);
 
-		if (charwidth <= 0) {
-			charwidth = 1;
+		if (charWidth <= 0) {
+			charWidth = 1;
 		}
-		int charheight = fm.getHeight();
-		if (charheight <= 0) {
-			charheight = fontsize;
+		int charHeight = fm.getHeight();
+		if (charHeight <= 0) {
+			charHeight = this.fontSize;
 		}
 
 		//Create another image for texture creation
-		final int ot = (int) ((float) fontsize / 24f);
+		final int ot = (int) ((float) this.fontSize / 24f);
 
 		final BufferedImage fontImage;
-		fontImage = new BufferedImage(charwidth + 4 * ot, charheight + 4 * ot, BufferedImage.TYPE_INT_ARGB);
+		fontImage = new BufferedImage(charWidth + 4 * ot, charHeight + 4 * ot, BufferedImage.TYPE_INT_ARGB);
 		final Graphics2D gt = (Graphics2D) fontImage.getGraphics();
 		//// Add AntiAliasing /////
-		gt.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-				RenderingHints.VALUE_ANTIALIAS_ON);
+		gt.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		///////////////////////////
-		gt.setFont(tempfont);
-
-		//// Uncomment these to fill in the texture with a background color
-		//// (used for debugging)
-		//gt.setColor(Color.RED);
-		//gt.fillRect(0, 0, charwidth, fontsize);
+		gt.setFont(tempFont);
 
 		//// Create Outline by painting the character in multiple positions and blurring it
-		gt.setColor(new java.awt.Color(Color4f.WHITE.getRed(), Color4f.WHITE.getGreen(), Color4f.WHITE.getBlue(), Color4f.WHITE.getAlpha()));
-		final int charx = -fm.getLeading() + 2 * ot;
-		final int chary = 2 * ot;
-		gt.drawString(String.valueOf(ch), (charx) + ot, (chary) + fm.getAscent());
-		gt.drawString(String.valueOf(ch), (charx) - ot, (chary) + fm.getAscent());
-		gt.drawString(String.valueOf(ch), (charx), (chary) + ot + fm.getAscent());
-		gt.drawString(String.valueOf(ch), (charx), (chary) - ot + fm.getAscent());
-		gt.drawString(String.valueOf(ch), (charx) + ot, (chary) + ot + fm.getAscent());
-		gt.drawString(String.valueOf(ch), (charx) + ot, (chary) - ot + fm.getAscent());
-		gt.drawString(String.valueOf(ch), (charx) - ot, (chary) + ot + fm.getAscent());
-		gt.drawString(String.valueOf(ch), (charx) - ot, (chary) - ot + fm.getAscent());
+		gt.setColor(new java.awt.Color(Color4f.WHITE.getRed(), Color4f.WHITE.getGreen(), Color4f.WHITE.getBlue(),
+									   Color4f.WHITE.getAlpha()));
+		final int charX = -fm.getLeading() + 2 * ot;
+		final int charY = 2 * ot;
+		gt.drawString(String.valueOf(ch), (charX) + ot, (charY) + fm.getAscent());
+		gt.drawString(String.valueOf(ch), (charX) - ot, (charY) + fm.getAscent());
+		gt.drawString(String.valueOf(ch), (charX), (charY) + ot + fm.getAscent());
+		gt.drawString(String.valueOf(ch), (charX), (charY) - ot + fm.getAscent());
+		gt.drawString(String.valueOf(ch), (charX) + ot, (charY) + ot + fm.getAscent());
+		gt.drawString(String.valueOf(ch), (charX) + ot, (charY) - ot + fm.getAscent());
+		gt.drawString(String.valueOf(ch), (charX) - ot, (charY) + ot + fm.getAscent());
+		gt.drawString(String.valueOf(ch), (charX) - ot, (charY) - ot + fm.getAscent());
 
 		final float ninth = 1.0f / 9.0f;
-		final float[] blurKernel = {
-				ninth, ninth, ninth,
-				ninth, ninth, ninth,
-				ninth, ninth, ninth
-		};
+		final float[] blurKernel = {ninth, ninth, ninth, ninth, ninth, ninth, ninth, ninth, ninth};
 		final BufferedImageOp blur = new ConvolveOp(new Kernel(3, 3, blurKernel));
 
-		final BufferedImage returnimage = blur.filter(fontImage, null);
-
-		return returnimage;
-
+		return blur.filter(fontImage, null);
 	}
 
 
@@ -191,17 +167,16 @@ public class FontTT {
 	 * Create and store the plain (non-outlined) set of the given fonts
 	 */
 	private void createPlainSet() {
-		charactersp = new Texture[256];
+		this.charactersP = new Texture[256];
 
 		for (int i = 0; i < 256; i++) {
 			final char ch = (char) i;
 
-			BufferedImage fontImage = getFontImage(ch);
+			final BufferedImage fontImage = getFontImage(ch);
 
-			final String temptexname = "Char." + i;
-			charactersp[i] = textureloader.getTexture(temptexname, fontImage);
+			this.charactersP[i] = this.textureloader.getTexture("Char." + i, fontImage);
 
-			charlistp.put(String.valueOf(ch), new IntObject(i));
+			this.charListP.put(String.valueOf(ch), new IntObject(i));
 
 		}
 	}
@@ -210,17 +185,16 @@ public class FontTT {
 	 * creates and stores the outlined set for the font
 	 */
 	private void createOutlineSet() {
-		characterso = new Texture[256];
+		this.charactersO = new Texture[256];
 
 		for (int i = 0; i < 256; i++) {
 			final char ch = (char) i;
 
-			BufferedImage fontImage = getOutlineFontImage(ch);
+			final BufferedImage fontImage = getOutlineFontImage(ch);
 
-			final String temptexname = "Charo." + i;
-			characterso[i] = textureloader.getTexture(temptexname, fontImage);
+			this.charactersO[i] = this.textureloader.getTexture("Charo." + i, fontImage);
 
-			charlisto.put(String.valueOf(ch), new IntObject(i));
+			this.charListO.put(String.valueOf(ch), new IntObject(i));
 		}
 	}
 
@@ -234,35 +208,34 @@ public class FontTT {
 	 * centered = center the font at the given location, or left justify
 	 *
 	 */
-	public void drawText(final String whatchars, final float size, final float x, final float y, final float z, final Color4f color, final float rotxpass, final float rotypass, final float rotzpass, final boolean centered) {
-		final float fontsizeratio = size / (float) fontsize;
+	public void drawText(final String content, final float size, final float x, final float y, final float z,
+						 final Color4f color, final float rotX, final float rotY, final float rotZ,
+						 final boolean centered) {
+		final float fontSizeRatio = size / (float) this.fontSize;
 
-		final int tempkerneling = kerneling;
-
-		int k = 0;
-		final float realwidth = getWidth(whatchars, size, false);
+		final float realWidth = getWidth(content, size, false);
 		GL11.glPushMatrix();
-		final boolean islightingon = GL11.glIsEnabled(GL11.GL_LIGHTING);
+		final boolean isLightingOn = GL11.glIsEnabled(GL11.GL_LIGHTING);
 
-		if (islightingon) {
+		if (isLightingOn) {
 			GL11.glDisable(GL11.GL_LIGHTING);
 		}
 
 		GL11.glTranslatef(x, y, z);
-		GL11.glRotatef(rotxpass, 1, 0, 0);
-		GL11.glRotatef(rotypass, 0, 1, 0);
-		GL11.glRotatef(rotzpass, 0, 0, 1);
+		GL11.glRotatef(rotX, 1, 0, 0);
+		GL11.glRotatef(rotY, 0, 1, 0);
+		GL11.glRotatef(rotZ, 0, 0, 1);
 		float totalwidth = 0;
 		if (centered) {
-			totalwidth = -realwidth / 2f;
+			totalwidth = -realWidth / 2f;
 		}
-		for (int i = 0; i < whatchars.length(); i++) {
-			final String tempstr = whatchars.substring(i, i + 1);
-			k = charlistp.get(tempstr).getCharnum();
-			drawtexture(charactersp[k], fontsizeratio, totalwidth, 0, color, rotxpass, rotypass, rotzpass);
-			totalwidth += (charactersp[k].getImageWidth() * fontsizeratio + tempkerneling);
+		for (int i = 0; i < content.length(); i++) {
+			final String tempstr = content.substring(i, i + 1);
+			final int k = this.charListP.get(tempstr).getCharNum();
+			drawtexture(this.charactersP[k], fontSizeRatio, totalwidth, 0, color);
+			totalwidth += (this.charactersP[k].getImageWidth() * fontSizeRatio + this.kerneling);
 		}
-		if (islightingon) {
+		if (isLightingOn) {
 			GL11.glEnable(GL11.GL_LIGHTING);
 		}
 		GL11.glPopMatrix();
@@ -280,9 +253,11 @@ public class FontTT {
 	 * centered = center the font at the given location, or left justify
 	 *
 	 */
-	public void drawText(final String whatchars, final float size, final float x, final float y, final float z, final Color4f color, final Color4f shadowcolor, final float rotxpass, final float rotypass, final float rotzpass, final boolean centered) {
-		drawText(whatchars, size, x + 1f, y - 1f, z, shadowcolor, rotxpass, rotypass, rotzpass, centered);
-		drawText(whatchars, size, x, y, z, color, rotxpass, rotypass, rotzpass, centered);
+	public void drawText(final String content, final float size, final float x, final float y, final float z,
+						 final Color4f color, final Color4f shadowColor, final float rotX, final float rotY,
+						 final float rotZ, final boolean centered) {
+		drawText(content, size, x + 1f, y - 1f, z, shadowColor, rotX, rotY, rotZ, centered);
+		drawText(content, size, x, y, z, color, rotX, rotY, rotZ, centered);
 	}
 
 
@@ -296,42 +271,42 @@ public class FontTT {
 	 * centered = center the font at the given location, or left justify
 	 *
 	 */
-	public void drawOutlinedText(final String whatchars, final float size, final float x, final float y, final float z, final Color4f color, final Color4f outlinecolor, final float rotxpass, final float rotypass, final float rotzpass, final boolean centered) {
-		final float fontsizeratio = size / (float) fontsize;
+	public void drawOutlinedText(final String content, final float size, final float x, final float y, final float z,
+								 final Color4f color, final Color4f outlineColor, final float rotX,
+								 final float rotY, final float rotZ, final boolean centered) {
+		final float fontSizeRatio = size / (float) this.fontSize;
 
-		final float tempkerneling = kerneling;
-
-		int k = 0;
-		int ko = 0;
-		final float realwidth = getWidth(whatchars, size, true);
+		final float realWidth = getWidth(content, size, true);
 		GL11.glPushMatrix();
-		final boolean islightingon = GL11.glIsEnabled(GL11.GL_LIGHTING);
+		final boolean isLightingOn = GL11.glIsEnabled(GL11.GL_LIGHTING);
 
-		if (islightingon) {
+		if (isLightingOn) {
 			GL11.glDisable(GL11.GL_LIGHTING);
 		}
 
 		GL11.glTranslatef(x, y, z);
-		GL11.glRotatef(rotxpass, 1, 0, 0);
-		GL11.glRotatef(rotypass, 0, 1, 0);
-		GL11.glRotatef(rotzpass, 0, 0, 1);
-		float xoffset, yoffset;
-		float totalwidth = 0;
+		GL11.glRotatef(rotX, 1, 0, 0);
+		GL11.glRotatef(rotY, 0, 1, 0);
+		GL11.glRotatef(rotZ, 0, 0, 1);
+		float xOffset;
+		float yOffset;
+		float totalWidth = 0;
 		if (centered) {
-			totalwidth = -realwidth / 2f;
+			totalWidth = -realWidth / 2f;
 		}
-		for (int i = 0; i < whatchars.length(); i++) {
-			final String tempstr = whatchars.substring(i, i + 1);
-			ko = charlisto.get(tempstr).getCharnum();
-			drawtexture(characterso[ko], fontsizeratio, totalwidth, 0, outlinecolor, rotxpass, rotypass, rotzpass);
+		for (int i = 0; i < content.length(); i++) {
+			final String tempStr = content.substring(i, i + 1);
+			final int ko = this.charListO.get(tempStr).getCharNum();
+			drawtexture(this.charactersO[ko], fontSizeRatio, totalWidth, 0, outlineColor);
 
-			k = charlistp.get(tempstr).getCharnum();
-			xoffset = (characterso[k].getImageWidth() - charactersp[k].getImageWidth()) * fontsizeratio / 2f;
-			yoffset = (characterso[k].getImageHeight() - charactersp[k].getImageHeight()) * fontsizeratio / 2f;
-			drawtexture(charactersp[k], fontsizeratio, totalwidth + xoffset, yoffset, color, rotxpass, rotypass, rotzpass);
-			totalwidth += ((characterso[k].getImageWidth() * fontsizeratio) + tempkerneling);
+			final int k = this.charListP.get(tempStr).getCharNum();
+			xOffset = (this.charactersO[k].getImageWidth() - this.charactersP[k].getImageWidth()) * fontSizeRatio / 2f;
+			yOffset = (this.charactersO[k].getImageHeight() - this.charactersP[k]
+					.getImageHeight()) * fontSizeRatio / 2f;
+			drawtexture(this.charactersP[k], fontSizeRatio, totalWidth + xOffset, yOffset, color);
+			totalWidth += ((this.charactersO[k].getImageWidth() * fontSizeRatio) + this.kerneling);
 		}
-		if (islightingon) {
+		if (isLightingOn) {
 			GL11.glEnable(GL11.GL_LIGHTING);
 		}
 		GL11.glPopMatrix();
@@ -341,12 +316,13 @@ public class FontTT {
 	/*
 	 * Draw the actual quad with character texture
 	 */
-	private void drawtexture(final Texture texture, final float ratio, final float x, final float y, final Color4f color, final float rotx, final float roty, final float rotz) {
+	private void drawtexture(final Texture texture, final float ratio, final float x, final float y,
+							 final Color4f color) {
 		// Get the appropriate measurements from the texture itself
-		final float imgwidth = texture.getImageWidth() * ratio;
-		final float imgheight = -texture.getImageHeight() * ratio;
-		final float texwidth = texture.getWidth();
-		final float texheight = texture.getHeight();
+		final float imgWidth = texture.getImageWidth() * ratio;
+		final float imgHeight = -texture.getImageHeight() * ratio;
+		final float texWidth = texture.getWidth();
+		final float texHeight = texture.getHeight();
 
 		// Bind the texture
 		texture.bind();
@@ -356,22 +332,23 @@ public class FontTT {
 
 		// draw a quad with to place the character onto
 		GL11.glBegin(GL11.GL_QUADS);
-		{
-			GL11.glTexCoord2f(0, 0);
-			GL11.glVertex2f(0 + x, 0 - y);
 
-			GL11.glTexCoord2f(0, texheight);
-			GL11.glVertex2f(0 + x, imgheight - y);
+		GL11.glTexCoord2f(0, 0);
+		GL11.glVertex2f(0 + x, 0 - y);
 
-			GL11.glTexCoord2f(texwidth, texheight);
-			GL11.glVertex2f(imgwidth + x, imgheight - y);
+		GL11.glTexCoord2f(0, texHeight);
+		GL11.glVertex2f(0 + x, imgHeight - y);
 
-			GL11.glTexCoord2f(texwidth, 0);
-			GL11.glVertex2f(imgwidth + x, 0 - y);
-		}
+		GL11.glTexCoord2f(texWidth, texHeight);
+		GL11.glVertex2f(imgWidth + x, imgHeight - y);
+
+		GL11.glTexCoord2f(texWidth, 0);
+		GL11.glVertex2f(imgWidth + x, 0 - y);
+
 		GL11.glEnd();
 
 	}
+
 
 	/*
 	 * Returns the width in pixels of the given string, size, outlined or not
@@ -380,22 +357,22 @@ public class FontTT {
 	 *
 	 */
 	public float getWidth(final String whatchars, final float size, final boolean outlined) {
-		final float fontsizeratio = size / (float) fontsize;
+		final float fontSizeRatio = size / (float) this.fontSize;
 
-		final float tempkerneling = ((float) kerneling * fontsizeratio);
-		float totalwidth = 0;
-		int k = 0;
+		final float tempKerneling = ((float) this.kerneling * fontSizeRatio);
+		float totalWidth = 0;
 		for (int i = 0; i < whatchars.length(); i++) {
-			final String tempstr = whatchars.substring(i, i + 1);
+			final String tempStr = whatchars.substring(i, i + 1);
+			final int k;
 			if (outlined) {
-				k = charlisto.get(tempstr).getCharnum();
-				totalwidth += (characterso[k].getImageWidth() * fontsizeratio) + tempkerneling;
+				k = this.charListO.get(tempStr).getCharNum();
+				totalWidth += (this.charactersO[k].getImageWidth() * fontSizeRatio) + tempKerneling;
 			} else {
-				k = charlistp.get(tempstr).getCharnum();
-				totalwidth += (charactersp[k].getImageWidth() * fontsizeratio) + tempkerneling;
+				k = this.charListP.get(tempStr).getCharNum();
+				totalWidth += (this.charactersP[k].getImageWidth() * fontSizeRatio) + tempKerneling;
 			}
 		}
-		return totalwidth;
+		return totalWidth;
 
 	}
 }
