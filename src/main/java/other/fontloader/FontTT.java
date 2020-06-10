@@ -193,24 +193,17 @@ public class FontTT {
 	private void createPlainSet() {
 		charactersp = new Texture[256];
 
-		try {
-			for (int i = 0; i < 256; i++) {
-				final char ch = (char) i;
+		for (int i = 0; i < 256; i++) {
+			final char ch = (char) i;
 
-				BufferedImage fontImage = getFontImage(ch);
+			BufferedImage fontImage = getFontImage(ch);
 
-				final String temptexname = "Char." + i;
-				charactersp[i] = textureloader.getTexture(temptexname, fontImage);
+			final String temptexname = "Char." + i;
+			charactersp[i] = textureloader.getTexture(temptexname, fontImage);
 
-				charlistp.put(String.valueOf(ch), new IntObject(i));
+			charlistp.put(String.valueOf(ch), new IntObject(i));
 
-				fontImage = null;
-			}
-		} catch (final IOException e) {
-			LOG.error("Failed to create plain set.", e);
 		}
-
-
 	}
 
 	/*
@@ -219,24 +212,16 @@ public class FontTT {
 	private void createOutlineSet() {
 		characterso = new Texture[256];
 
-		try {
-			for (int i = 0; i < 256; i++) {
-				final char ch = (char) i;
+		for (int i = 0; i < 256; i++) {
+			final char ch = (char) i;
 
-				BufferedImage fontImage = getOutlineFontImage(ch);
+			BufferedImage fontImage = getOutlineFontImage(ch);
 
-				final String temptexname = "Charo." + i;
-				characterso[i] = textureloader.getTexture(temptexname, fontImage);
+			final String temptexname = "Charo." + i;
+			characterso[i] = textureloader.getTexture(temptexname, fontImage);
 
-				charlisto.put(String.valueOf(ch), new IntObject(i));
-
-				fontImage = null;
-			}
-		} catch (final IOException e) {
-			LOG.error("Failed to create outline set.", e);
+			charlisto.put(String.valueOf(ch), new IntObject(i));
 		}
-
-
 	}
 
 
