@@ -3,10 +3,13 @@ package lv.herbis.cnakes.configuration;
 public class VideoConfiguration {
 
 	private ResolutionConfiguration resolution;
-	private int scale;
-	private Integer monitor;
+	private int scale = 10;
+	private Integer monitor = 0;
 
 	public ResolutionConfiguration getResolution() {
+		if (resolution == null) {
+			this.resolution = new ResolutionConfiguration();
+		}
 		return resolution;
 	}
 

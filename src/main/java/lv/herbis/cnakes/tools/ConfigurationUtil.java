@@ -17,7 +17,6 @@ import static lv.herbis.cnakes.constants.CnakesConstants.SAVE_FILE_PATH;
 public class ConfigurationUtil {
 	private static final Logger LOG = LogManager.getLogger(ConfigurationUtil.class);
 
-	private static final String DEFAULT_CONFIG_FILE_NAME = "defaultConfiguration.yaml";
 	private static final String LOCAL_CONFIG_FILE_NAME = "configuration.yaml";
 
 	private ConfigurationUtil() {
@@ -32,16 +31,15 @@ public class ConfigurationUtil {
 
 		boolean usingDefaultConfig = false;
 
-		InputStream inputStream = getLocalConfiguration();
-		if (inputStream == null) {
-			usingDefaultConfig = true;
-			inputStream = getDefaultConfigurationInputStream();
-		}
+		final CnakesConfiguration configuration;
+		final InputStream inputStream = getLocalConfiguration();
 
 		if (inputStream == null) {
-			throw new ConfigurationException("Configuration could not be read.");
+			LOG.warn("Local configuration not found, using default configuration.");
+			usingDefaultConfig = true;
+			configuration = new CnakesConfiguration();
+
 		} else {
-			final CnakesConfiguration configuration;
 			try {
 				configuration = yaml.loadAs(inputStream, CnakesConfiguration.class);
 			} catch (final Exception e) {
@@ -55,13 +53,13 @@ public class ConfigurationUtil {
 					LOG.debug(LOG_STACKTRACE, e);
 				}
 			}
-
-			if (usingDefaultConfig) {
-				saveConfiguration(configuration);
-			}
-
-			return configuration;
 		}
+
+		if (usingDefaultConfig) {
+			saveConfiguration(configuration);
+		}
+
+		return configuration;
 	}
 
 	public static void saveConfiguration(final CnakesConfiguration configuration) throws ConfigurationException {
@@ -91,9 +89,5 @@ public class ConfigurationUtil {
 
 			return null;
 		}
-	}
-
-	private static InputStream getDefaultConfigurationInputStream() {
-		return ConfigurationUtil.class.getClassLoader().getResourceAsStream(DEFAULT_CONFIG_FILE_NAME);
 	}
 }

@@ -1,9 +1,0 @@
-video:
-  monitor: 0
-  resolution:
-    horizontal: 1280
-    vertical: 720
-    fullScreen: false
-  scale: 10
-gameplay:
-  brightenMovementLine: false

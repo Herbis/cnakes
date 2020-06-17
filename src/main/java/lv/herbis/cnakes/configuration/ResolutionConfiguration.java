@@ -1,9 +1,9 @@
 package lv.herbis.cnakes.configuration;
 
 public class ResolutionConfiguration {
-	private int horizontal;
-	private int vertical;
-	private boolean fullScreen;
+	private int horizontal = 1280;
+	private int vertical = 720;
+	private boolean fullScreen = false;
 
 	public int getHorizontal() {
 		return horizontal;

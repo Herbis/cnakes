@@ -2,11 +2,13 @@ package lv.herbis.cnakes.configuration;
 
 public class CnakesConfiguration {
 	private VideoConfiguration video;
-
 	private GameplayConfiguration gameplay;
 
 	public VideoConfiguration getVideo() {
-		return video;
+		if (this.video == null) {
+			this.video = new VideoConfiguration();
+		}
+		return this.video;
 	}
 
 	public void setVideo(final VideoConfiguration video) {
@@ -14,7 +16,10 @@ public class CnakesConfiguration {
 	}
 
 	public GameplayConfiguration getGameplay() {
-		return gameplay;
+		if (this.gameplay == null) {
+			this.gameplay = new GameplayConfiguration();
+		}
+		return this.gameplay;
 	}
 
 	public void setGameplay(final GameplayConfiguration gameplay) {
