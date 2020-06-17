@@ -21,15 +21,17 @@ public class StartScreen {
 
 		LOG.debug("Game launched.");
 		try {
-			loadGame(ConfigurationUtil.readConfiguration());
+			loadMenu(ConfigurationUtil.readConfiguration());
 		} catch (final ConfigurationException e) {
 			LOG.error("Could not launch the game, configuration error.", e);
 			System.exit(1);
 		}
 	}
 
-	public static void loadGame(final CnakesConfiguration configuration) {
-		final LevelScreen ls = new LevelScreen(configuration);
+	public static void loadMenu(final CnakesConfiguration configuration) {
+		//final LevelScreen ls = new LevelScreen(configuration);
+		final MainMenu ls = new MainMenu(configuration);
+
 		final Thread lsThread = new Thread(ls);
 		lsThread.start();
 	}

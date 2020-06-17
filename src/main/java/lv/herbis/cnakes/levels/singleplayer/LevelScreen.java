@@ -18,7 +18,6 @@ import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 
 import javax.swing.filechooser.FileSystemView;
-import java.io.File;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,8 +32,8 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 public class LevelScreen implements Runnable {
 	private static final Logger LOG = LogManager.getLogger(LevelScreen.class);
 
-	private static final String SAVE_FILE_PATH = FileSystemView.getFileSystemView().getDefaultDirectory().getPath()
-			+ "\\My Games\\cnakes\\";
+	private static final String SAVE_FILE_PATH = FileSystemView.getFileSystemView().getDefaultDirectory()
+			.getPath() + "\\My Games\\cnakes\\";
 	private static final String HIGHSCORE_FILE = "classic.hs";
 	private static final int GAME_LENGTH = 1;
 
@@ -52,12 +51,12 @@ public class LevelScreen implements Runnable {
 
 	boolean halfCellReached = true;
 
-	final Drawing drawing;
-	SinglePlayerGameStatus gameStatus;
-	PointCoordinates head;
-	PointCoordinates target;
-	List<PointCoordinates> body;
-	Random random;
+	private final Drawing drawing;
+	private SinglePlayerGameStatus gameStatus;
+	private PointCoordinates head;
+	private PointCoordinates target;
+	private List<PointCoordinates> body;
+	private Random random;
 
 	/**
 	 * time at last frame
@@ -205,7 +204,8 @@ public class LevelScreen implements Runnable {
 
 		// Get the resolution of the primary monitor
 		final GLFWVidMode vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
-		glfwSetWindowPos(this.windowId, (vidmode.width() - this.screenWidth) / 2, (vidmode.height() - this.screenHeight) / 2);
+		glfwSetWindowPos(this.windowId, (vidmode.width() - this.screenWidth) / 2,
+						 (vidmode.height() - this.screenHeight) / 2);
 
 		glfwMakeContextCurrent(this.windowId);
 		glfwSwapInterval(0);
@@ -309,8 +309,6 @@ public class LevelScreen implements Runnable {
 	 */
 	@Override
 	public void run() {
-		System.setProperty("org.lwjgl.librarypath", new File("native").getAbsolutePath());
-
 		initDisplay();
 		initGL();
 		initGame();
@@ -366,7 +364,7 @@ public class LevelScreen implements Runnable {
 
 		if (!this.gameStatus.isPaused() && this.gameStatus.isBeingPlayed() && !this.gameStatus.hasEnded()) {
 
-			/* Update only every few miliseconds. */
+			/* Update only every few milliseconds. */
 			if (this.lastDelta > this.gameSpeedMs) {
 				this.lastDelta = getDelta();
 				this.halfCellReached = false;
@@ -378,8 +376,8 @@ public class LevelScreen implements Runnable {
 			}
 			/* Calculate how much in the cell we should move. */ // 10(lastDelta) * 10(scale) / 40 (move_every_ms) = 2.5
 			final int direction = MovingDirections.getPreviousDirection(MovingDirections.PLAYER_1);
-			this.drawing.drawSnakeInMovement(this.head, this.body, direction, this.lastDelta * this.gameScale / this.gameSpeedMs,
-											 this.halfCellReached);
+			this.drawing.drawSnakeInMovement(this.head, this.body, direction,
+											 this.lastDelta * this.gameScale / this.gameSpeedMs, this.halfCellReached);
 		} else {
 			this.drawing.drawSnake(this.head, this.body);
 
@@ -418,7 +416,8 @@ public class LevelScreen implements Runnable {
 
 			if (direction == MovingDirections.RIGHT) {
 				if (this.head.getX() + 1 < (this.drawing.getPlayAreaXEndPoint()) && hitsTail(this.head.getX() + 1,
-																							 this.head.getY())) { // maybe eliminate pointless game bound calculations?
+																							 this.head
+																									 .getY())) { // maybe eliminate pointless game bound calculations?
 					this.head = new PointCoordinates(this.head.getX() + 1, this.head.getY());
 
 				} else {
@@ -447,8 +446,8 @@ public class LevelScreen implements Runnable {
 					MovingDirections.setDirection(MovingDirections.PLAYER_1, MovingDirections.UP);
 				}
 			} else if (direction == MovingDirections.UP) {
-				if (this.head.getY() + 1 < (this.drawing.getPlayAreaYEndPoint()) && hitsTail(this.head.getX(), this.head
-						.getY() + 1)) {
+				if (this.head.getY() + 1 < (this.drawing.getPlayAreaYEndPoint()) && hitsTail(this.head.getX(),
+																							 this.head.getY() + 1)) {
 					this.head = new PointCoordinates(this.head.getX(), this.head.getY() + 1);
 				} else {
 					this.gameStatus.setInBonus(false);
