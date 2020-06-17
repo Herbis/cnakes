@@ -142,7 +142,7 @@ public class LevelScreen implements Runnable {
 	 * @param y
 	 * @return
 	 */
-	public boolean hitsTail(final long x, final long y) {
+	public boolean hitsTail(final int x, final int y) {
 
 		for (int index = 0; index < body.size(); index++) {
 			final PointCoordinates point = body.get(index);

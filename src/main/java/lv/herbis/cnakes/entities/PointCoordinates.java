@@ -3,24 +3,24 @@ package lv.herbis.cnakes.entities;
 import java.util.Objects;
 
 public class PointCoordinates {
-	private long x = 0;
-	private long y = 0;
+	private int x = 0;
+	private int y = 0;
 
-	public PointCoordinates(final long x, final long y) {
+	public PointCoordinates(final int x, final int y) {
 		this.x = x;
 		this.y = y;
 	}
 
-	public void setLocation(final long x, final long y) {
+	public void setLocation(final int x, final int y) {
 		this.x = x;
 		this.y = y;
 	}
 
-	public long getX() {
+	public int getX() {
 		return x;
 	}
 
-	public long getY() {
+	public int getY() {
 		return y;
 	}
 

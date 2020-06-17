@@ -691,8 +691,8 @@ public class TextureLoader {
 		}
 
 		// Do scaling
-		sx = (float) widthIn / (float) widthOut;
-		sy = (float) heightIn / (float) heightOut;
+		sx = (float) widthIn / widthOut;
+		sy = (float) heightIn / heightOut;
 
 		final float[] c = new float[components];
 		int src;

@@ -131,7 +131,7 @@ public class FontTT {
 		}
 
 		//Create another image for texture creation
-		final int ot = (int) ((float) this.fontSize / 24f);
+		final int ot = (int) (this.fontSize / 24f);
 
 		final BufferedImage fontImage;
 		fontImage = new BufferedImage(charWidth + 4 * ot, charHeight + 4 * ot, BufferedImage.TYPE_INT_ARGB);
@@ -211,7 +211,7 @@ public class FontTT {
 	public void drawText(final String content, final float size, final float x, final float y, final float z,
 						 final Color4f color, final float rotX, final float rotY, final float rotZ,
 						 final boolean centered) {
-		final float fontSizeRatio = size / (float) this.fontSize;
+		final float fontSizeRatio = size / this.fontSize;
 
 		final float realWidth = getWidth(content, size, false);
 		GL11.glPushMatrix();
@@ -274,7 +274,7 @@ public class FontTT {
 	public void drawOutlinedText(final String content, final float size, final float x, final float y, final float z,
 								 final Color4f color, final Color4f outlineColor, final float rotX,
 								 final float rotY, final float rotZ, final boolean centered) {
-		final float fontSizeRatio = size / (float) this.fontSize;
+		final float fontSizeRatio = size / this.fontSize;
 
 		final float realWidth = getWidth(content, size, true);
 		GL11.glPushMatrix();
@@ -356,9 +356,9 @@ public class FontTT {
 	 * or for this object
 	 */
 	public float getWidth(final String whatchars, final float size, final boolean outlined) {
-		final float fontSizeRatio = size / (float) this.fontSize;
+		final float fontSizeRatio = size / this.fontSize;
 
-		final float tempKerneling = ((float) this.kerneling * fontSizeRatio);
+		final float tempKerneling = (this.kerneling * fontSizeRatio);
 		float totalWidth = 0;
 		for (int i = 0; i < whatchars.length(); i++) {
 			final String tempStr = whatchars.substring(i, i + 1);

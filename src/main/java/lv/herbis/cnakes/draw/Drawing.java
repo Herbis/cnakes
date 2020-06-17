@@ -445,14 +445,14 @@ public class Drawing {
 	 * Draws an unfilled square based on given coordinates.
 	 * Does the glBegin(GL_LINE_STRIP) here too.
 	 */
-	private void drawUnfilledSquare(final long x, final long y, final int thickness) {
+	private void drawUnfilledSquare(final float x, final float y, final int thickness) {
 		glBegin(GL_LINE_STRIP);
 		for (int lap = 1; lap <= thickness; lap++) {
-			glVertex2f((x * (float) gameScale) + lap, (y * (float) gameScale) + gameScale - lap); // top left
-			glVertex2f((x * (float) gameScale) + lap, (y * (float) gameScale) + (lap - 1)); // bottom left
-			glVertex2f((x * (float) gameScale) + gameScale - lap, y * (float) gameScale + lap); // bottom right
-			glVertex2f((x * (float) gameScale) + gameScale - lap, (y * (float) gameScale) + gameScale - lap); // top right
-			glVertex2f((x * (float) gameScale) + lap, (y * (float) gameScale) + gameScale - lap); // top left
+			glVertex2f((x * gameScale) + lap, (y * gameScale) + gameScale - lap); // top left
+			glVertex2f((x * gameScale) + lap, (y * gameScale) + (lap - 1)); // bottom left
+			glVertex2f((x * gameScale) + gameScale - lap, y * gameScale + lap); // bottom right
+			glVertex2f((x * gameScale) + gameScale - lap, (y * gameScale) + gameScale - lap); // top right
+			glVertex2f((x * gameScale) + lap, (y * gameScale) + gameScale - lap); // top left
 		}
 		glEnd();
 	}
