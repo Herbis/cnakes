@@ -33,7 +33,8 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 public class LevelScreen implements Runnable {
 	private static final Logger LOG = LogManager.getLogger(LevelScreen.class);
 
-	private static final String SAVE_FILE_PATH = FileSystemView.getFileSystemView().getDefaultDirectory().getPath() + "\\My Games\\cnakes\\";
+	private static final String SAVE_FILE_PATH = FileSystemView.getFileSystemView().getDefaultDirectory().getPath()
+			+ "\\My Games\\cnakes\\";
 	private static final String HIGHSCORE_FILE = "classic.hs";
 	private static final int GAME_LENGTH = 1;
 
@@ -85,8 +86,8 @@ public class LevelScreen implements Runnable {
 	 * Cleans up (releases) the resources and destroys the window.
 	 */
 	private void cleanUp() {
-		glfwFreeCallbacks(windowId);
-		glfwDestroyWindow(windowId);
+		glfwFreeCallbacks(this.windowId);
+		glfwDestroyWindow(this.windowId);
 	}
 
 
@@ -94,11 +95,11 @@ public class LevelScreen implements Runnable {
 	 * Starts the game loop, that keeps the game running.
 	 */
 	private void gameLoop() {
-		while (!glfwWindowShouldClose(windowId)) {
+		while (!glfwWindowShouldClose(this.windowId)) {
 			glClear(GL_COLOR_BUFFER_BIT);
 			update();
 
-			glfwSwapBuffers(windowId);
+			glfwSwapBuffers(this.windowId);
 			try {
 				glfwPollEvents();
 			} catch (final NullPointerException e) {
@@ -116,8 +117,8 @@ public class LevelScreen implements Runnable {
 	 */
 	public int getDelta() {
 		final long time = getTime();
-		final int delta = (int) (time - lastFrame);
-		lastFrame = time;
+		final int delta = (int) (time - this.lastFrame);
+		this.lastFrame = time;
 
 		return delta;
 	}
@@ -142,20 +143,20 @@ public class LevelScreen implements Runnable {
 	 */
 	public boolean hitsTail(final int x, final int y) {
 
-		for (int index = 0; index < body.size(); index++) {
-			final PointCoordinates point = body.get(index);
+		for (int index = 0; index < this.body.size(); index++) {
+			final PointCoordinates point = this.body.get(index);
 			if (point.equals(new PointCoordinates(x, y))) {
 				int bonus = 1;
-				if (gameStatus.inBonus()) {
+				if (this.gameStatus.inBonus()) {
 					bonus = GameRules.POINTS_PER_POINT;
 				}
 
 				for (int till = index; till >= 0; till--) {
-					body.remove(till); // NOSONAR
-					gameStatus.addScore(GameRules.POINTS_PER_POINT + ((long) bonus * till));
+					this.body.remove(till); // NOSONAR
+					this.gameStatus.addScore(GameRules.POINTS_PER_POINT + ((long) bonus * till));
 				}
 
-				gameStatus.setSnakeLength(body.size());
+				this.gameStatus.setSnakeLength(this.body.size());
 
 				return true;
 			}
@@ -164,12 +165,12 @@ public class LevelScreen implements Runnable {
 	}
 
 	private void initConfiguration() {
-		fullScreen = configuration.getVideo().getResolution().isFullScreen();
-		screenWidth = configuration.getVideo().getResolution().getHorizontal();
-		screenHeight = configuration.getVideo().getResolution().getVertical();
-		monitor = configuration.getVideo().getMonitor();
-		gameScale = configuration.getVideo().getScale();
-		gameSpeedMs = configuration.getGameplay().getGameSpeed();
+		this.fullScreen = this.configuration.getVideo().getResolution().isFullScreen();
+		this.screenWidth = this.configuration.getVideo().getResolution().getHorizontal();
+		this.screenHeight = this.configuration.getVideo().getResolution().getVertical();
+		this.monitor = this.configuration.getVideo().getMonitor();
+		this.gameScale = this.configuration.getVideo().getScale();
+		this.gameSpeedMs = this.configuration.getGameplay().getGameSpeed();
 	}
 
 
@@ -190,27 +191,23 @@ public class LevelScreen implements Runnable {
 		glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE); // the window will not be resizable
 
 		final long fullScreenMonitor;
-		if (fullScreen) {
-			fullScreenMonitor = monitor == null ? glfwGetPrimaryMonitor() : glfwGetMonitors().get(monitor);
+		if (this.fullScreen) {
+			fullScreenMonitor = this.monitor == null ? glfwGetPrimaryMonitor() : glfwGetMonitors().get(this.monitor);
 		} else {
 			fullScreenMonitor = NULL;
 		}
 
 
-		windowId = glfwCreateWindow(screenWidth, screenHeight, "Cnakes", fullScreenMonitor, NULL);
-		if (windowId == NULL) {
+		this.windowId = glfwCreateWindow(this.screenWidth, this.screenHeight, "Cnakes", fullScreenMonitor, NULL);
+		if (this.windowId == NULL) {
 			throw new RuntimeException("Failed to create the GLFW window");
 		}
 
 		// Get the resolution of the primary monitor
 		final GLFWVidMode vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
-		glfwSetWindowPos(
-				windowId,
-				(vidmode.width() - screenWidth) / 2,
-				(vidmode.height() - screenHeight) / 2
-		);
+		glfwSetWindowPos(this.windowId, (vidmode.width() - this.screenWidth) / 2, (vidmode.height() - this.screenHeight) / 2);
 
-		glfwMakeContextCurrent(windowId);
+		glfwMakeContextCurrent(this.windowId);
 		glfwSwapInterval(0);
 		GL.createCapabilities();
 	}
@@ -222,7 +219,7 @@ public class LevelScreen implements Runnable {
 	private void initGame() {
 		loadHighScores();
 		startGame();
-		glfwSetKeyCallback(windowId, new SinglePlayerKeyListener(gameStatus));
+		glfwSetKeyCallback(this.windowId, new SinglePlayerKeyListener(this.gameStatus));
 	}
 
 
@@ -233,7 +230,7 @@ public class LevelScreen implements Runnable {
 
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();
-		glOrtho(0, screenWidth, 0, screenHeight, -1, 1);
+		glOrtho(0, this.screenWidth, 0, this.screenHeight, -1, 1);
 		glMatrixMode(GL_MODELVIEW);
 
 		glClearColor(0, 0, 0, 1);
@@ -247,12 +244,12 @@ public class LevelScreen implements Runnable {
 	 */
 	public void loadHighScores() {
 		try {
-			highScores = (HighScores) SerializationUtil.deserialize(SAVE_FILE_PATH, HIGHSCORE_FILE);
+			this.highScores = (HighScores) SerializationUtil.deserialize(SAVE_FILE_PATH, HIGHSCORE_FILE);
 		} catch (final Exception e) {
-			highScores = new HighScores(10);
+			this.highScores = new HighScores(10);
 		}
 
-		this.drawing.updateHighScores(highScores);
+		this.drawing.updateHighScores(this.highScores);
 	}
 
 
@@ -260,27 +257,40 @@ public class LevelScreen implements Runnable {
 	 * Creates a new Snake;
 	 */
 	public void newSnake() {
-		head = new PointCoordinates(0, 0);
-		body = new ArrayList<>();
+		this.head = new PointCoordinates(0, 0);
+		this.body = new ArrayList<>();
 	}
 
 
 	/**
-	 * Creates a new target (bug).
+	 * Creates a new target / bug.
 	 */
 	public void newTarget() {
-		if (target == null) {
-			/* If we didn't have a target object already, create one. */
-			target = new PointCoordinates(random.nextInt(drawing.getPlayAreaXEndPoint()), random.nextInt(drawing.getPlayAreaYEndPoint()));
-		} else {
-			/* Create a new target, but make sure it's not in the same spot as the old one. */
-			PointCoordinates newTarget = new PointCoordinates(random.nextInt(drawing.getPlayAreaXEndPoint()), random.nextInt(drawing.getPlayAreaYEndPoint()));
-			while (newTarget.equals(target)) {
-				newTarget = new PointCoordinates(random.nextInt(drawing.getPlayAreaXEndPoint()), random.nextInt(drawing.getPlayAreaYEndPoint()));
-			}
+		PointCoordinates newTarget;
+		do {
+			newTarget = new PointCoordinates(this.random.nextInt(this.drawing.getPlayAreaXEndPoint()),
+											 this.random.nextInt(this.drawing.getPlayAreaYEndPoint()));
+		} while (newTarget.equals(this.target) || locationMatchesSnake(newTarget));
 
-			target.setLocation(newTarget.getX(), newTarget.getY());
+		if (this.target == null) {
+			this.target = newTarget;
+		} else {
+			this.target.setLocation(newTarget.getX(), newTarget.getY());
 		}
+	}
+
+	private boolean locationMatchesSnake(final PointCoordinates location) {
+		if (location.equals(this.head)) {
+			return true;
+		}
+
+		for (final PointCoordinates bodyLoc : this.body) {
+			if (location.equals(bodyLoc)) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 
@@ -288,9 +298,9 @@ public class LevelScreen implements Runnable {
 	 * Renders all that needs to be rendered for this game.
 	 */
 	private void render() {
-		drawing.drawTarget(target);
-		drawing.drawPlayGrid(head);
-		drawing.drawScoreboard(gameStatus);
+		this.drawing.drawTarget(this.target);
+		this.drawing.drawPlayGrid(this.head);
+		this.drawing.drawScoreboard(this.gameStatus);
 	}
 
 
@@ -315,29 +325,29 @@ public class LevelScreen implements Runnable {
 	public void startGame() {
 		MovingDirections.resetDirection(MovingDirections.PLAYER_1);
 
-		gameStatus = new SinglePlayerGameStatus(Timer.minutesToMilliseconds(GAME_LENGTH)) {
+		this.gameStatus = new SinglePlayerGameStatus(Timer.minutesToMilliseconds(GAME_LENGTH)) {
 			@Override
 			public void afterEnd() {
 				LOG.info("End of the game.");
-				final HighScore highScore = new HighScore("Player 1", gameStatus.getScore());
-				if (highScores.addHighScore(highScore)) {
+				final HighScore highScore = new HighScore("Player 1", LevelScreen.this.gameStatus.getScore());
+				if (LevelScreen.this.highScores.addHighScore(highScore)) {
 					LOG.debug("Adding to high-scores.");
 					try {
-						SerializationUtil.serialize(highScores, SAVE_FILE_PATH, HIGHSCORE_FILE);
+						SerializationUtil.serialize(LevelScreen.this.highScores, SAVE_FILE_PATH, HIGHSCORE_FILE);
 					} catch (final Exception e) {
 						LOG.error("Could not save high-score file.", e);
 					}
 
-					drawing.updateHighScores(highScores);
+					LevelScreen.this.drawing.updateHighScores(LevelScreen.this.highScores);
 				} else {
 					LOG.debug("High-score was not added.");
 				}
 			}
 		};
 
-		head = new PointCoordinates(0, 0);
-		random = new SecureRandom();
-		body = new ArrayList<>();
+		this.head = new PointCoordinates(0, 0);
+		this.random = new SecureRandom();
+		this.body = new ArrayList<>();
 		newTarget();
 	}
 
@@ -348,34 +358,35 @@ public class LevelScreen implements Runnable {
 	private void update() {
 
 		/* Reset Target (bug) and Snake if the game has just been started. */
-		if (gameStatus.hasJustStarted()) {
+		if (this.gameStatus.hasJustStarted()) {
 			MovingDirections.resetDirection(MovingDirections.PLAYER_1);
 			newSnake();
 			newTarget();
 		}
 
-		if (!gameStatus.isPaused() && gameStatus.isBeingPlayed() && !gameStatus.hasEnded()) {
+		if (!this.gameStatus.isPaused() && this.gameStatus.isBeingPlayed() && !this.gameStatus.hasEnded()) {
 
 			/* Update only every few miliseconds. */
-			if (lastDelta > gameSpeedMs) {
-				lastDelta = getDelta();
-				halfCellReached = false;
+			if (this.lastDelta > this.gameSpeedMs) {
+				this.lastDelta = getDelta();
+				this.halfCellReached = false;
 
-			} else if (lastDelta > gameSpeedMs / 2 && !halfCellReached) {
+			} else if (this.lastDelta > this.gameSpeedMs / 2 && !this.halfCellReached) {
 				updateSnakePosition();
 
-				halfCellReached = true;
+				this.halfCellReached = true;
 			}
 			/* Calculate how much in the cell we should move. */ // 10(lastDelta) * 10(scale) / 40 (move_every_ms) = 2.5
 			final int direction = MovingDirections.getPreviousDirection(MovingDirections.PLAYER_1);
-			drawing.drawSnakeInMovement(head, body, direction, lastDelta * gameScale / gameSpeedMs, halfCellReached);
+			this.drawing.drawSnakeInMovement(this.head, this.body, direction, this.lastDelta * this.gameScale / this.gameSpeedMs,
+											 this.halfCellReached);
 		} else {
-			drawing.drawSnake(head, body);
+			this.drawing.drawSnake(this.head, this.body);
 
 		}
 
 		render();
-		lastDelta += getDelta();
+		this.lastDelta += getDelta();
 	}
 
 
@@ -383,11 +394,11 @@ public class LevelScreen implements Runnable {
 	 * Calculate the FPS and set it in the title bar
 	 */
 	public void updateFPS() {
-		if (getTime() - lastFPS > 1000) {
-			fps = 0;
-			lastFPS += 1000;
+		if (getTime() - this.lastFPS > 1000) {
+			this.fps = 0;
+			this.lastFPS += 1000;
 		}
-		fps++;
+		this.fps++;
 	}
 
 
@@ -396,58 +407,60 @@ public class LevelScreen implements Runnable {
 	 */
 	private void updateSnakePosition() {
 		int direction = -1;
-		if (head != null) {
+		if (this.head != null) {
 			direction = MovingDirections.getDirection(MovingDirections.PLAYER_1);
 
-			body.add(new PointCoordinates(head.getX(), head.getY()));
+			this.body.add(new PointCoordinates(this.head.getX(), this.head.getY()));
 
-			if (body.size() > gameStatus.getSnakeLength()) {
-				body.remove(0);
+			if (this.body.size() > this.gameStatus.getSnakeLength()) {
+				this.body.remove(0);
 			}
 
 			if (direction == MovingDirections.RIGHT) {
-				if (head.getX() + 1 < (drawing.getPlayAreaXEndPoint()) && hitsTail(head.getX() + 1, head.getY())) { // maybe eliminate pointless game bound calculations?
-					head = new PointCoordinates(head.getX() + 1, head.getY());
+				if (this.head.getX() + 1 < (this.drawing.getPlayAreaXEndPoint()) && hitsTail(this.head.getX() + 1,
+																							 this.head.getY())) { // maybe eliminate pointless game bound calculations?
+					this.head = new PointCoordinates(this.head.getX() + 1, this.head.getY());
 
 				} else {
-					gameStatus.setInBonus(false);
+					this.gameStatus.setInBonus(false);
 
 					/* Set opposite direction. */
 					MovingDirections.setDirection(MovingDirections.PLAYER_1, MovingDirections.LEFT);
 				}
 			} else if (direction == MovingDirections.LEFT) {
-				if (head.getX() - 1 >= 0 && hitsTail(head.getX() - 1, head.getY())) {
-					head = new PointCoordinates(head.getX() - 1, head.getY());
+				if (this.head.getX() - 1 >= 0 && hitsTail(this.head.getX() - 1, this.head.getY())) {
+					this.head = new PointCoordinates(this.head.getX() - 1, this.head.getY());
 				} else {
-					gameStatus.setInBonus(false);
+					this.gameStatus.setInBonus(false);
 
 					/* Set opposite direction. */
 					MovingDirections.setDirection(MovingDirections.PLAYER_1, MovingDirections.RIGHT);
 				}
 			} else if (direction == MovingDirections.DOWN) {
-				if (head.getY() - 1 >= 0 && hitsTail(head.getX(), head.getY() - 1)) {
+				if (this.head.getY() - 1 >= 0 && hitsTail(this.head.getX(), this.head.getY() - 1)) {
 
-					head = new PointCoordinates(head.getX(), head.getY() - 1);
+					this.head = new PointCoordinates(this.head.getX(), this.head.getY() - 1);
 				} else {
-					gameStatus.setInBonus(false);
+					this.gameStatus.setInBonus(false);
 
 					/* Set opposite direction. */
 					MovingDirections.setDirection(MovingDirections.PLAYER_1, MovingDirections.UP);
 				}
 			} else if (direction == MovingDirections.UP) {
-				if (head.getY() + 1 < (drawing.getPlayAreaYEndPoint()) && hitsTail(head.getX(), head.getY() + 1)) {
-					head = new PointCoordinates(head.getX(), head.getY() + 1);
+				if (this.head.getY() + 1 < (this.drawing.getPlayAreaYEndPoint()) && hitsTail(this.head.getX(), this.head
+						.getY() + 1)) {
+					this.head = new PointCoordinates(this.head.getX(), this.head.getY() + 1);
 				} else {
-					gameStatus.setInBonus(false);
+					this.gameStatus.setInBonus(false);
 
 					/* Set opposite direction. */
 					MovingDirections.setDirection(MovingDirections.PLAYER_1, MovingDirections.DOWN);
 				}
 			}
 
-			if (head.equals(target)) {
-				gameStatus.collectBug();
-				gameStatus.setInBonus(true);
+			if (this.head.equals(this.target)) {
+				this.gameStatus.collectBug();
+				this.gameStatus.setInBonus(true);
 				newTarget();
 			}
 		}
