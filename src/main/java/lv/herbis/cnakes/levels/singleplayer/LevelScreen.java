@@ -47,7 +47,7 @@ public class LevelScreen implements Runnable {
 	private int screenWidth;
 	private int screenHeight;
 	private int gameScale;
-	private static final int MOVE_EVERY_MS = 40; //40
+	private int gameSpeedMs;
 
 	boolean halfCellReached = true;
 
@@ -68,14 +68,12 @@ public class LevelScreen implements Runnable {
 	 * frames per second
 	 */
 	int fps;
+
 	/**
 	 * last fps time
 	 */
 	long lastFPS;
 
-	/**
-	 * The fonts to draw to the screen
-	 */
 
 	public LevelScreen(final CnakesConfiguration configuration) {
 		this.configuration = configuration;
@@ -171,6 +169,7 @@ public class LevelScreen implements Runnable {
 		screenHeight = configuration.getVideo().getResolution().getVertical();
 		monitor = configuration.getVideo().getMonitor();
 		gameScale = configuration.getVideo().getScale();
+		gameSpeedMs = configuration.getGameplay().getGameSpeed();
 	}
 
 
@@ -358,18 +357,18 @@ public class LevelScreen implements Runnable {
 		if (!gameStatus.isPaused() && gameStatus.isBeingPlayed() && !gameStatus.hasEnded()) {
 
 			/* Update only every few miliseconds. */
-			if (lastDelta > MOVE_EVERY_MS) {
+			if (lastDelta > gameSpeedMs) {
 				lastDelta = getDelta();
 				halfCellReached = false;
 
-			} else if (lastDelta > MOVE_EVERY_MS / 2 && !halfCellReached) {
+			} else if (lastDelta > gameSpeedMs / 2 && !halfCellReached) {
 				updateSnakePosition();
 
 				halfCellReached = true;
 			}
 			/* Calculate how much in the cell we should move. */ // 10(lastDelta) * 10(scale) / 40 (move_every_ms) = 2.5
 			final int direction = MovingDirections.getPreviousDirection(MovingDirections.PLAYER_1);
-			drawing.drawSnakeInMovement(head, body, direction, lastDelta * gameScale / MOVE_EVERY_MS, halfCellReached);
+			drawing.drawSnakeInMovement(head, body, direction, lastDelta * gameScale / gameSpeedMs, halfCellReached);
 		} else {
 			drawing.drawSnake(head, body);
 
