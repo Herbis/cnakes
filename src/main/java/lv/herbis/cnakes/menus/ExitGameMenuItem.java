@@ -1,17 +1,25 @@
 package lv.herbis.cnakes.menus;
 
-public class ExitGameMenuItem implements MenuItem {
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-	final String name = "EXIT";
+import static org.lwjgl.glfw.GLFW.glfwSetWindowShouldClose;
+
+public class ExitGameMenuItem implements MenuItem {
+	private static final Logger LOG = LogManager.getLogger(ExitGameMenuItem.class);
+
+	private static final String NAME = "EXIT";
 
 	@Override
 	public String getName() {
-		return name;
+		return NAME;
 	}
 
 	@Override
 	public boolean enter() {
-		return false;
+		LOG.debug("Exiting the game.");
+		glfwSetWindowShouldClose(0, true);
+		return true;
 	}
 
 	@Override

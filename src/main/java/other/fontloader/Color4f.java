@@ -12,6 +12,7 @@ public class Color4f {
 	public static final Color4f GREEN = new Color4f(0.0f, 1.0f, 0.0f, 1.0f);
 	public static final Color4f BLUE = new Color4f(0.0f, 0.0f, 1.0f, 1.0f);
 	public static final Color4f YELLOW = new Color4f(1.0f, 1.0f, 0.0f, 1.0f);
+	public static final Color4f GREY = new Color4f(0.5f, 0.5f, 0.5f, 1.0f);
 
 	private float red, green, blue, alpha;
 

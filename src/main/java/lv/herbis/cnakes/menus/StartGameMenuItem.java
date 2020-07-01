@@ -2,11 +2,11 @@ package lv.herbis.cnakes.menus;
 
 public class StartGameMenuItem implements MenuItem {
 
-	private String name = "START";
+	private static final String NAME = "START";
 
 	@Override
 	public String getName() {
-		return name;
+		return NAME;
 	}
 
 	@Override

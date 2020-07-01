@@ -147,12 +147,38 @@ public class MainMenu implements Runnable {
 
 	private void update() {
 		final MenuItem[] menuItems = this.navigation.getMenuItems();
+		final MenuItem activeItem = this.navigation.getActiveItem();
 		final int itemCount = menuItems.length;
+
+		final float scaledHeight = screenHeight / (float) gameScale;
+		final int slots = (int) scaledHeight / 3;
+		final int centerSlot = slots / 2;
+		final int centerItemIndex = (itemCount / 2);
+		float xLoc = screenWidth / ((float) gameScale  * 2f);
+
+
 		for (int i = 0; i < itemCount; i++) {
 			final MenuItem item = menuItems[i];
+			final float itemSize;
+			final Color4f color;
+			if (activeItem == item) {
+				itemSize = 3f;
+				color = Color4f.YELLOW;
+			} else {
+				itemSize = 2f;
+				color = Color4f.GREY;
+			}
 
 			glEnable(GL_TEXTURE_2D);
-			this.drawing.drawOutlinedText(item.getName(), 3, 10,  25 , Color4f.YELLOW, Color4f.RED,true);
+
+			if (i == centerItemIndex) {
+				this.drawing.drawText(item.getName(), itemSize, xLoc,  scaledHeight - (centerSlot * 3), color,true);
+			} else {
+				final int difference = i - centerItemIndex;
+				final int slot = (centerSlot + difference);
+				this.drawing.drawText(item.getName(), itemSize, xLoc,  scaledHeight - (slot * 3), color,true);
+			}
+
 			glDisable(GL_TEXTURE_2D);
 		}
 	}
