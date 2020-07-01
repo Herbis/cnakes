@@ -3,6 +3,7 @@ package lv.herbis.cnakes.menus;
 import lv.herbis.cnakes.configuration.CnakesConfiguration;
 import lv.herbis.cnakes.levels.singleplayer.LevelScreen;
 import lv.herbis.cnakes.movement.MenuNavigation;
+import other.fontloader.Color4f;
 
 public class StartGameMenuItem implements MenuItem {
 
@@ -17,6 +18,11 @@ public class StartGameMenuItem implements MenuItem {
 		this.configuration = configuration;
 		this.menuNavigation = menuNavigation;
 		this.windowId = windowId;
+	}
+
+	@Override
+	public Color4f getColor() {
+		return Color4f.YELLOW;
 	}
 
 	@Override

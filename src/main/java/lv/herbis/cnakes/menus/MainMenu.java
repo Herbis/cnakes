@@ -173,9 +173,11 @@ public class MainMenu implements Runnable {
 			final MenuItem item = menuItems[i];
 			final float itemSize;
 			final Color4f color;
+			float adjustment = 0;
 			if (activeItem == item) {
 				itemSize = 3f;
-				color = Color4f.YELLOW;
+				color = activeItem.getColor();
+				adjustment = 0.5f;
 			} else {
 				itemSize = 2f;
 				color = Color4f.GREY;
@@ -183,13 +185,11 @@ public class MainMenu implements Runnable {
 
 			glEnable(GL_TEXTURE_2D);
 
-			if (i == centerItemIndex) {
-				this.drawing.drawText(item.getName(), itemSize, xLoc, scaledHeight - (centerSlot * 3), color, true);
-			} else {
-				final int difference = i - centerItemIndex;
-				final int slot = (centerSlot + difference);
-				this.drawing.drawText(item.getName(), itemSize, xLoc, scaledHeight - (slot * 3), color, true);
-			}
+
+			final int difference = i - centerItemIndex;
+			final int slot = (centerSlot + difference);
+			this.drawing.drawText(item.getName(), itemSize, xLoc, scaledHeight - (slot * 3) + adjustment, color, true);
+
 
 			glDisable(GL_TEXTURE_2D);
 		}
