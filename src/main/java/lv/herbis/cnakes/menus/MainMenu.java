@@ -2,6 +2,7 @@ package lv.herbis.cnakes.menus;
 
 import lv.herbis.cnakes.configuration.CnakesConfiguration;
 import lv.herbis.cnakes.draw.Drawing;
+import lv.herbis.cnakes.levels.singleplayer.LevelScreen;
 import lv.herbis.cnakes.listeners.MenuKeyListener;
 import lv.herbis.cnakes.movement.MenuNavigation;
 import org.apache.logging.log4j.LogManager;
@@ -30,6 +31,8 @@ public class MainMenu implements Runnable {
 	private int screenWidth;
 	private int screenHeight;
 	private int gameScale;
+
+	private LevelScreen levelScreen;
 
 	public MainMenu(final CnakesConfiguration configuration) {
 		this.configuration = configuration;
@@ -121,7 +124,7 @@ public class MainMenu implements Runnable {
 	 * Initializes the game.
 	 */
 	private void initMenu() {
-		this.navigation = new MenuNavigation();
+		this.navigation = new MenuNavigation(this.configuration, this.windowId);
 		glfwSetKeyCallback(this.windowId, new MenuKeyListener(this.navigation, this.windowId));
 	}
 
@@ -129,9 +132,21 @@ public class MainMenu implements Runnable {
 	 * Starts the game loop, that keeps the game running.
 	 */
 	private void gameLoop() {
-		while (!glfwWindowShouldClose(this.windowId)) {
+		while (!glfwWindowShouldClose(this.windowId) ) {
+			final Object pendingItem = this.navigation.usePendingItem();
+			if (pendingItem instanceof LevelScreen) {
+				this.levelScreen = (LevelScreen) pendingItem;
+				this.levelScreen.initGame();
+			}
+
 			glClear(GL_COLOR_BUFFER_BIT);
-			update();
+
+			if (this.levelScreen != null) {
+				// maybe need to use a separate SCREEN interface.
+				this.levelScreen.update();
+			} else {
+				update();
+			}
 
 			glfwSwapBuffers(this.windowId);
 			try {

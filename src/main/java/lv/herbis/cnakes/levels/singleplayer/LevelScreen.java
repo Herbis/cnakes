@@ -13,9 +13,6 @@ import lv.herbis.cnakes.status.SinglePlayerGameStatus;
 import lv.herbis.cnakes.tools.SerializationUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.lwjgl.glfw.GLFWErrorCallback;
-import org.lwjgl.glfw.GLFWVidMode;
-import org.lwjgl.opengl.GL;
 
 import javax.swing.filechooser.FileSystemView;
 import java.security.SecureRandom;
@@ -23,13 +20,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
-import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.system.MemoryUtil.NULL;
 
 
-public class LevelScreen implements Runnable {
+public class LevelScreen {
 	private static final Logger LOG = LogManager.getLogger(LevelScreen.class);
 
 	private static final String SAVE_FILE_PATH = FileSystemView.getFileSystemView().getDefaultDirectory()
@@ -40,12 +34,9 @@ public class LevelScreen implements Runnable {
 	private HighScores highScores;
 	private final CnakesConfiguration configuration;
 
-	private boolean fullScreen;
-	private Integer monitor;
 
 	private long windowId;
-	private int screenWidth;
-	private int screenHeight;
+
 	private int gameScale;
 	private int gameSpeedMs;
 
@@ -75,38 +66,13 @@ public class LevelScreen implements Runnable {
 	long lastFPS;
 
 
-	public LevelScreen(final CnakesConfiguration configuration) {
+	public LevelScreen(final CnakesConfiguration configuration, final long windowId) {
 		this.configuration = configuration;
+		this.windowId = windowId;
 		this.drawing = new Drawing(configuration);
 		initConfiguration();
 	}
 
-	/**
-	 * Cleans up (releases) the resources and destroys the window.
-	 */
-	private void cleanUp() {
-		glfwFreeCallbacks(this.windowId);
-		glfwDestroyWindow(this.windowId);
-	}
-
-
-	/**
-	 * Starts the game loop, that keeps the game running.
-	 */
-	private void gameLoop() {
-		while (!glfwWindowShouldClose(this.windowId)) {
-			glClear(GL_COLOR_BUFFER_BIT);
-			update();
-
-			glfwSwapBuffers(this.windowId);
-			try {
-				glfwPollEvents();
-			} catch (final NullPointerException e) {
-				System.exit(0);
-			}
-		}
-
-	}
 
 	/**
 	 * Calculate how many milliseconds have passed
@@ -164,78 +130,20 @@ public class LevelScreen implements Runnable {
 	}
 
 	private void initConfiguration() {
-		this.fullScreen = this.configuration.getVideo().getResolution().isFullScreen();
-		this.screenWidth = this.configuration.getVideo().getResolution().getHorizontal();
-		this.screenHeight = this.configuration.getVideo().getResolution().getVertical();
-		this.monitor = this.configuration.getVideo().getMonitor();
 		this.gameScale = this.configuration.getVideo().getScale();
 		this.gameSpeedMs = this.configuration.getGameplay().getGameSpeed();
 	}
 
 
 	/**
-	 * Initializes the display / window.
-	 */
-	private void initDisplay() {
-		// Setup an error callback. The default implementation
-		// will print the error message in System.err.
-		GLFWErrorCallback.createPrint(System.err).set(); // NOSONAR
-
-		// Initialize GLFW. Most GLFW functions will not work before doing this.
-		if (!glfwInit()) {
-			throw new IllegalStateException("Unable to initialize GLFW");
-		}
-
-		// Configure GLFW
-		glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE); // the window will not be resizable
-
-		final long fullScreenMonitor;
-		if (this.fullScreen) {
-			fullScreenMonitor = this.monitor == null ? glfwGetPrimaryMonitor() : glfwGetMonitors().get(this.monitor);
-		} else {
-			fullScreenMonitor = NULL;
-		}
-
-
-		this.windowId = glfwCreateWindow(this.screenWidth, this.screenHeight, "Cnakes", fullScreenMonitor, NULL);
-		if (this.windowId == NULL) {
-			throw new RuntimeException("Failed to create the GLFW window");
-		}
-
-		// Get the resolution of the primary monitor
-		final GLFWVidMode vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
-		glfwSetWindowPos(this.windowId, (vidmode.width() - this.screenWidth) / 2,
-						 (vidmode.height() - this.screenHeight) / 2);
-
-		glfwMakeContextCurrent(this.windowId);
-		glfwSwapInterval(0);
-		GL.createCapabilities();
-	}
-
-
-	/**
 	 * Initializes the game.
 	 */
-	private void initGame() {
+	public void initGame() {
 		loadHighScores();
 		startGame();
 		glfwSetKeyCallback(this.windowId, new SinglePlayerKeyListener(this.gameStatus, this.windowId));
-	}
+		this.drawing.initFont("fonts/trs-million_rg.ttf");
 
-
-	/**
-	 * Initializes Open GL.
-	 */
-	private void initGL() {
-
-		glMatrixMode(GL_PROJECTION);
-		glLoadIdentity();
-		glOrtho(0, this.screenWidth, 0, this.screenHeight, -1, 1);
-		glMatrixMode(GL_MODELVIEW);
-
-		glClearColor(0, 0, 0, 1);
-
-		glDisable(GL_DEPTH_TEST);
 	}
 
 
@@ -305,19 +213,6 @@ public class LevelScreen implements Runnable {
 
 
 	/**
-	 * Gets called when the thread starts (keeps the game running).
-	 */
-	@Override
-	public void run() {
-		initDisplay();
-		initGL();
-		initGame();
-		this.drawing.initFont("fonts/trs-million_rg.ttf");
-		gameLoop();
-		cleanUp();
-	}
-
-	/**
 	 * Starts the playable game.
 	 */
 	public void startGame() {
@@ -353,7 +248,7 @@ public class LevelScreen implements Runnable {
 	/**
 	 * Updates the game.
 	 */
-	private void update() {
+	public void update() {
 
 		/* Reset Target (bug) and Snake if the game has just been started. */
 		if (this.gameStatus.hasJustStarted()) {
