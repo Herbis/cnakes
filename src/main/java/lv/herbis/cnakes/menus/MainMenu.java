@@ -2,9 +2,7 @@ package lv.herbis.cnakes.menus;
 
 import lv.herbis.cnakes.configuration.CnakesConfiguration;
 import lv.herbis.cnakes.draw.Drawing;
-import lv.herbis.cnakes.entities.PointCoordinates;
 import lv.herbis.cnakes.listeners.MenuKeyListener;
-import lv.herbis.cnakes.listeners.SinglePlayerKeyListener;
 import lv.herbis.cnakes.movement.MenuNavigation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -15,7 +13,6 @@ import other.fontloader.Color4f;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
-import static org.lwjgl.glfw.GLFW.glfwSwapInterval;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
@@ -87,7 +84,8 @@ public class MainMenu implements Runnable {
 
 		// Get the resolution of the primary monitor
 		final GLFWVidMode vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
-		glfwSetWindowPos(this.windowId, (vidmode.width() - this.screenWidth) / 2, (vidmode.height() - this.screenHeight) / 2);
+		glfwSetWindowPos(this.windowId, (vidmode.width() - this.screenWidth) / 2,
+						 (vidmode.height() - this.screenHeight) / 2);
 
 		glfwMakeContextCurrent(this.windowId);
 		glfwSwapInterval(0);
@@ -123,8 +121,8 @@ public class MainMenu implements Runnable {
 	 * Initializes the game.
 	 */
 	private void initMenu() {
-		navigation = new MenuNavigation();
-		glfwSetKeyCallback(this.windowId, new MenuKeyListener(navigation));
+		this.navigation = new MenuNavigation();
+		glfwSetKeyCallback(this.windowId, new MenuKeyListener(this.navigation, this.windowId));
 	}
 
 	/**
@@ -142,7 +140,6 @@ public class MainMenu implements Runnable {
 				System.exit(0);
 			}
 		}
-
 	}
 
 	private void update() {
@@ -150,11 +147,11 @@ public class MainMenu implements Runnable {
 		final MenuItem activeItem = this.navigation.getActiveItem();
 		final int itemCount = menuItems.length;
 
-		final float scaledHeight = screenHeight / (float) gameScale;
+		final float scaledHeight = this.screenHeight / (float) this.gameScale;
 		final int slots = (int) scaledHeight / 3;
 		final int centerSlot = slots / 2;
 		final int centerItemIndex = (itemCount / 2);
-		float xLoc = screenWidth / ((float) gameScale  * 2f);
+		final float xLoc = this.screenWidth / ((float) this.gameScale * 2f);
 
 
 		for (int i = 0; i < itemCount; i++) {
@@ -172,11 +169,11 @@ public class MainMenu implements Runnable {
 			glEnable(GL_TEXTURE_2D);
 
 			if (i == centerItemIndex) {
-				this.drawing.drawText(item.getName(), itemSize, xLoc,  scaledHeight - (centerSlot * 3), color,true);
+				this.drawing.drawText(item.getName(), itemSize, xLoc, scaledHeight - (centerSlot * 3), color, true);
 			} else {
 				final int difference = i - centerItemIndex;
 				final int slot = (centerSlot + difference);
-				this.drawing.drawText(item.getName(), itemSize, xLoc,  scaledHeight - (slot * 3), color,true);
+				this.drawing.drawText(item.getName(), itemSize, xLoc, scaledHeight - (slot * 3), color, true);
 			}
 
 			glDisable(GL_TEXTURE_2D);

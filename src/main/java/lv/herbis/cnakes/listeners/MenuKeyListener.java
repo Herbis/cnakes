@@ -12,9 +12,11 @@ public class MenuKeyListener extends GLFWKeyCallback {
 	private static final Logger LOG = LogManager.getLogger(MenuKeyListener.class);
 
 	private final MenuNavigation navigation;
+	private final long windowId;
 
-	public MenuKeyListener(final MenuNavigation navigation) {
+	public MenuKeyListener(final MenuNavigation navigation, final long windowId) {
 		this.navigation = navigation;
+		this.windowId = windowId;
 	}
 
 	@Override
@@ -43,7 +45,7 @@ public class MenuKeyListener extends GLFWKeyCallback {
 			this.navigation.getActiveItem().enter();
 		} else if (key == GLFW_KEY_ESCAPE) {
 			LOG.debug("Exiting the game.");
-			glfwSetWindowShouldClose(0, true);
+			glfwSetWindowShouldClose(this.windowId, true);
 		}
 	}
 }

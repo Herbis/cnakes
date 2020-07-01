@@ -219,7 +219,7 @@ public class LevelScreen implements Runnable {
 	private void initGame() {
 		loadHighScores();
 		startGame();
-		glfwSetKeyCallback(this.windowId, new SinglePlayerKeyListener(this.gameStatus));
+		glfwSetKeyCallback(this.windowId, new SinglePlayerKeyListener(this.gameStatus, this.windowId));
 	}
 
 

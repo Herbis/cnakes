@@ -8,10 +8,14 @@ import static org.lwjgl.glfw.GLFW.*;
 
 public class SinglePlayerKeyListener extends GLFWKeyCallback {
 
-	private GameStatus game;
+	private final GameStatus game;
+	private final long windowId;
 
-	public SinglePlayerKeyListener(final GameStatus gameStatus) {
-		game = gameStatus;
+
+	public SinglePlayerKeyListener(final GameStatus gameStatus, final long windowId) {
+		this.game = gameStatus;
+		this.windowId = windowId;
+
 	}
 
 
@@ -28,19 +32,19 @@ public class SinglePlayerKeyListener extends GLFWKeyCallback {
 		boolean caught = false;
 
 		if (key == GLFW_KEY_SPACE) {
-			game.pause();
+			this.game.pause();
 			caught = true;
 		} else if (key == GLFW_KEY_ENTER) {
 			/* Only allow to start the game if the game is not being played or has ended. */
-			if (!game.isBeingPlayed() || game.hasEnded()) {
-				game.start();
+			if (!this.game.isBeingPlayed() || this.game.hasEnded()) {
+				this.game.start();
 			}
 			caught = true;
 		} else if (key == GLFW_KEY_ESCAPE) {
 			/* Only allow to exit if */
-			if (game.isPaused()) {
-				game.end();
-				glfwDestroyWindow(0);
+			if (this.game.isPaused()) {
+				this.game.end();
+				glfwSetWindowShouldClose(this.windowId, true); // TODO should probably just go to main menu
 			}
 			caught = true;
 		}
@@ -49,7 +53,7 @@ public class SinglePlayerKeyListener extends GLFWKeyCallback {
 	}
 
 	private boolean catchMovement(final int key) {
-		if (game.isBeingPlayed() && !game.hasEnded() && !game.isPaused()) {
+		if (this.game.isBeingPlayed() && !this.game.hasEnded() && !this.game.isPaused()) {
 			/* Actions allowed only when the game has not been started or has not ended or is not paused. */
 			boolean caught = false;
 			if (key == GLFW_KEY_LEFT) {
