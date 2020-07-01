@@ -18,7 +18,7 @@
 		<class>menus.StartScreen</class>
 		<maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
         <maven-shade-plugin.version>3.2.1</maven-shade-plugin.version>
-		<log4j.version>2.13.1</log4j.version>
+		<log4j.version>2.13.3</log4j.version>
 	</properties>
 
 	<profiles>
