@@ -1,13 +1,27 @@
 package lv.herbis.cnakes.movement;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.util.LinkedList;
 import java.util.Queue;
 
 public class MovingDirections {
 
-	public static final int UP = 0, DOWN = 1, LEFT = 2, RIGHT = 3;
-	public static final int PLAYER_1 = 1, PLAYER_2 = 2, PLAYER_3 = 3, PLAYER_4 = 4,
-			PLAYER_5 = 5, PLAYER_6 = 6, PLAYER_7 = 7, PLAYER_8 = 8;
+	private static final Logger LOG = LogManager.getLogger(MovingDirections.class);
+
+	public static final int UP = 0;
+	public static final int DOWN = 1;
+	public static final int LEFT = 2;
+	public static final int RIGHT = 3;
+	public static final int PLAYER_1 = 1;
+	public static final int PLAYER_2 = 2;
+	public static final int PLAYER_3 = 3;
+	public static final int PLAYER_4 = 4;
+	public static final int PLAYER_5 = 5;
+	public static final int PLAYER_6 = 6;
+	public static final int PLAYER_7 = 7;
+	public static final int PLAYER_8 = 8;
 
 
 	private static Queue<Integer> p1DirectionQ;
@@ -35,6 +49,11 @@ public class MovingDirections {
 	private static int p8Direction;
 	private static int p8LastDirection;
 
+
+	private MovingDirections()
+	{
+		// Only Static access.
+	}
 
 	/**
 	 * Sets Direction the player should go to (adds the direction to queue).
@@ -77,6 +96,8 @@ public class MovingDirections {
 				MovingDirections.p8DirectionQ.add(direction);
 				MovingDirections.p8Direction = direction;
 				break;
+			default:
+				LOG.warn("Player {} not recognized, direction {} will not be set", player, direction);
 		}
 	}
 
@@ -164,6 +185,9 @@ public class MovingDirections {
 				MovingDirections.p8LastDirection = direction;
 
 				break;
+			default:
+				LOG.warn("Player {} not recognized. Can't get direction.", player);
+
 		}
 
 		return direction;
@@ -196,6 +220,8 @@ public class MovingDirections {
 
 			case PLAYER_8:
 				return MovingDirections.p8LastDirection;
+			default:
+				LOG.warn("Player {} not recognized, can't get previous direction.", player);
 		}
 
 		return -1;
@@ -284,6 +310,9 @@ public class MovingDirections {
 				MovingDirections.p8LastDirection = MovingDirections.UP;
 
 				break;
+			default:
+				LOG.warn("Player {} not recognized, can't reset direction.", player);
+
 		}
 	}
 
