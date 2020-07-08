@@ -25,6 +25,7 @@ public class MainMenu implements Runnable {
 	private final CnakesConfiguration configuration;
 	private MenuNavigation navigation;
 
+	private boolean resolutionAutoConfig;
 	private boolean fullScreen;
 	private Integer monitor;
 
@@ -41,6 +42,14 @@ public class MainMenu implements Runnable {
 		initConfiguration();
 	}
 
+	private void autoConfigureResolution()
+	{
+		final GLFWVidMode vidModes = glfwGetVideoMode(glfwGetPrimaryMonitor());
+		this.configuration.getVideo().getResolution().setHorizontal(vidModes.width());
+		this.configuration.getVideo().getResolution().setVertical(vidModes.height());
+		this.configuration.getVideo().getResolution().setFullScreen(true);
+	}
+
 	/**
 	 * Cleans up (releases) the resources and destroys the window.
 	 */
@@ -50,9 +59,7 @@ public class MainMenu implements Runnable {
 	}
 
 	private void initConfiguration() {
-		this.fullScreen = this.configuration.getVideo().getResolution().isFullScreen();
-		this.screenWidth = this.configuration.getVideo().getResolution().getHorizontal();
-		this.screenHeight = this.configuration.getVideo().getResolution().getVertical();
+		this.resolutionAutoConfig = this.configuration.getVideo().getResolution().isAutoConfig();
 		this.monitor = this.configuration.getVideo().getMonitor();
 		this.gameScale = this.configuration.getVideo().getScale();
 	}
@@ -73,13 +80,20 @@ public class MainMenu implements Runnable {
 		// Configure GLFW
 		glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE); // the window will not be resizable
 
+		if (this.resolutionAutoConfig) {
+			autoConfigureResolution();
+		}
+
+		this.fullScreen = this.configuration.getVideo().getResolution().isFullScreen();
+		this.screenWidth = this.configuration.getVideo().getResolution().getHorizontal();
+		this.screenHeight = this.configuration.getVideo().getResolution().getVertical();
+
 		final long fullScreenMonitor;
 		if (this.fullScreen) {
 			fullScreenMonitor = this.monitor == null ? glfwGetPrimaryMonitor() : glfwGetMonitors().get(this.monitor);
 		} else {
 			fullScreenMonitor = NULL;
 		}
-
 
 		this.windowId = glfwCreateWindow(this.screenWidth, this.screenHeight, "Cnakes", fullScreenMonitor, NULL);
 		if (this.windowId == NULL) {
