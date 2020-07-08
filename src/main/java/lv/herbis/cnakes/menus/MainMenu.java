@@ -12,6 +12,7 @@ import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 import other.fontloader.Color4f;
 
+import static lv.herbis.cnakes.constants.CnakesConstants.LOG_STACKTRACE;
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
@@ -152,6 +153,8 @@ public class MainMenu implements Runnable {
 			try {
 				glfwPollEvents();
 			} catch (final NullPointerException e) {
+				LOG.warn("Exiting due to NullPointerException in Poll Events.");
+				LOG.debug(LOG_STACKTRACE, e);
 				System.exit(0);
 			}
 		}
