@@ -100,13 +100,12 @@ public class LevelScreen {
 
 
 	/**
-	 * Method that checks if the x,y matches any part of the tail.
+	 * Method that checks if the x,y matches any part of the tail, and executes logic based on that.
 	 *
-	 * @param x
-	 * @param y
-	 * @return
+	 * @param x x coordinates.
+	 * @param y y coordinates
 	 */
-	public boolean hitsTail(final int x, final int y) {
+	public void processTailHits(final int x, final int y) {
 
 		for (int index = 0; index < this.body.size(); index++) {
 			final PointCoordinates point = this.body.get(index);
@@ -123,10 +122,8 @@ public class LevelScreen {
 
 				this.gameStatus.setSnakeLength(this.body.size());
 
-				return true;
 			}
 		}
-		return true;
 	}
 
 	private void initConfiguration() {
@@ -325,10 +322,9 @@ public class LevelScreen {
 	}
 
 	private void updateSnakePositionForRightDirection() {
-		if (this.head.getX() + 1 < (this.drawing.getPlayAreaXEndPoint()) && hitsTail(this.head.getX() + 1,
-																					 this.head.getY())) {
+		if (this.head.getX() + 1 < this.drawing.getPlayAreaXEndPoint()) {
+			processTailHits(this.head.getX() + 1, this.head.getY());
 			this.head = new PointCoordinates(this.head.getX() + 1, this.head.getY());
-
 		} else {
 			this.gameStatus.setInBonus(false);
 
@@ -338,7 +334,9 @@ public class LevelScreen {
 	}
 
 	private void updateSnakePositionForLeftDirection() {
-		if (this.head.getX() - 1 >= 0 && hitsTail(this.head.getX() - 1, this.head.getY())) {
+		if (this.head.getX() - 1 >= 0)
+		{
+			processTailHits(this.head.getX() - 1, this.head.getY());
 			this.head = new PointCoordinates(this.head.getX() - 1, this.head.getY());
 		} else {
 			this.gameStatus.setInBonus(false);
@@ -349,8 +347,8 @@ public class LevelScreen {
 	}
 
 	private void updateSnakePositionForUpDirection() {
-		if (this.head.getY() + 1 < (this.drawing.getPlayAreaYEndPoint()) && hitsTail(this.head.getX(),
-																					 this.head.getY() + 1)) {
+		if (this.head.getY() + 1 < (this.drawing.getPlayAreaYEndPoint())) {
+			processTailHits(this.head.getX(), this.head.getY() + 1);
 			this.head = new PointCoordinates(this.head.getX(), this.head.getY() + 1);
 		} else {
 			this.gameStatus.setInBonus(false);
@@ -361,8 +359,8 @@ public class LevelScreen {
 	}
 
 	private void updateSnakePositionForDownDirection() {
-		if (this.head.getY() - 1 >= 0 && hitsTail(this.head.getX(), this.head.getY() - 1)) {
-
+		if (this.head.getY() - 1 >= 0) {
+			processTailHits(this.head.getX(), this.head.getY() - 1);
 			this.head = new PointCoordinates(this.head.getX(), this.head.getY() - 1);
 		} else {
 			this.gameStatus.setInBonus(false);
