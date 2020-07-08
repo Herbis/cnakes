@@ -3,7 +3,6 @@ package lv.herbis.cnakes.menus;
 import lv.herbis.cnakes.configuration.CnakesConfiguration;
 import lv.herbis.cnakes.configuration.ConfigurationException;
 import lv.herbis.cnakes.configuration.logger.LoggingConfiguration;
-import lv.herbis.cnakes.levels.singleplayer.LevelScreen;
 import lv.herbis.cnakes.tools.ConfigurationUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -21,15 +20,16 @@ public class StartScreen {
 
 		LOG.debug("Game launched.");
 		try {
-			loadGame(ConfigurationUtil.readConfiguration());
+			loadMenu(ConfigurationUtil.readConfiguration());
 		} catch (final ConfigurationException e) {
 			LOG.error("Could not launch the game, configuration error.", e);
 			System.exit(1);
 		}
 	}
 
-	public static void loadGame(final CnakesConfiguration configuration) {
-		final LevelScreen ls = new LevelScreen(configuration);
+	public static void loadMenu(final CnakesConfiguration configuration) {
+		final MainMenu ls = new MainMenu(configuration);
+
 		final Thread lsThread = new Thread(ls);
 		lsThread.start();
 	}
