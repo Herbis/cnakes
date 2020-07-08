@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import static org.lwjgl.glfw.GLFW.*;
+import static org.lwjgl.glfw.GLFW.glfwSetKeyCallback;
 
 
 public class LevelScreen {
@@ -35,7 +35,7 @@ public class LevelScreen {
 	private final CnakesConfiguration configuration;
 
 
-	private long windowId;
+	private final long windowId;
 
 	private int gameScale;
 	private int gameSpeedMs;
@@ -299,56 +299,21 @@ public class LevelScreen {
 	 * Updates the snake position.
 	 */
 	private void updateSnakePosition() {
-		int direction = -1;
 		if (this.head != null) {
-			direction = MovingDirections.getDirection(MovingDirections.PLAYER_1);
+			final int direction = MovingDirections.getDirection(MovingDirections.PLAYER_1);
 
 			this.body.add(new PointCoordinates(this.head.getX(), this.head.getY()));
 
-			if (this.body.size() > this.gameStatus.getSnakeLength()) {
-				this.body.remove(0);
-			}
+			reduceSnakeSizeIfNecessary();
 
 			if (direction == MovingDirections.RIGHT) {
-				if (this.head.getX() + 1 < (this.drawing.getPlayAreaXEndPoint()) && hitsTail(this.head.getX() + 1,
-																							 this.head.getY())) {
-					this.head = new PointCoordinates(this.head.getX() + 1, this.head.getY());
-
-				} else {
-					this.gameStatus.setInBonus(false);
-
-					/* Set opposite direction. */
-					MovingDirections.setDirection(MovingDirections.PLAYER_1, MovingDirections.LEFT);
-				}
+				updateSnakePositionForRightDirection();
 			} else if (direction == MovingDirections.LEFT) {
-				if (this.head.getX() - 1 >= 0 && hitsTail(this.head.getX() - 1, this.head.getY())) {
-					this.head = new PointCoordinates(this.head.getX() - 1, this.head.getY());
-				} else {
-					this.gameStatus.setInBonus(false);
-
-					/* Set opposite direction. */
-					MovingDirections.setDirection(MovingDirections.PLAYER_1, MovingDirections.RIGHT);
-				}
+				updateSnakePositionForLeftDirection();
 			} else if (direction == MovingDirections.DOWN) {
-				if (this.head.getY() - 1 >= 0 && hitsTail(this.head.getX(), this.head.getY() - 1)) {
-
-					this.head = new PointCoordinates(this.head.getX(), this.head.getY() - 1);
-				} else {
-					this.gameStatus.setInBonus(false);
-
-					/* Set opposite direction. */
-					MovingDirections.setDirection(MovingDirections.PLAYER_1, MovingDirections.UP);
-				}
+				updateSnakePositionForDownDirection();
 			} else if (direction == MovingDirections.UP) {
-				if (this.head.getY() + 1 < (this.drawing.getPlayAreaYEndPoint()) && hitsTail(this.head.getX(),
-																							 this.head.getY() + 1)) {
-					this.head = new PointCoordinates(this.head.getX(), this.head.getY() + 1);
-				} else {
-					this.gameStatus.setInBonus(false);
-
-					/* Set opposite direction. */
-					MovingDirections.setDirection(MovingDirections.PLAYER_1, MovingDirections.DOWN);
-				}
+				updateSnakePositionForUpDirection();
 			}
 
 			if (this.head.equals(this.target)) {
@@ -357,7 +322,60 @@ public class LevelScreen {
 				newTarget();
 			}
 		}
+	}
 
+	private void updateSnakePositionForRightDirection() {
+		if (this.head.getX() + 1 < (this.drawing.getPlayAreaXEndPoint()) && hitsTail(this.head.getX() + 1,
+																					 this.head.getY())) {
+			this.head = new PointCoordinates(this.head.getX() + 1, this.head.getY());
+
+		} else {
+			this.gameStatus.setInBonus(false);
+
+			/* Set opposite direction. */
+			MovingDirections.setDirection(MovingDirections.PLAYER_1, MovingDirections.LEFT);
+		}
+	}
+
+	private void updateSnakePositionForLeftDirection() {
+		if (this.head.getX() - 1 >= 0 && hitsTail(this.head.getX() - 1, this.head.getY())) {
+			this.head = new PointCoordinates(this.head.getX() - 1, this.head.getY());
+		} else {
+			this.gameStatus.setInBonus(false);
+
+			/* Set opposite direction. */
+			MovingDirections.setDirection(MovingDirections.PLAYER_1, MovingDirections.RIGHT);
+		}
+	}
+
+	private void updateSnakePositionForUpDirection() {
+		if (this.head.getY() + 1 < (this.drawing.getPlayAreaYEndPoint()) && hitsTail(this.head.getX(),
+																					 this.head.getY() + 1)) {
+			this.head = new PointCoordinates(this.head.getX(), this.head.getY() + 1);
+		} else {
+			this.gameStatus.setInBonus(false);
+
+			/* Set opposite direction. */
+			MovingDirections.setDirection(MovingDirections.PLAYER_1, MovingDirections.DOWN);
+		}
+	}
+
+	private void updateSnakePositionForDownDirection() {
+		if (this.head.getY() - 1 >= 0 && hitsTail(this.head.getX(), this.head.getY() - 1)) {
+
+			this.head = new PointCoordinates(this.head.getX(), this.head.getY() - 1);
+		} else {
+			this.gameStatus.setInBonus(false);
+
+			/* Set opposite direction. */
+			MovingDirections.setDirection(MovingDirections.PLAYER_1, MovingDirections.UP);
+		}
+	}
+
+	private void reduceSnakeSizeIfNecessary() {
+		if (this.body.size() > this.gameStatus.getSnakeLength()) {
+			this.body.remove(0);
+		}
 	}
 
 }
