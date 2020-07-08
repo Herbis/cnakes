@@ -102,7 +102,7 @@ public class MainMenu implements Runnable {
 		}
 
 		// Hide cursor
-		glfwSetInputMode(this.windowId, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+		glfwSetInputMode(this.windowId, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
 
 		// Get the resolution of the primary monitor
 		final GLFWVidMode vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
