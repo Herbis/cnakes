@@ -2,6 +2,7 @@ package lv.herbis.cnakes.save;
 
 import java.io.Serializable;
 import java.util.Calendar;
+import java.util.Objects;
 
 /**
  * High-Score object, representing user's High-Score.
@@ -51,7 +52,7 @@ public class HighScore implements Serializable, Comparable<HighScore> {
 	 * @return Returns score.
 	 */
 	public long getScore() {
-		return score;
+		return this.score;
 	}
 
 
@@ -61,7 +62,7 @@ public class HighScore implements Serializable, Comparable<HighScore> {
 	 * @return Returns timestamp (date represented in milliseconds).
 	 */
 	public long getTimestamp() {
-		return timestamp;
+		return this.timestamp;
 	}
 
 
@@ -71,7 +72,7 @@ public class HighScore implements Serializable, Comparable<HighScore> {
 	 * @return String containing user's username;
 	 */
 	public String getUsername() {
-		return username;
+		return this.username;
 	}
 
 
@@ -119,5 +120,23 @@ public class HighScore implements Serializable, Comparable<HighScore> {
 		final int scoreCompare = Long.compare(o.getScore(), getScore());
 
 		return scoreCompare == 0 ? Long.compare(getTimestamp(), o.getTimestamp()) : scoreCompare;
+	}
+
+	@Override
+	public boolean equals(final Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
+		final HighScore highScore = (HighScore) o;
+		return this.score == highScore.score && this.timestamp == highScore.timestamp && Objects
+				.equals(this.username, highScore.username);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(this.score, this.timestamp, this.username);
 	}
 }

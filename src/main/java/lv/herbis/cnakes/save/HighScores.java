@@ -10,7 +10,7 @@ public class HighScores implements Serializable {
 	public static final int MAX_LIMIT = Integer.MAX_VALUE;
 	private static final long serialVersionUID = 5871033699197551246L;
 
-	private int LIMIT;
+	private int limit;
 
 	List<HighScore> highScores;
 
@@ -43,7 +43,7 @@ public class HighScores implements Serializable {
 	public boolean addHighScore(final HighScore score) {
 		final int highScoreSize = highScores.size();
 		/* Check if highscore list has reached (or is over) the limit. */
-		if (LIMIT <= highScoreSize) {
+		if (limit <= highScoreSize) {
 			if (getBottomScore().getScore() < score.getScore()) {
 				/* Remove last element, add new score and sort. */
 				highScores.remove(highScoreSize - 1);
@@ -82,10 +82,10 @@ public class HighScores implements Serializable {
 	 * @param newLimit new limit.
 	 */
 	public void changeLimit(final int newLimit) {
-		if (MAX_LIMIT < newLimit || newLimit <= 0) {
+		if (newLimit <= 0) {
 			throw new IllegalArgumentException("HighScore limit invalid: " + newLimit);
 		}
-		LIMIT = newLimit;
+		limit = newLimit;
 	}
 
 
@@ -105,7 +105,7 @@ public class HighScores implements Serializable {
 	 * @return HighScore object that is the first (top) in the List of scores.
 	 */
 	public HighScore getTopScore() {
-		return highScores.size() > 0 ? highScores.get(0) : null;
+		return getHighScoreList().isEmpty() ? null : highScores.get(0);
 	}
 
 
