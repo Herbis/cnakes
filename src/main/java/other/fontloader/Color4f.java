@@ -14,41 +14,44 @@ public class Color4f {
 	public static final Color4f YELLOW = new Color4f(1.0f, 1.0f, 0.0f, 1.0f);
 	public static final Color4f GREY = new Color4f(0.5f, 0.5f, 0.5f, 1.0f);
 
-	private float red, green, blue, alpha;
+	private float redAmount;
+	private float greenAmount;
+	private float blueAmount;
+	private float alpha;
 
-	public Color4f(final float red, final float green, final float blue, final float alpha) {
-		setRed(red);
-		setBlue(blue);
-		setGreen(green);
+	public Color4f(final float redAmount, final float greenAmount, final float blueAmount, final float alpha) {
+		setRedAmount(redAmount);
+		setBlueAmount(blueAmount);
+		setGreenAmount(greenAmount);
 		setAlpha(alpha);
 	}
 
-	public Color4f(final float red, final float green, final float blue) {
-		this(red, green, blue, 1.0f);
+	public Color4f(final float redAmount, final float greenAmount, final float blueAmount) {
+		this(redAmount, greenAmount, blueAmount, 1.0f);
 	}
 
-	public float getRed() {
-		return red;
+	public float getRedAmount() {
+		return redAmount;
 	}
 
-	public void setRed(final float red) {
-		this.red = red;
+	public void setRedAmount(final float redAmount) {
+		this.redAmount = redAmount;
 	}
 
-	public float getGreen() {
-		return green;
+	public float getGreenAmount() {
+		return greenAmount;
 	}
 
-	public void setGreen(final float green) {
-		this.green = green;
+	public void setGreenAmount(final float greenAmount) {
+		this.greenAmount = greenAmount;
 	}
 
-	public float getBlue() {
-		return blue;
+	public float getBlueAmount() {
+		return blueAmount;
 	}
 
-	public void setBlue(final float blue) {
-		this.blue = blue;
+	public void setBlueAmount(final float blueAmount) {
+		this.blueAmount = blueAmount;
 	}
 
 	public float getAlpha() {

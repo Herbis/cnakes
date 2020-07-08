@@ -95,7 +95,7 @@ public class FontTT {
 		///////////////////////////
 		gt.setFont(tempFont);
 
-		gt.setColor(new java.awt.Color(Color4f.WHITE.getRed(), Color4f.WHITE.getGreen(), Color4f.WHITE.getBlue(),
+		gt.setColor(new java.awt.Color(Color4f.WHITE.getRedAmount(), Color4f.WHITE.getGreenAmount(), Color4f.WHITE.getBlueAmount(),
 									   Color4f.WHITE.getAlpha()));
 		final int charX = 0;
 		final int charY = 0;
@@ -142,7 +142,7 @@ public class FontTT {
 		gt.setFont(tempFont);
 
 		//// Create Outline by painting the character in multiple positions and blurring it
-		gt.setColor(new java.awt.Color(Color4f.WHITE.getRed(), Color4f.WHITE.getGreen(), Color4f.WHITE.getBlue(),
+		gt.setColor(new java.awt.Color(Color4f.WHITE.getRedAmount(), Color4f.WHITE.getGreenAmount(), Color4f.WHITE.getBlueAmount(),
 									   Color4f.WHITE.getAlpha()));
 		final int charX = -fm.getLeading() + 2 * ot;
 		final int charY = 2 * ot;
@@ -328,7 +328,7 @@ public class FontTT {
 		texture.bind();
 
 		// translate to the right location
-		GL11.glColor4f(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
+		GL11.glColor4f(color.getRedAmount(), color.getGreenAmount(), color.getBlueAmount(), color.getAlpha());
 
 		// draw a quad with to place the character onto
 		GL11.glBegin(GL11.GL_QUADS);
