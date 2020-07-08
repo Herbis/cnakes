@@ -1,10 +1,10 @@
 package lv.herbis.cnakes.menus;
 
-import other.fontloader.Color4f;
+import java.awt.*;
 
 public interface MenuItem {
 
-	abstract Color4f getColor();
+	abstract Color getColor();
 
 	abstract String getName();
 

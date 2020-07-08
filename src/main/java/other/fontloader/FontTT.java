@@ -95,8 +95,7 @@ public class FontTT {
 		///////////////////////////
 		gt.setFont(tempFont);
 
-		gt.setColor(new java.awt.Color(Color4f.WHITE.getRedAmount(), Color4f.WHITE.getGreenAmount(), Color4f.WHITE.getBlueAmount(),
-									   Color4f.WHITE.getAlpha()));
+		gt.setColor(Color.WHITE);
 		final int charX = 0;
 		final int charY = 0;
 		gt.drawString(String.valueOf(ch), (charX), (charY) + fm.getAscent());
@@ -142,8 +141,7 @@ public class FontTT {
 		gt.setFont(tempFont);
 
 		//// Create Outline by painting the character in multiple positions and blurring it
-		gt.setColor(new java.awt.Color(Color4f.WHITE.getRedAmount(), Color4f.WHITE.getGreenAmount(), Color4f.WHITE.getBlueAmount(),
-									   Color4f.WHITE.getAlpha()));
+		gt.setColor(Color.WHITE);
 		final int charX = -fm.getLeading() + 2 * ot;
 		final int charY = 2 * ot;
 		gt.drawString(String.valueOf(ch), (charX) + ot, (charY) + fm.getAscent());
@@ -209,7 +207,7 @@ public class FontTT {
 	 *
 	 */
 	public void drawText(final String content, final float size, final float x, final float y, final float z,
-						 final Color4f color, final float rotX, final float rotY, final float rotZ,
+						 final Color color, final float rotX, final float rotY, final float rotZ,
 						 final boolean centered) {
 		final float fontSizeRatio = size / this.fontSize;
 
@@ -254,7 +252,7 @@ public class FontTT {
 	 *
 	 */
 	public void drawText(final String content, final float size, final float x, final float y, final float z,
-						 final Color4f color, final Color4f shadowColor, final float rotX, final float rotY,
+						 final Color color, final Color shadowColor, final float rotX, final float rotY,
 						 final float rotZ, final boolean centered) {
 		drawText(content, size, x + 1f, y - 1f, z, shadowColor, rotX, rotY, rotZ, centered);
 		drawText(content, size, x, y, z, color, rotX, rotY, rotZ, centered);
@@ -272,7 +270,7 @@ public class FontTT {
 	 *
 	 */
 	public void drawOutlinedText(final String content, final float size, final float x, final float y, final float z,
-								 final Color4f color, final Color4f outlineColor, final float rotX,
+								 final Color color, final Color outlineColor, final float rotX,
 								 final float rotY, final float rotZ, final boolean centered) {
 		final float fontSizeRatio = size / this.fontSize;
 
@@ -317,7 +315,7 @@ public class FontTT {
 	 * Draw the actual quad with character texture
 	 */
 	private void drawTexture(final Texture texture, final float ratio, final float x, final float y,
-							 final Color4f color) {
+							 final Color color) {
 		// Get the appropriate measurements from the texture itself
 		final float imgWidth = texture.getImageWidth() * ratio;
 		final float imgHeight = -texture.getImageHeight() * ratio;
@@ -328,7 +326,7 @@ public class FontTT {
 		texture.bind();
 
 		// translate to the right location
-		GL11.glColor4f(color.getRedAmount(), color.getGreenAmount(), color.getBlueAmount(), color.getAlpha());
+		GL11.glColor4f(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
 
 		// draw a quad with to place the character onto
 		GL11.glBegin(GL11.GL_QUADS);

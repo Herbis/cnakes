@@ -2,7 +2,8 @@ package lv.herbis.cnakes.menus;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import other.fontloader.Color4f;
+
+import java.awt.*;
 
 import static org.lwjgl.glfw.GLFW.glfwSetWindowShouldClose;
 
@@ -12,8 +13,8 @@ public class ExitGameMenuItem implements MenuItem {
 	private static final String NAME = "EXIT";
 
 	@Override
-	public Color4f getColor() {
-		return Color4f.RED;
+	public Color getColor() {
+		return Color.RED;
 	}
 
 	@Override

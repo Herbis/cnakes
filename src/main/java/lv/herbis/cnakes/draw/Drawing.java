@@ -8,7 +8,6 @@ import lv.herbis.cnakes.save.HighScores;
 import lv.herbis.cnakes.status.SinglePlayerGameStatus;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import other.fontloader.Color4f;
 import other.fontloader.FontTT;
 
 import java.awt.*;
@@ -493,13 +492,13 @@ public class Drawing {
 		glEnd();
 	}
 
-	public void drawText(final String text, final float size, final float x, final float y, final Color4f color,
+	public void drawText(final String text, final float size, final float x, final float y, final Color color,
 						 final boolean centered) {
 		this.gameFont.drawText(text, this.gameScale * size, x * this.gameScale, y * this.gameScale, 0, color, 0, 0, 0, centered);
 	}
 
-	public void drawOutlinedText(final String text, final float size, final float x, final float y, final Color4f color,
-								 final Color4f outlineColor, final boolean centered) {
+	public void drawOutlinedText(final String text, final float size, final float x, final float y, final Color color,
+								 final Color outlineColor, final boolean centered) {
 		this.gameFont.drawOutlinedText(text, this.gameScale * size, x * this.gameScale, y * this.gameScale, 0, color, outlineColor, 0, 0, 0,
 									   centered);
 	}

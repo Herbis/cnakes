@@ -10,7 +10,8 @@ import org.apache.logging.log4j.Logger;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
-import other.fontloader.Color4f;
+
+import java.awt.*;
 
 import static lv.herbis.cnakes.constants.CnakesConstants.LOG_STACKTRACE;
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
@@ -193,7 +194,7 @@ public class MainMenu implements Runnable {
 		for (int i = 0; i < itemCount; i++) {
 			final MenuItem item = menuItems[i];
 			final float itemSize;
-			final Color4f color;
+			final Color color;
 			float adjustment = 0;
 			if (activeItem == item) {
 				itemSize = 3f;
@@ -201,7 +202,7 @@ public class MainMenu implements Runnable {
 				adjustment = 0.5f;
 			} else {
 				itemSize = 2f;
-				color = Color4f.GREY;
+				color = Color.GRAY;
 			}
 
 			glEnable(GL_TEXTURE_2D);

@@ -5,8 +5,8 @@ import lv.herbis.cnakes.save.HighScore;
 import lv.herbis.cnakes.save.HighScores;
 import lv.herbis.cnakes.status.SinglePlayerGameStatus;
 import lv.herbis.cnakes.tools.ConversionUtil;
-import other.fontloader.Color4f;
 
+import java.awt.*;
 import java.time.format.DateTimeFormatter;
 
 import static org.lwjgl.opengl.GL11.*;
@@ -119,20 +119,20 @@ public class ScoreboardDrawing {
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 		/* "Bugs Eaten" number */
-		drawing.drawText(String.valueOf(gameStatus.getBugsCollected()), 1, bugsEatenTextXLocation, bugsEatenTextYLocation, Color4f.YELLOW, false);
+		drawing.drawText(String.valueOf(gameStatus.getBugsCollected()), 1, bugsEatenTextXLocation, bugsEatenTextYLocation, Color.YELLOW, false);
 
 		/* "Snake Length" number */
-		drawing.drawText(String.valueOf(gameStatus.getSnakeLength()), 1, snakeLengthTextXLocation, snakeLengthTextYLocation, Color4f.YELLOW, false);
+		drawing.drawText(String.valueOf(gameStatus.getSnakeLength()), 1, snakeLengthTextXLocation, snakeLengthTextYLocation, Color.YELLOW, false);
 
 		/* "Score" number */
-		drawing.drawText(String.valueOf(gameStatus.getScore()), 1, scoreTextXLocation, scoreTextYLocation, Color4f.YELLOW, false);
+		drawing.drawText(String.valueOf(gameStatus.getScore()), 1, scoreTextXLocation, scoreTextYLocation, Color.YELLOW, false);
 
 		/* "Player name" text */
-		drawing.drawText("Player 1", 1, playerNameXLocation, playerNameYLocation, Color4f.YELLOW, false);
+		drawing.drawText("Player 1", 1, playerNameXLocation, playerNameYLocation, Color.YELLOW, false);
 
 
 		if (gameStatus.isPaused()) {
-			drawing.drawText("PAUSED", 2, gamePausedXLocation, gamePausedYLocation, Color4f.YELLOW, true);
+			drawing.drawText("PAUSED", 2, gamePausedXLocation, gamePausedYLocation, Color.YELLOW, true);
 		}
 		glDisable(GL_TEXTURE_2D);
 
@@ -153,17 +153,17 @@ public class ScoreboardDrawing {
 		final Timer currentTimer = gameStatus.getTimer();
 		if (currentTimer == null) {
 			/* If the current Timer is null, the game was never started. */
-			drawing.drawText("Start the Game!", 2f, startGameXLocation, startGameYLocation, Color4f.GREEN, true);
+			drawing.drawText("Start the Game!", 2f, startGameXLocation, startGameYLocation, Color.GREEN, true);
 		} else {
 			if (gameStatus.hasEnded()) {
-				drawing.drawText("Game Over", 2f, gameOverXLocation, gameOverYLocation, Color4f.RED, true);
+				drawing.drawText("Game Over", 2f, gameOverXLocation, gameOverYLocation, Color.RED, true);
 				if (topHighScore == null) {
-					drawing.drawText("High score cannot be displayed.", 1f, highScoreXLocation, highScoreYLocation, Color4f.WHITE, true);
+					drawing.drawText("High score cannot be displayed.", 1f, highScoreXLocation, highScoreYLocation, Color.WHITE, true);
 				} else {
-					drawing.drawText(String.format("Top High Score: %d (%s) %s", topHighScore.getScore(), topHighScore.getUsername(), this.topHighScoreFormatted), 1f, highScoreXLocation, highScoreYLocation, Color4f.WHITE, true);
+					drawing.drawText(String.format("Top High Score: %d (%s) %s", topHighScore.getScore(), topHighScore.getUsername(), this.topHighScoreFormatted), 1f, highScoreXLocation, highScoreYLocation, Color.WHITE, true);
 				}
 			} else {
-				drawing.drawText(timeFormat.format(ConversionUtil.millisecondsToLocalDateTime(gameStatus.getTimer().getTimeLeft())), 2f, timerXLocation, timerYLocation, Color4f.RED, true);
+				drawing.drawText(timeFormat.format(ConversionUtil.millisecondsToLocalDateTime(gameStatus.getTimer().getTimeLeft())), 2f, timerXLocation, timerYLocation, Color.RED, true);
 			}
 		}
 
