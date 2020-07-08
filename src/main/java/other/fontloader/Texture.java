@@ -13,11 +13,11 @@ public class Texture {
 	/**
 	 * The GL target type
 	 */
-	private int target;
+	private final int target;
 	/**
 	 * The GL texture ID
 	 */
-	private int textureID;
+	private final int textureID;
 	/**
 	 * The height of the image
 	 */
@@ -56,10 +56,9 @@ public class Texture {
 
 	/**
 	 * Bind the specified GL context to a texture
-	 *
 	 */
 	public void bind() {
-		GL11.glBindTexture(target, textureID);
+		GL11.glBindTexture(this.target, this.textureID);
 	}
 
 	/**
@@ -88,7 +87,7 @@ public class Texture {
 	 * @return The height of the original image
 	 */
 	public int getImageHeight() {
-		return (int) (height);
+		return this.height;
 	}
 
 	/**
@@ -97,7 +96,7 @@ public class Texture {
 	 * @return The width of the original image
 	 */
 	public int getImageWidth() {
-		return (int) (width);
+		return this.width;
 	}
 
 	/**
@@ -106,7 +105,7 @@ public class Texture {
 	 * @return The height of physical texture
 	 */
 	public float getHeight() {
-		return heightRatio;
+		return this.heightRatio;
 	}
 
 	/**
@@ -115,7 +114,7 @@ public class Texture {
 	 * @return The width of physical texture
 	 */
 	public float getWidth() {
-		return widthRatio;
+		return this.widthRatio;
 	}
 
 	/**
@@ -143,8 +142,8 @@ public class Texture {
 	 * ratio also.
 	 */
 	private void setHeight() {
-		if (texHeight != 0) {
-			heightRatio = ((float) height) / texHeight;
+		if (this.texHeight != 0) {
+			this.heightRatio = ((float) this.height) / this.texHeight;
 		}
 	}
 
@@ -153,8 +152,8 @@ public class Texture {
 	 * ratio also.
 	 */
 	private void setWidth() {
-		if (texWidth != 0) {
-			widthRatio = ((float) width) / texWidth;
+		if (this.texWidth != 0) {
+			this.widthRatio = ((float) this.width) / this.texWidth;
 		}
 	}
 }
