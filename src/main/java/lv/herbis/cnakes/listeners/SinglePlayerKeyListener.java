@@ -4,6 +4,8 @@ import lv.herbis.cnakes.movement.MovingDirections;
 import lv.herbis.cnakes.status.GameStatus;
 import org.lwjgl.glfw.GLFWKeyCallback;
 
+import java.util.Objects;
+
 import static org.lwjgl.glfw.GLFW.*;
 
 public class SinglePlayerKeyListener extends GLFWKeyCallback {
@@ -18,14 +20,15 @@ public class SinglePlayerKeyListener extends GLFWKeyCallback {
 
 	}
 
-
 	@Override
 	public void invoke(final long window, final int key, final int scanCode, final int action, final int mods) {
-		if (catchNotKeyPress(action) || catchMovement(key)) {
-			return;
+		if (catchKeyPress(action)) {
+			processKeyPress(key);
 		}
+	}
 
-		catchCommonAction(key);
+	private boolean processKeyPress(final int key) {
+		return catchCommonAction(key) || catchMovement(key);
 	}
 
 	private boolean catchCommonAction(final int key) {
@@ -44,7 +47,7 @@ public class SinglePlayerKeyListener extends GLFWKeyCallback {
 			/* Only allow to exit if */
 			if (this.game.isPaused()) {
 				this.game.end();
-				glfwSetWindowShouldClose(this.windowId, true); // TODO should probably just go to main menu
+				glfwSetWindowShouldClose(this.windowId, true);
 			}
 			caught = true;
 		}
@@ -57,32 +60,16 @@ public class SinglePlayerKeyListener extends GLFWKeyCallback {
 			/* Actions allowed only when the game has not been started or has not ended or is not paused. */
 			boolean caught = false;
 			if (key == GLFW_KEY_LEFT) {
-				/* We can only start moving left, if we're not going right.*/
-				if (MovingDirections.getP1Direction() != MovingDirections.RIGHT && MovingDirections
-						.getP1Direction() != MovingDirections.LEFT) {
-					MovingDirections.setDirection(MovingDirections.PLAYER_1, MovingDirections.LEFT);
-				}
+				attemptToMoveLeft();
 				caught = true;
 			} else if (key == GLFW_KEY_RIGHT) {
-				/* We can only start moving right, if we're not going left.*/
-				if (MovingDirections.getP1Direction() != MovingDirections.LEFT && MovingDirections
-						.getP1Direction() != MovingDirections.RIGHT) {
-					MovingDirections.setDirection(MovingDirections.PLAYER_1, MovingDirections.RIGHT);
-				}
+				attemptToMoveRight();
 				caught = true;
 			} else if (key == GLFW_KEY_UP) {
-				/* We can only start moving up, if we're not going down.*/
-				if (MovingDirections.getP1Direction() != MovingDirections.DOWN && MovingDirections
-						.getP1Direction() != MovingDirections.UP) {
-					MovingDirections.setDirection(MovingDirections.PLAYER_1, MovingDirections.UP);
-				}
+				attemptToMoveUp();
 				caught = true;
 			} else if (key == GLFW_KEY_DOWN) {
-				/* We can only start moving down, if we're not going up.*/
-				if (MovingDirections.getP1Direction() != MovingDirections.UP && MovingDirections
-						.getP1Direction() != MovingDirections.DOWN) {
-					MovingDirections.setDirection(MovingDirections.PLAYER_1, MovingDirections.DOWN);
-				}
+				attemptToMoveDown();
 				caught = true;
 			}
 
@@ -92,8 +79,56 @@ public class SinglePlayerKeyListener extends GLFWKeyCallback {
 		return false;
 	}
 
-	private boolean catchNotKeyPress(final int action) {
-		return action != GLFW_PRESS;
+	private void attemptToMoveLeft() {
+		/* We can only start moving left, if we're not going right.*/
+		if (MovingDirections.getP1Direction() != MovingDirections.RIGHT && MovingDirections
+				.getP1Direction() != MovingDirections.LEFT) {
+			MovingDirections.setDirection(MovingDirections.PLAYER_1, MovingDirections.LEFT);
+		}
 	}
 
+	private void attemptToMoveRight() {
+		/* We can only start moving right, if we're not going left.*/
+		if (MovingDirections.getP1Direction() != MovingDirections.LEFT && MovingDirections
+				.getP1Direction() != MovingDirections.RIGHT) {
+			MovingDirections.setDirection(MovingDirections.PLAYER_1, MovingDirections.RIGHT);
+		}
+	}
+
+	private void attemptToMoveUp() {
+		/* We can only start moving up, if we're not going down.*/
+		if (MovingDirections.getP1Direction() != MovingDirections.DOWN && MovingDirections
+				.getP1Direction() != MovingDirections.UP) {
+			MovingDirections.setDirection(MovingDirections.PLAYER_1, MovingDirections.UP);
+		}
+	}
+
+	private void attemptToMoveDown() {
+		/* We can only start moving down, if we're not going up.*/
+		if (MovingDirections.getP1Direction() != MovingDirections.UP && MovingDirections
+				.getP1Direction() != MovingDirections.DOWN) {
+			MovingDirections.setDirection(MovingDirections.PLAYER_1, MovingDirections.DOWN);
+		}
+	}
+
+	private boolean catchKeyPress(final int action) {
+		return action == GLFW_PRESS;
+	}
+
+	@Override
+	public boolean equals(final Object o) {
+		if (this == o) {
+			return true;
+		} else if (o == null || getClass() != o.getClass() || !super.equals(o)) {
+			return false;
+		}
+
+		final SinglePlayerKeyListener that = (SinglePlayerKeyListener) o;
+		return this.windowId == that.windowId && Objects.equals(this.game, that.game);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(super.hashCode(), this.game, this.windowId);
+	}
 }
