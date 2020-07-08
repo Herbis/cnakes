@@ -27,29 +27,4 @@ public class ExitGameMenuItem implements MenuItem {
 		glfwSetWindowShouldClose(0, true);
 		return true;
 	}
-
-	@Override
-	public boolean back() {
-		return false;
-	}
-
-	@Override
-	public boolean up() {
-		return false;
-	}
-
-	@Override
-	public boolean down() {
-		return false;
-	}
-
-	@Override
-	public boolean left() {
-		return false;
-	}
-
-	@Override
-	public boolean right() {
-		return false;
-	}
 }

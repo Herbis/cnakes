@@ -62,6 +62,15 @@ public class MenuNavigation {
 		setActiveItem(newActiveMenuItem);
 	}
 
+
+	public void moveRight() {
+		getActiveItem().right();
+	}
+
+	public void moveLeft() {
+		getActiveItem().left();
+	}
+
 	public Object usePendingItem() {
 		final Object pendingItemTmp = this.pendingItem;
 		this.pendingItem = null;

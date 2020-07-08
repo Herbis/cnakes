@@ -121,9 +121,9 @@ public class Drawing {
 	 */
 	public void drawPlayGrid(final PointCoordinates head) {
 
-		final long headXScaled = head.getX() * this.gameScale;
+		final long headXScaled = (long) head.getX() * this.gameScale;
 		final long headXScaledPlus = headXScaled + this.gameScale;
-		final long headYScaled = head.getY() * this.gameScale;
+		final long headYScaled = (long) head.getY() * this.gameScale;
 		final long headYScaledPlus = headYScaled + this.gameScale;
 		final int direction = MovingDirections.getPreviousDirection(MovingDirections.PLAYER_1);
 

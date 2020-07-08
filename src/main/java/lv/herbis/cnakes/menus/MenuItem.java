@@ -4,20 +4,32 @@ import other.fontloader.Color4f;
 
 public interface MenuItem {
 
-	Color4f getColor();
+	abstract Color4f getColor();
 
-	String getName();
+	abstract String getName();
 
-	boolean enter();
+	default boolean enter() {
+		return false;
+	}
 
-	boolean back();
+	default boolean back() {
+		return false;
+	}
 
-	boolean up();
+	default boolean up() {
+		return false;
+	}
 
-	boolean down();
+	default boolean down() {
+		return false;
+	}
 
-	boolean left();
+	default boolean left() {
+		return false;
+	}
 
-	boolean right();
+	default boolean right() {
+		return false;
+	}
 
 }

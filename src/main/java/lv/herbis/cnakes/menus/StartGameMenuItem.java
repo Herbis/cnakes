@@ -37,29 +37,4 @@ public class StartGameMenuItem implements MenuItem {
 
 		return true;
 	}
-
-	@Override
-	public boolean back() {
-		return false;
-	}
-
-	@Override
-	public boolean up() {
-		return false;
-	}
-
-	@Override
-	public boolean down() {
-		return false;
-	}
-
-	@Override
-	public boolean left() {
-		return false;
-	}
-
-	@Override
-	public boolean right() {
-		return false;
-	}
 }

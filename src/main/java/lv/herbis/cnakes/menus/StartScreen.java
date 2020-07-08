@@ -3,7 +3,6 @@ package lv.herbis.cnakes.menus;
 import lv.herbis.cnakes.configuration.CnakesConfiguration;
 import lv.herbis.cnakes.configuration.ConfigurationException;
 import lv.herbis.cnakes.configuration.logger.LoggingConfiguration;
-import lv.herbis.cnakes.levels.singleplayer.LevelScreen;
 import lv.herbis.cnakes.tools.ConfigurationUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -29,7 +28,6 @@ public class StartScreen {
 	}
 
 	public static void loadMenu(final CnakesConfiguration configuration) {
-		//final LevelScreen ls = new LevelScreen(configuration);
 		final MainMenu ls = new MainMenu(configuration);
 
 		final Thread lsThread = new Thread(ls);

@@ -6,6 +6,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.glfw.GLFWKeyCallback;
 
+import java.util.Objects;
+
 import static org.lwjgl.glfw.GLFW.*;
 
 public class MenuKeyListener extends GLFWKeyCallback {
@@ -28,24 +30,38 @@ public class MenuKeyListener extends GLFWKeyCallback {
 
 		/* Actions allowed only when the game has not been started or has not ended or is not paused. */
 		if (key == GLFW_KEY_LEFT) {
-			/* We can only start moving left, if we're not going right.*/
-			return;
+			this.navigation.moveLeft();
 		} else if (key == GLFW_KEY_RIGHT) {
-			/* We can only start moving right, if we're not going left.*/
-			return;
+			this.navigation.moveRight();
 		} else if (key == GLFW_KEY_UP) {
-			/* We can only start moving up, if we're not going down.*/
 			this.navigation.moveUp();
-			return;
 		} else if (key == GLFW_KEY_DOWN) {
-			/* We can only start moving down, if we're not going up.*/
 			this.navigation.moveDown();
-			return;
 		} else if (key == GLFW_KEY_ENTER) {
 			this.navigation.getActiveItem().enter();
 		} else if (key == GLFW_KEY_ESCAPE) {
 			LOG.debug("Exiting the game.");
 			glfwSetWindowShouldClose(this.windowId, true);
 		}
+	}
+
+	@Override
+	public boolean equals(final Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
+		if (!super.equals(o)) {
+			return false;
+		}
+		final MenuKeyListener that = (MenuKeyListener) o;
+		return this.windowId == that.windowId && Objects.equals(this.navigation, that.navigation);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(super.hashCode(), this.navigation, this.windowId);
 	}
 }
