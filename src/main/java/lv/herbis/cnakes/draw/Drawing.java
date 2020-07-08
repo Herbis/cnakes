@@ -355,92 +355,131 @@ public class Drawing {
 		}
 	}
 
-	public void drawSnakeInMovement(final PointCoordinates head, final List<PointCoordinates> body, final int direction,
-									final long pixelAmount, final boolean halfCellReached) {
+	private PointCoordinates drawSnakeBodyInMovementAndGetSmoothingCoordinates(final PointCoordinates head, final List<PointCoordinates> body,
+																			   final boolean halfCellReached) {
+		/* We need to determine which snake part we need to smooth to. */
+		final PointCoordinates smoothTo;
+
+		if (body.size() > 1) {
+			smoothTo = body.get(1); // Smooth to body part before the last one.
+			int bodySize = body.size();
+			if (halfCellReached) {
+				bodySize = bodySize - 1;
+			}
+			for (int i = 1; i < bodySize; i++) {
+				final PointCoordinates bodyPart = body.get(i);
+				drawFilledSquare(bodyPart.getX(), bodyPart.getY());
+			}
+
+		} else {
+			smoothTo = head; // Smooth to head.
+		}
+
+		return smoothTo;
+	}
+
+	private void drawSnakeBodySmoothing(final PointCoordinates smoothTo, final PointCoordinates lastBodyPart,
+										final long pixelAmount, final boolean halfCellReached)
+	{
+
+		if (smoothTo.getX() - lastBodyPart.getX() != 0) { // Smooth on the X axis
+			if (smoothTo.getX() - lastBodyPart.getX() == 1) { // Smooth to left
+				drawSnakeBodySmoothingLeft(lastBodyPart, pixelAmount, halfCellReached);
+			} else { // Smooth to right
+				drawSnakeBodySmoothingRight(lastBodyPart, pixelAmount, halfCellReached);
+			}
+		} else if (smoothTo.getY() - lastBodyPart.getY() != 0) { // Smooth on the Y axis
+			if (smoothTo.getY() - lastBodyPart.getY() == 1) { // Smooth up
+				drawSnakeBodySmoothingUp(lastBodyPart, pixelAmount, halfCellReached);
+			} else { // Smooth down
+				drawSnakeBodySmoothingDown(lastBodyPart, pixelAmount, halfCellReached);
+			}
+		}
+	}
+
+	private void drawSnakeBodySmoothingLeft(final PointCoordinates lastBodyPart, final long pixelAmount,
+											final boolean halfCellReached)
+	{
 		final float gameScaleF = this.gameScale;
-		final boolean drawExtraHeadBit = !body.isEmpty();
+		if (halfCellReached) {
+			drawFilledUnscaledSquare((lastBodyPart.getX() * gameScaleF) + pixelAmount - gameScaleF,
+									 (lastBodyPart.getX() * gameScaleF) + gameScaleF,
+									 (lastBodyPart.getY() * gameScaleF),
+									 (lastBodyPart.getY() * gameScaleF) + gameScaleF);
+		} else {
+			drawFilledUnscaledSquare((lastBodyPart.getX() * gameScaleF) + pixelAmount,
+									 (lastBodyPart.getX() * gameScaleF) + gameScaleF,
+									 (lastBodyPart.getY() * gameScaleF),
+									 (lastBodyPart.getY() * gameScaleF) + gameScaleF);
+		}
+	}
 
-		drawSnakeHeadInMovement(head, direction, pixelAmount, halfCellReached, drawExtraHeadBit);
+	private void drawSnakeBodySmoothingRight(final PointCoordinates lastBodyPart, final long pixelAmount,
+											 final boolean halfCellReached)
+	{
+		final float gameScaleF = this.gameScale;
+		if (halfCellReached) {
+			drawFilledUnscaledSquare((lastBodyPart.getX() * gameScaleF), (lastBodyPart
+											 .getX() * gameScaleF) + gameScaleF - pixelAmount + gameScaleF,
+									 (lastBodyPart.getY() * gameScaleF),
+									 (lastBodyPart.getY() * gameScaleF) + gameScaleF);
+		} else {
+			drawFilledUnscaledSquare((lastBodyPart.getX() * gameScaleF) - gameScaleF,
+									 (lastBodyPart.getX() * gameScaleF) + gameScaleF - pixelAmount,
+									 (lastBodyPart.getY() * gameScaleF),
+									 (lastBodyPart.getY() * gameScaleF) + gameScaleF);
+		}
+	}
 
-		/* Draw the body. */
-		glBegin(GL_QUADS); // Must
+	private void drawSnakeBodySmoothingUp(final PointCoordinates lastBodyPart, final long pixelAmount,
+											   final boolean halfCellReached)
+	{
+		final float gameScaleF = this.gameScale;
+		if (halfCellReached) {
+			drawFilledUnscaledSquare((lastBodyPart.getX() * gameScaleF),
+									 (lastBodyPart.getX() * gameScaleF) + gameScaleF,
+									 (lastBodyPart.getY() * gameScaleF) + pixelAmount - gameScaleF,
+									 (lastBodyPart.getY() * gameScaleF) + gameScaleF);
+		} else {
+			drawFilledUnscaledSquare((lastBodyPart.getX() * gameScaleF),
+									 (lastBodyPart.getX() * gameScaleF) + gameScaleF,
+									 (lastBodyPart.getY() * gameScaleF) + pixelAmount,
+									 (lastBodyPart.getY() * gameScaleF) + gameScaleF);
+		}
+	}
 
+	private void drawSnakeBodySmoothingDown(final PointCoordinates lastBodyPart, final long pixelAmount,
+										  final boolean halfCellReached)
+	{
+		final float gameScaleF = this.gameScale;
+		if (halfCellReached) {
+			drawFilledUnscaledSquare((lastBodyPart.getX() * gameScaleF),
+									 (lastBodyPart.getX() * gameScaleF) + gameScaleF,
+									 (lastBodyPart.getY() * gameScaleF) - gameScaleF, (lastBodyPart
+							.getY() * gameScaleF) + gameScaleF - pixelAmount + gameScaleF);
+		} else {
+			drawFilledUnscaledSquare((lastBodyPart.getX() * gameScaleF),
+									 (lastBodyPart.getX() * gameScaleF) + gameScaleF,
+									 (lastBodyPart.getY() * gameScaleF),
+									 (lastBodyPart.getY() * gameScaleF) + gameScaleF - pixelAmount);
+		}
+	}
+
+	private void drawSnakeBodyInMovement(final PointCoordinates head, final List<PointCoordinates> body,
+												 final long pixelAmount, final boolean halfCellReached) {
 		if (!body.isEmpty()) {
-			/* We need to determine which snake part we need to smooth to. */
-			final PointCoordinates smoothTo;
-			if (body.size() > 1) {
-				smoothTo = body.get(1); // Smooth to body part before the last one.
-				int bodySize = body.size();
-				if (halfCellReached) {
-					bodySize = bodySize - 1;
-				}
-				for (int i = 1; i < bodySize; i++) {
-					final PointCoordinates bodyPart = body.get(i);
-					drawFilledSquare(bodyPart.getX(), bodyPart.getY());
-				}
-
-			} else {
-				smoothTo = head; // Smooth to head.
-			}
-			final PointCoordinates lastBodyPart = body.get(0);
-
-
 			glBegin(GL_QUADS); // Must
-			if (smoothTo.getX() - lastBodyPart.getX() != 0) { // Smooth on the X axis
-				if (smoothTo.getX() - lastBodyPart.getX() == 1) { // Smooth to left
-					if (halfCellReached) {
-						drawFilledUnscaledSquare((lastBodyPart.getX() * gameScaleF) + pixelAmount - gameScaleF,
-												 (lastBodyPart.getX() * gameScaleF) + gameScaleF,
-												 (lastBodyPart.getY() * gameScaleF),
-												 (lastBodyPart.getY() * gameScaleF) + gameScaleF);
-					} else {
-						drawFilledUnscaledSquare((lastBodyPart.getX() * gameScaleF) + pixelAmount,
-												 (lastBodyPart.getX() * gameScaleF) + gameScaleF,
-												 (lastBodyPart.getY() * gameScaleF),
-												 (lastBodyPart.getY() * gameScaleF) + gameScaleF);
-					}
-				} else { // Smooth to right
-					if (halfCellReached) {
-						drawFilledUnscaledSquare((lastBodyPart.getX() * gameScaleF), (lastBodyPart
-														 .getX() * gameScaleF) + gameScaleF - pixelAmount + gameScaleF,
-												 (lastBodyPart.getY() * gameScaleF),
-												 (lastBodyPart.getY() * gameScaleF) + gameScaleF);
-					} else {
-						drawFilledUnscaledSquare((lastBodyPart.getX() * gameScaleF) - gameScaleF,
-												 (lastBodyPart.getX() * gameScaleF) + gameScaleF - pixelAmount,
-												 (lastBodyPart.getY() * gameScaleF),
-												 (lastBodyPart.getY() * gameScaleF) + gameScaleF);
-					}
-				}
-			} else if (smoothTo.getY() - lastBodyPart.getY() != 0) { // Smooth on the Y axis
-				if (smoothTo.getY() - lastBodyPart.getY() == 1) { // Smooth up
-					if (halfCellReached) {
-						drawFilledUnscaledSquare((lastBodyPart.getX() * gameScaleF),
-												 (lastBodyPart.getX() * gameScaleF) + gameScaleF,
-												 (lastBodyPart.getY() * gameScaleF) + pixelAmount - gameScaleF,
-												 (lastBodyPart.getY() * gameScaleF) + gameScaleF);
-					} else {
-						drawFilledUnscaledSquare((lastBodyPart.getX() * gameScaleF),
-												 (lastBodyPart.getX() * gameScaleF) + gameScaleF,
-												 (lastBodyPart.getY() * gameScaleF) + pixelAmount,
-												 (lastBodyPart.getY() * gameScaleF) + gameScaleF);
-					}
-				} else { // Smooth down
-					if (halfCellReached) {
-						drawFilledUnscaledSquare((lastBodyPart.getX() * gameScaleF),
-												 (lastBodyPart.getX() * gameScaleF) + gameScaleF,
-												 (lastBodyPart.getY() * gameScaleF) - gameScaleF, (lastBodyPart
-										.getY() * gameScaleF) + gameScaleF - pixelAmount + gameScaleF);
-					} else {
-						drawFilledUnscaledSquare((lastBodyPart.getX() * gameScaleF),
-												 (lastBodyPart.getX() * gameScaleF) + gameScaleF,
-												 (lastBodyPart.getY() * gameScaleF),
-												 (lastBodyPart.getY() * gameScaleF) + gameScaleF - pixelAmount);
-					}
-				}
-			}
+			final PointCoordinates smoothTo = drawSnakeBodyInMovementAndGetSmoothingCoordinates(head, body, halfCellReached);
+			drawSnakeBodySmoothing(smoothTo, body.get(0), pixelAmount, halfCellReached);
 			glEnd();
 		}
+	}
+
+	public void drawSnakeInMovement(final PointCoordinates head, final List<PointCoordinates> body, final int direction,
+									final long pixelAmount, final boolean halfCellReached) {
+		final boolean drawExtraHeadBit = !body.isEmpty();
+		drawSnakeHeadInMovement(head, direction, pixelAmount, halfCellReached, drawExtraHeadBit);
+		drawSnakeBodyInMovement(head, body, pixelAmount, halfCellReached);
 	}
 
 

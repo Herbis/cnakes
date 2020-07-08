@@ -311,8 +311,7 @@ public class LevelScreen {
 
 			if (direction == MovingDirections.RIGHT) {
 				if (this.head.getX() + 1 < (this.drawing.getPlayAreaXEndPoint()) && hitsTail(this.head.getX() + 1,
-																							 this.head
-																									 .getY())) { // maybe eliminate pointless game bound calculations?
+																							 this.head.getY())) {
 					this.head = new PointCoordinates(this.head.getX() + 1, this.head.getY());
 
 				} else {
