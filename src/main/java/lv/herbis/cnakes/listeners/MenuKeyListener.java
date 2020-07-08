@@ -21,14 +21,18 @@ public class MenuKeyListener extends GLFWKeyCallback {
 		this.windowId = windowId;
 	}
 
+	private boolean catchKeyPress(final int action) {
+		return action == GLFW_PRESS;
+	}
+
 	@Override
 	public void invoke(final long window, final int key, final int scanCode, final int action, final int mods) {
-
-		if (action != GLFW_PRESS) {
-			return;
+		if (catchKeyPress(action)) {
+			processKeyPress(key);
 		}
+	}
 
-		/* Actions allowed only when the game has not been started or has not ended or is not paused. */
+	private void processKeyPress(final int key) {
 		if (key == GLFW_KEY_LEFT) {
 			this.navigation.moveLeft();
 		} else if (key == GLFW_KEY_RIGHT) {
