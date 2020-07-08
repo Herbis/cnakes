@@ -26,7 +26,6 @@ public class MainMenu implements Runnable {
 	private MenuNavigation navigation;
 
 	private boolean resolutionAutoConfig;
-	private boolean fullScreen;
 	private Integer monitor;
 
 	private long windowId;
@@ -42,8 +41,7 @@ public class MainMenu implements Runnable {
 		initConfiguration();
 	}
 
-	private void autoConfigureResolution()
-	{
+	private void autoConfigureResolution() {
 		final GLFWVidMode vidModes = glfwGetVideoMode(glfwGetPrimaryMonitor());
 		this.configuration.getVideo().getResolution().setHorizontal(vidModes.width());
 		this.configuration.getVideo().getResolution().setVertical(vidModes.height());
@@ -54,6 +52,9 @@ public class MainMenu implements Runnable {
 	 * Cleans up (releases) the resources and destroys the window.
 	 */
 	private void cleanUp() {
+		// set cursor back to normal
+		glfwSetInputMode(this.windowId, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+
 		glfwFreeCallbacks(this.windowId);
 		glfwDestroyWindow(this.windowId);
 	}
@@ -84,12 +85,12 @@ public class MainMenu implements Runnable {
 			autoConfigureResolution();
 		}
 
-		this.fullScreen = this.configuration.getVideo().getResolution().isFullScreen();
+		final boolean fullScreen = this.configuration.getVideo().getResolution().isFullScreen();
 		this.screenWidth = this.configuration.getVideo().getResolution().getHorizontal();
 		this.screenHeight = this.configuration.getVideo().getResolution().getVertical();
 
 		final long fullScreenMonitor;
-		if (this.fullScreen) {
+		if (fullScreen) {
 			fullScreenMonitor = this.monitor == null ? glfwGetPrimaryMonitor() : glfwGetMonitors().get(this.monitor);
 		} else {
 			fullScreenMonitor = NULL;
@@ -99,6 +100,9 @@ public class MainMenu implements Runnable {
 		if (this.windowId == NULL) {
 			throw new IllegalStateException("Failed to create the GLFW window");
 		}
+
+		// Hide cursor
+		glfwSetInputMode(this.windowId, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 		// Get the resolution of the primary monitor
 		final GLFWVidMode vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
@@ -147,7 +151,7 @@ public class MainMenu implements Runnable {
 	 * Starts the game loop, that keeps the game running.
 	 */
 	private void gameLoop() {
-		while (!glfwWindowShouldClose(this.windowId) ) {
+		while (!glfwWindowShouldClose(this.windowId)) {
 			final Object pendingItem = this.navigation.usePendingItem();
 			if (pendingItem instanceof LevelScreen) {
 				this.levelScreen = (LevelScreen) pendingItem;
