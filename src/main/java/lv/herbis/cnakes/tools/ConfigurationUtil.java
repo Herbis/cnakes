@@ -9,7 +9,10 @@ import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 import org.yaml.snakeyaml.representer.Representer;
 
-import java.io.*;
+import java.io.FileInputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -83,12 +86,23 @@ public class ConfigurationUtil {
 		final Yaml yaml = new Yaml(options);
 		final Path path = Paths.get(SAVE_FILE_PATH.toString(), configFileName);
 
+		try {
+			Files.createDirectories(SAVE_FILE_PATH); // Make sure directory exists.
+		} catch (final IOException e) {
+			LOG.error("Could not create directories: {}. Reason {}", path, e.getMessage());
+			LOG.debug(LOG_STACKTRACE, e);
+			throw new ConfigurationException(
+					String.format("Could not create save file directories. Reason: %s", e.getMessage()));
+		}
+
+
 		try (final FileWriter writer = new FileWriter(path.toString())) {
 			yaml.dump(configuration, writer);
 		} catch (final IOException e) {
 			LOG.error("Could not save configuration locally to path: {}. Reason {}", path, e.getMessage());
 			LOG.debug(LOG_STACKTRACE, e);
-			throw new ConfigurationException(String.format("Could not save configuration locally. Reason: %s", e.getMessage()));
+			throw new ConfigurationException(
+					String.format("Could not save configuration locally. Reason: %s", e.getMessage()));
 		}
 	}
 
@@ -99,14 +113,12 @@ public class ConfigurationUtil {
 	 * @return InputStream of the config file.
 	 */
 	protected static InputStream getLocalConfiguration(final String configFileName) {
-		final File folder = SAVE_FILE_PATH.toFile();
-		folder.mkdirs();
 		final Path path = Paths.get(SAVE_FILE_PATH.toString(), configFileName);
 		try {
+			Files.createDirectories(SAVE_FILE_PATH); // Make sure directory exists
 			return new FileInputStream(path.toString());
-		} catch (final FileNotFoundException e) {
-			LOG.warn("Local configuration not found. Path: {}, Reason: {}", path,
-					 e.getMessage());
+		} catch (final IOException e) {
+			LOG.warn("Local configuration not found. Path: {}, Reason: {}", path, e.getMessage());
 			LOG.debug(LOG_STACKTRACE, e);
 
 			return null;
