@@ -7,7 +7,6 @@ import org.apache.logging.log4j.Logger;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
-import org.yaml.snakeyaml.introspector.BeanAccess;
 import org.yaml.snakeyaml.representer.Representer;
 
 import java.io.*;
@@ -44,8 +43,6 @@ public class ConfigurationUtil {
 		if (inputStream == null) {
 			LOG.warn("Local configuration not found, using default configuration.");
 			configuration = new CnakesConfiguration();
-			configuration.setDefaultConfig(true);
-
 		} else {
 			try {
 				configuration = yaml.loadAs(inputStream, CnakesConfiguration.class);

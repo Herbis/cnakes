@@ -22,8 +22,7 @@ public class ConfigurationUtilTest {
 	public void tearDown() {
 		try {
 			ConfigurationUtil.removeLocalConfiguration(CONFIG_FILE);
-		} catch (final ConfigurationException e)
-		{
+		} catch (final ConfigurationException e) {
 			LOG.error("Could not remove configuration.", e);
 		}
 	}
@@ -44,7 +43,6 @@ public class ConfigurationUtilTest {
 	@Test
 	public void testReadConfigurationWithExistingFile() {
 		final CnakesConfiguration newConfig = new CnakesConfiguration();
-		newConfig.setDefaultConfig(true);
 		final int gameSpeed = newConfig.getGameplay().getGameSpeed() + 20;
 		newConfig.getGameplay().setGameSpeed(gameSpeed);
 
@@ -97,8 +95,7 @@ public class ConfigurationUtilTest {
 		assertThatLocalConfigurationRemoveConfigWithoutExceptions();
 	}
 
-	private void assertThatLocalConfigurationExists()
-	{
+	private void assertThatLocalConfigurationExists() {
 		try (final InputStream inputStream = ConfigurationUtil.getLocalConfiguration(CONFIG_FILE)) {
 			assertNotNull("Configuration file should exist.", inputStream);
 		} catch (final IOException e) {
@@ -106,8 +103,7 @@ public class ConfigurationUtilTest {
 		}
 	}
 
-	private void assertThatLocalConfigurationDoesNotExist()
-	{
+	private void assertThatLocalConfigurationDoesNotExist() {
 		try (final InputStream inputStream = ConfigurationUtil.getLocalConfiguration(CONFIG_FILE)) {
 			assertNull("Local configuration file should not exist.", inputStream);
 		} catch (final IOException e) {
@@ -115,8 +111,7 @@ public class ConfigurationUtilTest {
 		}
 	}
 
-	private void assertThatSaveConfigWithoutExceptions(final CnakesConfiguration cnakesConfiguration)
-	{
+	private void assertThatSaveConfigWithoutExceptions(final CnakesConfiguration cnakesConfiguration) {
 		try {
 			ConfigurationUtil.saveConfiguration(cnakesConfiguration, CONFIG_FILE);
 		} catch (final ConfigurationException e) {
@@ -125,8 +120,7 @@ public class ConfigurationUtilTest {
 		}
 	}
 
-	private void assertThatLocalConfigurationRemoveConfigWithoutExceptions()
-	{
+	private void assertThatLocalConfigurationRemoveConfigWithoutExceptions() {
 		try {
 			ConfigurationUtil.removeLocalConfiguration(CONFIG_FILE);
 		} catch (final ConfigurationException e) {

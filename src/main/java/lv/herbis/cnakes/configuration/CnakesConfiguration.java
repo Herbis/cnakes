@@ -4,7 +4,7 @@ public class CnakesConfiguration {
 	private VideoConfiguration video;
 	private GameplayConfiguration gameplay;
 
-	private transient boolean defaultConfig = false;
+	private boolean defaultConfig = true;
 
 	public VideoConfiguration getVideo() {
 		if (this.video == null) {
