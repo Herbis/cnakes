@@ -12,6 +12,7 @@ import org.yaml.snakeyaml.representer.Representer;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import static lv.herbis.cnakes.constants.CnakesConstants.LOG_STACKTRACE;
 import static lv.herbis.cnakes.constants.CnakesConstants.SAVE_FILE_PATH;
@@ -80,8 +81,9 @@ public class ConfigurationUtil {
 		options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
 		options.setPrettyFlow(true);
 		final Yaml yaml = new Yaml(options);
+		final Path path = Paths.get(SAVE_FILE_PATH.toString(), configFileName);
 
-		try (final FileWriter writer = new FileWriter(SAVE_FILE_PATH + configFileName)) {
+		try (final FileWriter writer = new FileWriter(path.toString())) {
 			yaml.dump(configuration, writer);
 		} catch (final IOException e) {
 			LOG.fatal("Could not save configuration locally to path: {}", SAVE_FILE_PATH + configFileName);
@@ -96,10 +98,11 @@ public class ConfigurationUtil {
 	 * @return InputStream of the config file.
 	 */
 	protected static InputStream getLocalConfiguration(final String configFileName) {
-		final File file = new File(SAVE_FILE_PATH);
-		file.mkdirs();
+		final File folder = SAVE_FILE_PATH.toFile();
+		folder.mkdirs();
+		final Path path = Paths.get(SAVE_FILE_PATH.toString(), configFileName);
 		try {
-			return new FileInputStream(SAVE_FILE_PATH + configFileName);
+			return new FileInputStream(path.toString());
 		} catch (final FileNotFoundException e) {
 			LOG.warn("Local configuration not found. Path: {}, Reason: {}", SAVE_FILE_PATH + configFileName,
 					 e.getMessage());
@@ -116,7 +119,7 @@ public class ConfigurationUtil {
 	 */
 	protected static void removeLocalConfiguration(final String configFileName) throws ConfigurationException {
 		try {
-			if (Files.deleteIfExists(Path.of(SAVE_FILE_PATH + configFileName))) {
+			if (Files.deleteIfExists(Paths.get(SAVE_FILE_PATH.toString(), configFileName))) {
 				LOG.debug("Config file {} successfully removed", configFileName);
 			}
 		} catch (final IOException e) {
