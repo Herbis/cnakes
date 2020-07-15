@@ -15,6 +15,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.swing.filechooser.FileSystemView;
+import java.io.File;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +28,7 @@ public class SinglePlayerLevelScreen {
 	private static final Logger LOG = LogManager.getLogger(SinglePlayerLevelScreen.class);
 
 	private static final String SAVE_FILE_PATH = FileSystemView.getFileSystemView().getDefaultDirectory()
-			.getPath() + "\\My Games\\cnakes\\";
+			.getPath() + File.separator + "My Games" + File.separator + "cnakes" + File.separator;
 	private static final String HIGHSCORE_FILE = "classic.hs";
 	private static final int GAME_LENGTH = 1;
 
@@ -219,11 +220,13 @@ public class SinglePlayerLevelScreen {
 			@Override
 			public void afterEnd() {
 				LOG.info("End of the game.");
-				final HighScore highScore = new HighScore("Player 1", SinglePlayerLevelScreen.this.gameStatus.getScore());
+				final HighScore highScore = new HighScore("Player 1",
+														  SinglePlayerLevelScreen.this.gameStatus.getScore());
 				if (SinglePlayerLevelScreen.this.highScores.addHighScore(highScore)) {
 					LOG.debug("Adding to high-scores.");
 					try {
-						SerializationUtil.serialize(SinglePlayerLevelScreen.this.highScores, SAVE_FILE_PATH, HIGHSCORE_FILE);
+						SerializationUtil
+								.serialize(SinglePlayerLevelScreen.this.highScores, SAVE_FILE_PATH, HIGHSCORE_FILE);
 					} catch (final Exception e) {
 						LOG.error("Could not save high-score file.", e);
 					}
@@ -334,8 +337,7 @@ public class SinglePlayerLevelScreen {
 	}
 
 	private void updateSnakePositionForLeftDirection() {
-		if (this.head.getX() - 1 >= 0)
-		{
+		if (this.head.getX() - 1 >= 0) {
 			processTailHits(this.head.getX() - 1, this.head.getY());
 			this.head = new PointCoordinates(this.head.getX() - 1, this.head.getY());
 		} else {
