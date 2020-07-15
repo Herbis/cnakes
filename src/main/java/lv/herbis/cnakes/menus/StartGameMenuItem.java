@@ -1,7 +1,7 @@
 package lv.herbis.cnakes.menus;
 
 import lv.herbis.cnakes.configuration.CnakesConfiguration;
-import lv.herbis.cnakes.levels.singleplayer.LevelScreen;
+import lv.herbis.cnakes.levels.singleplayer.SinglePlayerLevelScreen;
 import lv.herbis.cnakes.movement.MenuNavigation;
 
 import java.awt.*;
@@ -33,7 +33,7 @@ public class StartGameMenuItem implements MenuItem {
 
 	@Override
 	public boolean enter() {
-		final LevelScreen ls = new LevelScreen(configuration, windowId);
+		final SinglePlayerLevelScreen ls = new SinglePlayerLevelScreen(configuration, windowId);
 		menuNavigation.setPendingItem(ls);
 
 		return true;

@@ -2,7 +2,7 @@ package lv.herbis.cnakes.menus;
 
 import lv.herbis.cnakes.configuration.CnakesConfiguration;
 import lv.herbis.cnakes.draw.Drawing;
-import lv.herbis.cnakes.levels.singleplayer.LevelScreen;
+import lv.herbis.cnakes.levels.singleplayer.SinglePlayerLevelScreen;
 import lv.herbis.cnakes.listeners.MenuKeyListener;
 import lv.herbis.cnakes.movement.MenuNavigation;
 import org.apache.logging.log4j.LogManager;
@@ -34,7 +34,7 @@ public class MainMenu implements Runnable {
 	private int screenHeight;
 	private int gameScale;
 
-	private LevelScreen levelScreen;
+	private SinglePlayerLevelScreen levelScreen;
 
 	public MainMenu(final CnakesConfiguration configuration) {
 		this.configuration = configuration;
@@ -154,8 +154,8 @@ public class MainMenu implements Runnable {
 	private void gameLoop() {
 		while (!glfwWindowShouldClose(this.windowId)) {
 			final Object pendingItem = this.navigation.usePendingItem();
-			if (pendingItem instanceof LevelScreen) {
-				this.levelScreen = (LevelScreen) pendingItem;
+			if (pendingItem instanceof SinglePlayerLevelScreen) {
+				this.levelScreen = (SinglePlayerLevelScreen) pendingItem;
 				this.levelScreen.initGame();
 			}
 

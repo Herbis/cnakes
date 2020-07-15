@@ -23,8 +23,8 @@ import java.util.Random;
 import static org.lwjgl.glfw.GLFW.glfwSetKeyCallback;
 
 
-public class LevelScreen {
-	private static final Logger LOG = LogManager.getLogger(LevelScreen.class);
+public class SinglePlayerLevelScreen {
+	private static final Logger LOG = LogManager.getLogger(SinglePlayerLevelScreen.class);
 
 	private static final String SAVE_FILE_PATH = FileSystemView.getFileSystemView().getDefaultDirectory()
 			.getPath() + "\\My Games\\cnakes\\";
@@ -66,7 +66,7 @@ public class LevelScreen {
 	long lastFPS;
 
 
-	public LevelScreen(final CnakesConfiguration configuration, final long windowId) {
+	public SinglePlayerLevelScreen(final CnakesConfiguration configuration, final long windowId) {
 		this.configuration = configuration;
 		this.windowId = windowId;
 		this.drawing = new Drawing(configuration);
@@ -219,16 +219,16 @@ public class LevelScreen {
 			@Override
 			public void afterEnd() {
 				LOG.info("End of the game.");
-				final HighScore highScore = new HighScore("Player 1", LevelScreen.this.gameStatus.getScore());
-				if (LevelScreen.this.highScores.addHighScore(highScore)) {
+				final HighScore highScore = new HighScore("Player 1", SinglePlayerLevelScreen.this.gameStatus.getScore());
+				if (SinglePlayerLevelScreen.this.highScores.addHighScore(highScore)) {
 					LOG.debug("Adding to high-scores.");
 					try {
-						SerializationUtil.serialize(LevelScreen.this.highScores, SAVE_FILE_PATH, HIGHSCORE_FILE);
+						SerializationUtil.serialize(SinglePlayerLevelScreen.this.highScores, SAVE_FILE_PATH, HIGHSCORE_FILE);
 					} catch (final Exception e) {
 						LOG.error("Could not save high-score file.", e);
 					}
 
-					LevelScreen.this.drawing.updateHighScores(LevelScreen.this.highScores);
+					SinglePlayerLevelScreen.this.drawing.updateHighScores(SinglePlayerLevelScreen.this.highScores);
 				} else {
 					LOG.debug("High-score was not added.");
 				}
