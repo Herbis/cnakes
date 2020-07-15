@@ -60,36 +60,36 @@ public class ScoreboardDrawing {
 		final float xMiddle = drawing.getPlayAreaXEndPoint() / 2f;
 		final float yMiddle = drawing.getPlayAreaYEndPoint() / 2f;
 
-		bugsEatenIconXLocation = 1;
-		bugsEatenIconYLocation = drawing.getPlayAreaYEndPoint() + 3f;
-		snakeLengthIconXLocation = 1;
-		snakeLengthIconYLocation = drawing.getPlayAreaYEndPoint() + 2f;
-		scoreIconXLocation = 1;
-		scoreIconYLocation = drawing.getPlayAreaYEndPoint() + 1f;
+		this.bugsEatenIconXLocation = 1;
+		this.bugsEatenIconYLocation = drawing.getPlayAreaYEndPoint() + 3f;
+		this.snakeLengthIconXLocation = 1;
+		this.snakeLengthIconYLocation = drawing.getPlayAreaYEndPoint() + 2f;
+		this.scoreIconXLocation = 1;
+		this.scoreIconYLocation = drawing.getPlayAreaYEndPoint() + 1f;
 
 
-		bugsEatenTextXLocation = bugsEatenIconXLocation + 1.5f;
-		bugsEatenTextYLocation = bugsEatenIconYLocation + 1.1f;
-		snakeLengthTextXLocation = snakeLengthIconXLocation + 1.5f;
-		snakeLengthTextYLocation = snakeLengthIconYLocation + 1.1f;
-		scoreTextXLocation = scoreIconXLocation + 1.5f;
-		scoreTextYLocation = scoreIconYLocation + 1.1f;
+		this.bugsEatenTextXLocation = this.bugsEatenIconXLocation + 1.5f;
+		this.bugsEatenTextYLocation = this.bugsEatenIconYLocation + 1.1f;
+		this.snakeLengthTextXLocation = this.snakeLengthIconXLocation + 1.5f;
+		this.snakeLengthTextYLocation = this.snakeLengthIconYLocation + 1.1f;
+		this.scoreTextXLocation = this.scoreIconXLocation + 1.5f;
+		this.scoreTextYLocation = this.scoreIconYLocation + 1.1f;
 
-		playerNameXLocation = 1f;
-		playerNameYLocation = drawing.getPlayAreaYEndPoint() + 5.1f;
-		gamePausedXLocation = xMiddle;
-		gamePausedYLocation = yMiddle;
-		gameOverXLocation = xMiddle;
-		gameOverYLocation = drawing.getPlayAreaYEndPoint() + 3.1f;
+		this.playerNameXLocation = 1f;
+		this.playerNameYLocation = drawing.getPlayAreaYEndPoint() + 5.1f;
+		this.gamePausedXLocation = xMiddle;
+		this.gamePausedYLocation = yMiddle;
+		this.gameOverXLocation = xMiddle;
+		this.gameOverYLocation = drawing.getPlayAreaYEndPoint() + 3.1f;
 
-		highScoreXLocation = xMiddle;
-		highScoreYLocation = drawing.getPlayAreaYEndPoint() + 4.1f;
+		this.highScoreXLocation = xMiddle;
+		this.highScoreYLocation = drawing.getPlayAreaYEndPoint() + 4.1f;
 
-		startGameXLocation = xMiddle;
-		startGameYLocation = drawing.getPlayAreaYEndPoint() + 3.1f;
+		this.startGameXLocation = xMiddle;
+		this.startGameYLocation = drawing.getPlayAreaYEndPoint() + 3.1f;
 
-		timerXLocation = xMiddle;
-		timerYLocation = drawing.getPlayAreaYEndPoint() + 3.1f;
+		this.timerXLocation = xMiddle;
+		this.timerYLocation = drawing.getPlayAreaYEndPoint() + 3.1f;
 	}
 
 	/**
@@ -100,15 +100,15 @@ public class ScoreboardDrawing {
 		glBegin(GL_QUADS);
 		/* "Bugs Eaten" square */
 		glColor3f(0.25f, 0.73f, 0.31f);
-		drawing.drawFilledSquare(bugsEatenIconXLocation, bugsEatenIconYLocation);
+		this.drawing.drawFilledSquare(this.bugsEatenIconXLocation, this.bugsEatenIconYLocation);
 
 		/* "Snake Length" square */
 		glColor3f(0.55f, 0.01f, 0.31f);
-		drawing.drawFilledSquare(snakeLengthIconXLocation, snakeLengthIconYLocation);
+		this.drawing.drawFilledSquare(this.snakeLengthIconXLocation, this.snakeLengthIconYLocation);
 
 		/* "Score" square */
 		glColor3f(1.35f, 0.44f, 2.55f);
-		drawing.drawFilledSquare(scoreIconXLocation, scoreIconYLocation);
+		this.drawing.drawFilledSquare(this.scoreIconXLocation, this.scoreIconYLocation);
 
 		glEnd();
 
@@ -119,20 +119,24 @@ public class ScoreboardDrawing {
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 		/* "Bugs Eaten" number */
-		drawing.drawText(String.valueOf(gameStatus.getBugsCollected()), 1, bugsEatenTextXLocation, bugsEatenTextYLocation, Color.YELLOW, false);
+		this.drawing.drawText(String.valueOf(gameStatus.getBugsCollected()), 1, this.bugsEatenTextXLocation,
+							  this.bugsEatenTextYLocation, Color.YELLOW, false);
 
 		/* "Snake Length" number */
-		drawing.drawText(String.valueOf(gameStatus.getSnakeLength()), 1, snakeLengthTextXLocation, snakeLengthTextYLocation, Color.YELLOW, false);
+		this.drawing.drawText(String.valueOf(gameStatus.getSnakeLength()), 1, this.snakeLengthTextXLocation,
+							  this.snakeLengthTextYLocation, Color.YELLOW, false);
 
 		/* "Score" number */
-		drawing.drawText(String.valueOf(gameStatus.getScore()), 1, scoreTextXLocation, scoreTextYLocation, Color.YELLOW, false);
+		this.drawing
+				.drawText(String.valueOf(gameStatus.getScore()), 1, this.scoreTextXLocation, this.scoreTextYLocation,
+						  Color.YELLOW, false);
 
 		/* "Player name" text */
-		drawing.drawText("Player 1", 1, playerNameXLocation, playerNameYLocation, Color.YELLOW, false);
+		this.drawing.drawText("Player 1", 1, this.playerNameXLocation, this.playerNameYLocation, Color.YELLOW, false);
 
 
 		if (gameStatus.isPaused()) {
-			drawing.drawText("PAUSED", 2, gamePausedXLocation, gamePausedYLocation, Color.YELLOW, true);
+			this.drawing.drawText("PAUSED", 2, this.gamePausedXLocation, this.gamePausedYLocation, Color.YELLOW, true);
 		}
 		glDisable(GL_TEXTURE_2D);
 
@@ -153,17 +157,23 @@ public class ScoreboardDrawing {
 		final Timer currentTimer = gameStatus.getTimer();
 		if (currentTimer == null) {
 			/* If the current Timer is null, the game was never started. */
-			drawing.drawText("Start the Game!", 2f, startGameXLocation, startGameYLocation, Color.GREEN, true);
+			this.drawing.drawText("Start the Game!", 2f, this.startGameXLocation, this.startGameYLocation, Color.GREEN,
+								  true);
 		} else {
 			if (gameStatus.hasEnded()) {
-				drawing.drawText("Game Over", 2f, gameOverXLocation, gameOverYLocation, Color.RED, true);
-				if (topHighScore == null) {
-					drawing.drawText("High score cannot be displayed.", 1f, highScoreXLocation, highScoreYLocation, Color.WHITE, true);
+				this.drawing.drawText("Game Over", 2f, this.gameOverXLocation, this.gameOverYLocation, Color.RED, true);
+				if (this.topHighScore == null) {
+					this.drawing.drawText("High score cannot be displayed.", 1f, this.highScoreXLocation,
+										  this.highScoreYLocation, Color.WHITE, true);
 				} else {
-					drawing.drawText(String.format("Top High Score: %d (%s) %s", topHighScore.getScore(), topHighScore.getUsername(), this.topHighScoreFormatted), 1f, highScoreXLocation, highScoreYLocation, Color.WHITE, true);
+					this.drawing.drawText(String.format("Top High Score: %d (%s) %s", this.topHighScore.getScore(),
+														this.topHighScore.getUsername(), this.topHighScoreFormatted),
+										  1f, this.highScoreXLocation, this.highScoreYLocation, Color.WHITE, true);
 				}
 			} else {
-				drawing.drawText(timeFormat.format(ConversionUtil.millisecondsToLocalDateTime(gameStatus.getTimer().getTimeLeft())), 2f, timerXLocation, timerYLocation, Color.RED, true);
+				this.drawing.drawText(this.timeFormat.format(ConversionUtil.millisecondsToLocalDateTime(
+						gameStatus.getTimer().getTimeLeft())), 2f, this.timerXLocation, this.timerYLocation, Color.RED,
+									  true);
 			}
 		}
 
@@ -172,7 +182,12 @@ public class ScoreboardDrawing {
 
 	public void updateHighScores(final HighScores highScores) {
 		this.topHighScore = highScores.getTopScore();
-		this.topHighScoreFormatted = hsDateFormat.format(ConversionUtil.millisecondsToLocalDateTime(this.topHighScore.getTimestamp()));
+		if (this.topHighScore == null) {
+			this.topHighScoreFormatted = "";
+		} else {
+			this.topHighScoreFormatted = this.hsDateFormat
+					.format(ConversionUtil.millisecondsToLocalDateTime(this.topHighScore.getTimestamp()));
+		}
 	}
 
 }

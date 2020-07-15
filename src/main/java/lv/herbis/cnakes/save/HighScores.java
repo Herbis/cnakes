@@ -1,5 +1,8 @@
 package lv.herbis.cnakes.save;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -7,18 +10,19 @@ import java.util.List;
 
 public class HighScores implements Serializable {
 
-	public static final int MAX_LIMIT = Integer.MAX_VALUE;
+	public static final int MAX_LIMIT = 100_000;
 	private static final long serialVersionUID = 5871033699197551246L;
+	private static final Logger LOG = LogManager.getLogger(HighScores.class);
 
 	private int limit;
 
-	List<HighScore> highScores;
+	private List<HighScore> highScoreList;
 
 	/**
 	 * Creates unlimited list of High Scores.
 	 */
 	public HighScores() {
-		highScores = new ArrayList<>();
+		this.highScoreList = new ArrayList<>();
 		changeLimit(MAX_LIMIT);
 	}
 
@@ -28,7 +32,7 @@ public class HighScores implements Serializable {
 	 * @param limit How many High Scores to keep.
 	 */
 	public HighScores(final int limit) {
-		highScores = new ArrayList<>();
+		this.highScoreList = new ArrayList<>();
 		changeLimit(limit);
 	}
 
@@ -41,16 +45,18 @@ public class HighScores implements Serializable {
 	 * @return Returns true if user's score was added to the list, false otherwise.
 	 */
 	public boolean addHighScore(final HighScore score) {
-		final int highScoreSize = highScores.size();
-		/* Check if highscore list has reached (or is over) the limit. */
-		if (limit <= highScoreSize) {
-			if (getBottomScore().getScore() < score.getScore()) {
-				/* Remove last element, add new score and sort. */
-				highScores.remove(highScoreSize - 1);
+		final int highScoreSize = getHighScoreList().size();
+		/* Check if high-score list has reached (or is over) the limit. */
+		if (getLimit() <= highScoreSize) {
+			LOG.debug("High-score limit ({}) reached.", getLimit());
+			final HighScore bottomScore = getBottomScore();
+			if (bottomScore == null || bottomScore.getScore() < score.getScore()) {
+				/* Add new score and sort. */
 				addHighScoreToList(score, true);
-
-				//TODO method to remove all elements outside the limit
+				removeHighScoresAboveTheLimit();
 				return true;
+			} else {
+				LOG.debug("Score lower than the bottom score.");
 			}
 			return false; // Didn't add to high scores.
 		}
@@ -69,12 +75,25 @@ public class HighScores implements Serializable {
 	 * @param sort  Should the list be sorted? (Most likely always true).
 	 */
 	private void addHighScoreToList(final HighScore score, final boolean sort) {
-		highScores.add(score);
+		getHighScoreList().add(score);
 		if (sort) {
-			Collections.sort(highScores);
+			Collections.sort(getHighScoreList());
 		}
 	}
 
+	/**
+	 * Returns the High-score entry limit. Should always return value above 0.
+	 *
+	 * @return High-score entry limit.
+	 */
+	public int getLimit() {
+		if (this.limit <= 0) {
+			final int newLimit = MAX_LIMIT;
+			LOG.debug("High-Score limit was {}, automatically adjusted to {}", this.limit, newLimit);
+			this.limit = newLimit;
+		}
+		return this.limit;
+	}
 
 	/**
 	 * Change the limit of how many High Scores there can be.
@@ -85,7 +104,7 @@ public class HighScores implements Serializable {
 		if (newLimit <= 0) {
 			throw new IllegalArgumentException("HighScore limit invalid: " + newLimit);
 		}
-		limit = newLimit;
+		this.limit = newLimit;
 	}
 
 
@@ -95,9 +114,12 @@ public class HighScores implements Serializable {
 	 * @return Returns a List of HighScore objects.
 	 */
 	public List<HighScore> getHighScoreList() {
-		return highScores;
-	}
+		if (this.highScoreList == null) {
+			this.highScoreList = new ArrayList<>();
+		}
 
+		return this.highScoreList;
+	}
 
 	/**
 	 * Returns the top high score.
@@ -105,7 +127,7 @@ public class HighScores implements Serializable {
 	 * @return HighScore object that is the first (top) in the List of scores.
 	 */
 	public HighScore getTopScore() {
-		return getHighScoreList().isEmpty() ? null : highScores.get(0);
+		return getHighScoreList().isEmpty() ? null : getHighScoreList().get(0);
 	}
 
 
@@ -115,7 +137,16 @@ public class HighScores implements Serializable {
 	 * @return HighScore object that is the last (lowest) in the List of scores.
 	 */
 	public HighScore getBottomScore() {
-		final int highScoreSize = highScores.size();
-		return highScoreSize > 0 ? highScores.get(highScoreSize - 1) : null;
+		final int highScoreSize = getHighScoreList().size();
+		return highScoreSize > 0 ? getHighScoreList().get(highScoreSize - 1) : null;
+	}
+
+	public void removeHighScoresAboveTheLimit() {
+		final List<HighScore> list = getHighScoreList();
+		final int listMaxIndex = list.size() - 1;
+		final int indexLimit = getLimit() - 1;
+		if (listMaxIndex > indexLimit + 1) {
+			list.subList(indexLimit + 1, listMaxIndex + 1).clear();
+		}
 	}
 }
