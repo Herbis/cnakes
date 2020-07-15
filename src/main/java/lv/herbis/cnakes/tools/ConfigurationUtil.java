@@ -86,8 +86,9 @@ public class ConfigurationUtil {
 		try (final FileWriter writer = new FileWriter(path.toString())) {
 			yaml.dump(configuration, writer);
 		} catch (final IOException e) {
-			LOG.fatal("Could not save configuration locally to path: {}", SAVE_FILE_PATH + configFileName);
-			throw new ConfigurationException("Could not save configuration locally.");
+			LOG.error("Could not save configuration locally to path: {}. Reason {}", path, e.getMessage());
+			LOG.debug(LOG_STACKTRACE, e);
+			throw new ConfigurationException(String.format("Could not save configuration locally. Reason: %s", e.getMessage()));
 		}
 	}
 
@@ -104,7 +105,7 @@ public class ConfigurationUtil {
 		try {
 			return new FileInputStream(path.toString());
 		} catch (final FileNotFoundException e) {
-			LOG.warn("Local configuration not found. Path: {}, Reason: {}", SAVE_FILE_PATH + configFileName,
+			LOG.warn("Local configuration not found. Path: {}, Reason: {}", path,
 					 e.getMessage());
 			LOG.debug(LOG_STACKTRACE, e);
 
