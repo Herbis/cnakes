@@ -17,6 +17,7 @@ import org.apache.logging.log4j.Logger;
 import javax.swing.filechooser.FileSystemView;
 
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +29,7 @@ import static org.lwjgl.glfw.GLFW.glfwSetKeyCallback;
 public class SinglePlayerLevelScreen {
 	private static final Logger LOG = LogManager.getLogger(SinglePlayerLevelScreen.class);
 
-	private static final Path SAVE_FILE_PATH = Path.of(FileSystemView.getFileSystemView().getDefaultDirectory()
+	private static final Path SAVE_FILE_PATH = Paths.get(FileSystemView.getFileSystemView().getDefaultDirectory()
 			.getPath(), "My Games", "cnakes");
 	private static final String HIGHSCORE_FILE = "classic.hs";
 	private static final int GAME_LENGTH = 1;
