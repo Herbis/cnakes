@@ -7,9 +7,12 @@ import org.apache.logging.log4j.Logger;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
+import org.yaml.snakeyaml.introspector.BeanAccess;
 import org.yaml.snakeyaml.representer.Representer;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import static lv.herbis.cnakes.constants.CnakesConstants.LOG_STACKTRACE;
 import static lv.herbis.cnakes.constants.CnakesConstants.SAVE_FILE_PATH;
@@ -35,19 +38,18 @@ public class ConfigurationUtil {
 
 		final Yaml yaml = new Yaml(new Constructor(CnakesConfiguration.class), representer);
 
-		boolean usingDefaultConfig = false;
-
 		final CnakesConfiguration configuration;
 		final InputStream inputStream = getLocalConfiguration(configFileName);
 
 		if (inputStream == null) {
 			LOG.warn("Local configuration not found, using default configuration.");
-			usingDefaultConfig = true;
 			configuration = new CnakesConfiguration();
+			configuration.setDefaultConfig(true);
 
 		} else {
 			try {
 				configuration = yaml.loadAs(inputStream, CnakesConfiguration.class);
+				configuration.setDefaultConfig(false);
 			} catch (final Exception e) {
 				LOG.error("Error occurred while loading Configuration.", e);
 				throw new ConfigurationException(e.getMessage());
@@ -61,7 +63,7 @@ public class ConfigurationUtil {
 			}
 		}
 
-		if (usingDefaultConfig) {
+		if (configuration.isDefaultConfig()) {
 			saveConfiguration(configuration, configFileName);
 		}
 
@@ -82,11 +84,10 @@ public class ConfigurationUtil {
 		options.setPrettyFlow(true);
 		final Yaml yaml = new Yaml(options);
 
-		try {
-			final FileWriter writer = new FileWriter(SAVE_FILE_PATH + configFileName);
+		try (final FileWriter writer = new FileWriter(SAVE_FILE_PATH + configFileName)) {
 			yaml.dump(configuration, writer);
 		} catch (final IOException e) {
-			LOG.fatal("Could not save configuration locally to path: {}", SAVE_FILE_PATH + LOCAL_CONFIG_FILE_NAME);
+			LOG.fatal("Could not save configuration locally to path: {}", SAVE_FILE_PATH + configFileName);
 			throw new ConfigurationException("Could not save configuration locally.");
 		}
 	}
@@ -116,10 +117,15 @@ public class ConfigurationUtil {
 	 *
 	 * @param configFileName configuration file name. See {@link #LOCAL_CONFIG_FILE_NAME}.
 	 */
-	protected static void removeLocalConfiguration(final String configFileName) {
-		final File file = new File(SAVE_FILE_PATH);
-		if (file.exists() && file.delete()) {
-			LOG.debug("Config file {} successfully removed", configFileName);
+	protected static void removeLocalConfiguration(final String configFileName) throws ConfigurationException {
+		try {
+			if (Files.deleteIfExists(Path.of(SAVE_FILE_PATH + configFileName))) {
+				LOG.debug("Config file {} successfully removed", configFileName);
+			}
+		} catch (final IOException e) {
+			LOG.debug(LOG_STACKTRACE, e);
+			throw new ConfigurationException("Could not remove local configuration because " + e.getMessage());
 		}
+
 	}
 }

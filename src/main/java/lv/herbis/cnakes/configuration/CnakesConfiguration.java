@@ -4,6 +4,8 @@ public class CnakesConfiguration {
 	private VideoConfiguration video;
 	private GameplayConfiguration gameplay;
 
+	private transient boolean defaultConfig = false;
+
 	public VideoConfiguration getVideo() {
 		if (this.video == null) {
 			this.video = new VideoConfiguration();
@@ -24,5 +26,13 @@ public class CnakesConfiguration {
 
 	public void setGameplay(final GameplayConfiguration gameplay) {
 		this.gameplay = gameplay;
+	}
+
+	public boolean isDefaultConfig() {
+		return defaultConfig;
+	}
+
+	public void setDefaultConfig(boolean defaultConfig) {
+		this.defaultConfig = defaultConfig;
 	}
 }
