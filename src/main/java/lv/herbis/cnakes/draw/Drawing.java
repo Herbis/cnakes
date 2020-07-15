@@ -124,7 +124,8 @@ public class Drawing {
 		final long headXScaledPlus = headXScaled + this.gameScale;
 		final long headYScaled = (long) head.getY() * this.gameScale;
 		final long headYScaledPlus = headYScaled + this.gameScale;
-		final int direction = MovingDirections.getPreviousDirection(MovingDirections.PLAYER_1);
+		// The following should be refactored to be less single player specific
+		final int direction = MovingDirections.getP1LastDirection();
 
 		resetToBasicPlayGridLineColor();
 

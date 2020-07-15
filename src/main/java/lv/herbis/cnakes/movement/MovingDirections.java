@@ -50,8 +50,7 @@ public class MovingDirections {
 	private static int p8LastDirection;
 
 
-	private MovingDirections()
-	{
+	private MovingDirections() {
 		// Only Static access.
 	}
 
@@ -61,138 +60,73 @@ public class MovingDirections {
 	 * @param player    Which player to set it for.
 	 * @param direction Which direction the player should go.
 	 */
-	public static void setDirection(final int player, final int direction) {
+	public static void setDirectionAndPushToQueue(final int player, final int direction) {
 
 		switch (player) {
 			case PLAYER_1:
-				MovingDirections.p1DirectionQ.add(direction);
-				MovingDirections.p1Direction = direction;
+				setP1DirectionAndPushToQueue(direction);
 				break;
 			case PLAYER_2:
-				MovingDirections.p2DirectionQ.add(direction);
-				MovingDirections.p2Direction = direction;
+				setP2DirectionAndPushToQueue(direction);
 				break;
 			case PLAYER_3:
-				MovingDirections.p3DirectionQ.add(direction);
-				MovingDirections.p3Direction = direction;
+				setP3DirectionAndPushToQueue(direction);
 				break;
 			case PLAYER_4:
-				MovingDirections.p4DirectionQ.add(direction);
-				MovingDirections.p4Direction = direction;
+				setP4DirectionAndPushToQueue(direction);
 				break;
 			case PLAYER_5:
-				MovingDirections.p5DirectionQ.add(direction);
-				MovingDirections.p5Direction = direction;
+				setP5DirectionAndPushToQueue(direction);
 				break;
 			case PLAYER_6:
-				MovingDirections.p6DirectionQ.add(direction);
-				MovingDirections.p6Direction = direction;
+				setP6DirectionAndPushToQueue(direction);
 				break;
 			case PLAYER_7:
-				MovingDirections.p7DirectionQ.add(direction);
-				MovingDirections.p7Direction = direction;
+				setP7DirectionAndPushToQueue(direction);
 				break;
 			case PLAYER_8:
-				MovingDirections.p8DirectionQ.add(direction);
-				MovingDirections.p8Direction = direction;
+				setP8DirectionAndPushToQueue(direction);
 				break;
 			default:
 				LOG.warn("Player {} not recognized, direction {} will not be set", player, direction);
 		}
 	}
 
-	public static int getDirection(final int player) {
+
+	public static int getDirectionAndPoolFromQueue(final int player) {
 		int direction = -1;
 
 		switch (player) {
 			case PLAYER_1:
-				if (MovingDirections.p1DirectionQ.isEmpty()) {
-					direction = MovingDirections.p1Direction;
-				} else {
-					direction = MovingDirections.p1DirectionQ.poll();
-				}
-
-				MovingDirections.p1LastDirection = direction;
-
+				direction = getP1DirectionAndPoolFromQueue();
 				break;
 			case PLAYER_2:
-				if (MovingDirections.p2DirectionQ.isEmpty()) {
-					direction = MovingDirections.p2Direction;
-				} else {
-					direction = MovingDirections.p2DirectionQ.poll();
-				}
-
-				MovingDirections.p2LastDirection = direction;
-
+				direction = getP2DirectionAndPoolFromQueue();
 				break;
 			case PLAYER_3:
-				if (MovingDirections.p3DirectionQ.isEmpty()) {
-					direction = MovingDirections.p3Direction;
-				} else {
-					direction = MovingDirections.p3DirectionQ.poll();
-				}
-
-				MovingDirections.p3LastDirection = direction;
-
+				direction = getP3DirectionAndPoolFromQueue();
 				break;
 			case PLAYER_4:
-				if (MovingDirections.p4DirectionQ.isEmpty()) {
-					direction = MovingDirections.p4Direction;
-				} else {
-					direction = MovingDirections.p4DirectionQ.poll();
-				}
-
-				MovingDirections.p4LastDirection = direction;
-
+				direction = getP4DirectionAndPoolFromQueue();
 				break;
 			case PLAYER_5:
-				if (MovingDirections.p5DirectionQ.isEmpty()) {
-					direction = MovingDirections.p5Direction;
-				} else {
-					direction = MovingDirections.p5DirectionQ.poll();
-				}
-
-				MovingDirections.p5LastDirection = direction;
-
+				direction = getP5DirectionAndPoolFromQueue();
 				break;
 			case PLAYER_6:
-				if (MovingDirections.p6DirectionQ.isEmpty()) {
-					direction = MovingDirections.p6Direction;
-				} else {
-					direction = MovingDirections.p6DirectionQ.poll();
-				}
-
-				MovingDirections.p6LastDirection = direction;
-
+				direction = getP6DirectionAndPoolFromQueue();
 				break;
 			case PLAYER_7:
-				if (MovingDirections.p7DirectionQ.isEmpty()) {
-					direction = MovingDirections.p7Direction;
-				} else {
-					direction = MovingDirections.p7DirectionQ.poll();
-				}
-
-				MovingDirections.p7LastDirection = direction;
-
+				direction = getP7DirectionAndPoolFromQueue();
 				break;
 			case PLAYER_8:
-				if (MovingDirections.p8DirectionQ.isEmpty()) {
-					direction = MovingDirections.p8Direction;
-				} else {
-					direction = MovingDirections.p8DirectionQ.poll();
-				}
-
-				MovingDirections.p8LastDirection = direction;
-
+				direction = getP8DirectionAndPoolFromQueue();
 				break;
 			default:
 				LOG.warn("Player {} not recognized. Can't get direction.", player);
-
 		}
 
 		return direction;
 	}
-
 
 	public static int getPreviousDirection(final int player) {
 
@@ -230,90 +164,257 @@ public class MovingDirections {
 	public static void resetDirection(final int player) {
 		switch (player) {
 			case PLAYER_1:
-				if (MovingDirections.p1DirectionQ == null) {
-					MovingDirections.p1DirectionQ = new LinkedList<>();
-				} else {
-					MovingDirections.p1DirectionQ.clear();
-				}
-				MovingDirections.p1Direction = MovingDirections.UP;
-				MovingDirections.p1LastDirection = MovingDirections.UP;
-
+				resetP1Direction();
 				break;
 			case PLAYER_2:
-				if (MovingDirections.p2DirectionQ == null) {
-					MovingDirections.p2DirectionQ = new LinkedList<>();
-				} else {
-					MovingDirections.p2DirectionQ.clear();
-				}
-				MovingDirections.p2Direction = MovingDirections.UP;
-				MovingDirections.p2LastDirection = MovingDirections.UP;
-
+				resetP2Direction();
 				break;
 			case PLAYER_3:
-				if (MovingDirections.p3DirectionQ == null) {
-					MovingDirections.p3DirectionQ = new LinkedList<>();
-				} else {
-					MovingDirections.p3DirectionQ.clear();
-				}
-				MovingDirections.p3Direction = MovingDirections.UP;
-				MovingDirections.p3LastDirection = MovingDirections.UP;
-
+				resetP3Direction();
 				break;
 			case PLAYER_4:
-				if (MovingDirections.p4DirectionQ == null) {
-					MovingDirections.p4DirectionQ = new LinkedList<>();
-				} else {
-					MovingDirections.p4DirectionQ.clear();
-				}
-				MovingDirections.p4Direction = MovingDirections.UP;
-				MovingDirections.p4LastDirection = MovingDirections.UP;
-
+				resetP4Direction();
 				break;
 			case PLAYER_5:
-				if (MovingDirections.p5DirectionQ == null) {
-					MovingDirections.p5DirectionQ = new LinkedList<>();
-				} else {
-					MovingDirections.p5DirectionQ.clear();
-				}
-				MovingDirections.p5Direction = MovingDirections.UP;
-				MovingDirections.p5LastDirection = MovingDirections.UP;
-
+				resetP5Direction();
 				break;
 			case PLAYER_6:
-				if (MovingDirections.p6DirectionQ == null) {
-					MovingDirections.p6DirectionQ = new LinkedList<>();
-				} else {
-					MovingDirections.p6DirectionQ.clear();
-				}
-				MovingDirections.p6Direction = MovingDirections.UP;
-				MovingDirections.p6LastDirection = MovingDirections.UP;
-
+				resetP6Direction();
 				break;
 			case PLAYER_7:
-				if (MovingDirections.p7DirectionQ == null) {
-					MovingDirections.p7DirectionQ = new LinkedList<>();
-				} else {
-					MovingDirections.p7DirectionQ.clear();
-				}
-				MovingDirections.p7Direction = MovingDirections.UP;
-				MovingDirections.p7LastDirection = MovingDirections.UP;
-
-
+				resetP7Direction();
 				break;
 			case PLAYER_8:
-				if (MovingDirections.p8DirectionQ == null) {
-					MovingDirections.p8DirectionQ = new LinkedList<>();
-				} else {
-					MovingDirections.p8DirectionQ.clear();
-				}
-				MovingDirections.p8Direction = MovingDirections.UP;
-				MovingDirections.p8LastDirection = MovingDirections.UP;
-
+				resetP8Direction();
 				break;
 			default:
 				LOG.warn("Player {} not recognized, can't reset direction.", player);
 
 		}
+	}
+
+	public static void setP1DirectionAndPushToQueue(final int direction) {
+		MovingDirections.p1DirectionQ.add(direction);
+		MovingDirections.p1Direction = direction;
+	}
+
+	public static void setP2DirectionAndPushToQueue(final int direction) {
+		MovingDirections.p2DirectionQ.add(direction);
+		MovingDirections.p2Direction = direction;
+	}
+
+	public static void setP3DirectionAndPushToQueue(final int direction) {
+		MovingDirections.p3DirectionQ.add(direction);
+		MovingDirections.p3Direction = direction;
+	}
+
+	public static void setP4DirectionAndPushToQueue(final int direction) {
+		MovingDirections.p4DirectionQ.add(direction);
+		MovingDirections.p4Direction = direction;
+	}
+
+	public static void setP5DirectionAndPushToQueue(final int direction) {
+		MovingDirections.p5DirectionQ.add(direction);
+		MovingDirections.p5Direction = direction;
+	}
+
+	public static void setP6DirectionAndPushToQueue(final int direction) {
+		MovingDirections.p6DirectionQ.add(direction);
+		MovingDirections.p6Direction = direction;
+	}
+
+	public static void setP7DirectionAndPushToQueue(final int direction) {
+		MovingDirections.p7DirectionQ.add(direction);
+		MovingDirections.p7Direction = direction;
+	}
+
+	public static void setP8DirectionAndPushToQueue(final int direction) {
+		MovingDirections.p8DirectionQ.add(direction);
+		MovingDirections.p8Direction = direction;
+	}
+
+	public static int getP1DirectionAndPoolFromQueue() {
+		final int direction;
+		if (MovingDirections.p1DirectionQ.isEmpty()) {
+			direction = MovingDirections.p1Direction;
+		} else {
+			direction = MovingDirections.p1DirectionQ.poll();
+		}
+
+		MovingDirections.p1LastDirection = direction;
+
+		return direction;
+	}
+
+	public static int getP2DirectionAndPoolFromQueue() {
+		final int direction;
+		if (MovingDirections.p2DirectionQ.isEmpty()) {
+			direction = MovingDirections.p2Direction;
+		} else {
+			direction = MovingDirections.p2DirectionQ.poll();
+		}
+
+		MovingDirections.p2LastDirection = direction;
+
+		return direction;
+	}
+
+	public static int getP3DirectionAndPoolFromQueue() {
+		final int direction;
+		if (MovingDirections.p3DirectionQ.isEmpty()) {
+			direction = MovingDirections.p3Direction;
+		} else {
+			direction = MovingDirections.p3DirectionQ.poll();
+		}
+
+		MovingDirections.p3LastDirection = direction;
+
+		return direction;
+	}
+
+	public static int getP4DirectionAndPoolFromQueue() {
+		final int direction;
+		if (MovingDirections.p4DirectionQ.isEmpty()) {
+			direction = MovingDirections.p4Direction;
+		} else {
+			direction = MovingDirections.p4DirectionQ.poll();
+		}
+
+		MovingDirections.p4LastDirection = direction;
+
+		return direction;
+	}
+
+	public static int getP5DirectionAndPoolFromQueue() {
+		final int direction;
+		if (MovingDirections.p5DirectionQ.isEmpty()) {
+			direction = MovingDirections.p5Direction;
+		} else {
+			direction = MovingDirections.p5DirectionQ.poll();
+		}
+
+		MovingDirections.p5LastDirection = direction;
+
+		return direction;
+	}
+
+	public static int getP6DirectionAndPoolFromQueue() {
+		final int direction;
+		if (MovingDirections.p6DirectionQ.isEmpty()) {
+			direction = MovingDirections.p6Direction;
+		} else {
+			direction = MovingDirections.p6DirectionQ.poll();
+		}
+
+		MovingDirections.p6LastDirection = direction;
+
+		return direction;
+	}
+
+	public static int getP7DirectionAndPoolFromQueue() {
+		final int direction;
+		if (MovingDirections.p7DirectionQ.isEmpty()) {
+			direction = MovingDirections.p7Direction;
+		} else {
+			direction = MovingDirections.p7DirectionQ.poll();
+		}
+
+		MovingDirections.p7LastDirection = direction;
+
+		return direction;
+	}
+
+	public static int getP8DirectionAndPoolFromQueue() {
+		final int direction;
+		if (MovingDirections.p8DirectionQ.isEmpty()) {
+			direction = MovingDirections.p8Direction;
+		} else {
+			direction = MovingDirections.p8DirectionQ.poll();
+		}
+
+		MovingDirections.p8LastDirection = direction;
+
+		return direction;
+	}
+
+	public static void resetP1Direction() {
+		if (MovingDirections.p1DirectionQ == null) {
+			MovingDirections.p1DirectionQ = new LinkedList<>();
+		} else {
+			MovingDirections.p1DirectionQ.clear();
+		}
+		MovingDirections.p1Direction = MovingDirections.UP;
+		MovingDirections.p1LastDirection = MovingDirections.UP;
+	}
+
+	public static void resetP2Direction() {
+		if (MovingDirections.p2DirectionQ == null) {
+			MovingDirections.p2DirectionQ = new LinkedList<>();
+		} else {
+			MovingDirections.p2DirectionQ.clear();
+		}
+		MovingDirections.p2Direction = MovingDirections.UP;
+		MovingDirections.p2LastDirection = MovingDirections.UP;
+	}
+
+	public static void resetP3Direction() {
+		if (MovingDirections.p3DirectionQ == null) {
+			MovingDirections.p3DirectionQ = new LinkedList<>();
+		} else {
+			MovingDirections.p3DirectionQ.clear();
+		}
+		MovingDirections.p3Direction = MovingDirections.UP;
+		MovingDirections.p3LastDirection = MovingDirections.UP;
+	}
+
+	public static void resetP4Direction() {
+		if (MovingDirections.p4DirectionQ == null) {
+			MovingDirections.p4DirectionQ = new LinkedList<>();
+		} else {
+			MovingDirections.p4DirectionQ.clear();
+		}
+		MovingDirections.p4Direction = MovingDirections.UP;
+		MovingDirections.p4LastDirection = MovingDirections.UP;
+	}
+
+	public static void resetP5Direction() {
+		if (MovingDirections.p5DirectionQ == null) {
+			MovingDirections.p5DirectionQ = new LinkedList<>();
+		} else {
+			MovingDirections.p5DirectionQ.clear();
+		}
+		MovingDirections.p5Direction = MovingDirections.UP;
+		MovingDirections.p5LastDirection = MovingDirections.UP;
+	}
+
+	public static void resetP6Direction() {
+		if (MovingDirections.p6DirectionQ == null) {
+			MovingDirections.p6DirectionQ = new LinkedList<>();
+		} else {
+			MovingDirections.p6DirectionQ.clear();
+		}
+		MovingDirections.p6Direction = MovingDirections.UP;
+		MovingDirections.p6LastDirection = MovingDirections.UP;
+	}
+
+	public static void resetP7Direction() {
+		if (MovingDirections.p7DirectionQ == null) {
+			MovingDirections.p7DirectionQ = new LinkedList<>();
+		} else {
+			MovingDirections.p7DirectionQ.clear();
+		}
+		MovingDirections.p7Direction = MovingDirections.UP;
+		MovingDirections.p7LastDirection = MovingDirections.UP;
+	}
+
+	public static void resetP8Direction() {
+		if (MovingDirections.p8DirectionQ == null) {
+			MovingDirections.p8DirectionQ = new LinkedList<>();
+		} else {
+			MovingDirections.p8DirectionQ.clear();
+		}
+		MovingDirections.p8Direction = MovingDirections.UP;
+		MovingDirections.p8LastDirection = MovingDirections.UP;
 	}
 
 	public static Queue<Integer> getP1DirectionQ() {

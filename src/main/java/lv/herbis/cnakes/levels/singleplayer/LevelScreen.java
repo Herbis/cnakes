@@ -213,7 +213,7 @@ public class LevelScreen {
 	 * Starts the playable game.
 	 */
 	public void startGame() {
-		MovingDirections.resetDirection(MovingDirections.PLAYER_1);
+		MovingDirections.resetP1Direction();
 
 		this.gameStatus = new SinglePlayerGameStatus(Timer.minutesToMilliseconds(GAME_LENGTH)) {
 			@Override
@@ -249,7 +249,7 @@ public class LevelScreen {
 
 		/* Reset Target (bug) and Snake if the game has just been started. */
 		if (this.gameStatus.hasJustStarted()) {
-			MovingDirections.resetDirection(MovingDirections.PLAYER_1);
+			MovingDirections.resetP1Direction();
 			newSnake();
 			newTarget();
 		}
@@ -267,7 +267,7 @@ public class LevelScreen {
 				this.halfCellReached = true;
 			}
 			/* Calculate how much in the cell we should move. */ // 10(lastDelta) * 10(scale) / 40 (move_every_ms) = 2.5
-			final int direction = MovingDirections.getPreviousDirection(MovingDirections.PLAYER_1);
+			final int direction = MovingDirections.getP1LastDirection();
 			this.drawing.drawSnakeInMovement(this.head, this.body, direction,
 											 this.lastDelta * this.gameScale / this.gameSpeedMs, this.halfCellReached);
 		} else {
@@ -297,7 +297,7 @@ public class LevelScreen {
 	 */
 	private void updateSnakePosition() {
 		if (this.head != null) {
-			final int direction = MovingDirections.getDirection(MovingDirections.PLAYER_1);
+			final int direction = MovingDirections.getP1DirectionAndPoolFromQueue();
 
 			this.body.add(new PointCoordinates(this.head.getX(), this.head.getY()));
 
@@ -329,7 +329,7 @@ public class LevelScreen {
 			this.gameStatus.setInBonus(false);
 
 			/* Set opposite direction. */
-			MovingDirections.setDirection(MovingDirections.PLAYER_1, MovingDirections.LEFT);
+			MovingDirections.setP1DirectionAndPushToQueue(MovingDirections.LEFT);
 		}
 	}
 
@@ -342,7 +342,7 @@ public class LevelScreen {
 			this.gameStatus.setInBonus(false);
 
 			/* Set opposite direction. */
-			MovingDirections.setDirection(MovingDirections.PLAYER_1, MovingDirections.RIGHT);
+			MovingDirections.setP1DirectionAndPushToQueue(MovingDirections.RIGHT);
 		}
 	}
 
@@ -354,7 +354,7 @@ public class LevelScreen {
 			this.gameStatus.setInBonus(false);
 
 			/* Set opposite direction. */
-			MovingDirections.setDirection(MovingDirections.PLAYER_1, MovingDirections.DOWN);
+			MovingDirections.setP1DirectionAndPushToQueue(MovingDirections.DOWN);
 		}
 	}
 
@@ -366,7 +366,7 @@ public class LevelScreen {
 			this.gameStatus.setInBonus(false);
 
 			/* Set opposite direction. */
-			MovingDirections.setDirection(MovingDirections.PLAYER_1, MovingDirections.UP);
+			MovingDirections.setP1DirectionAndPushToQueue(MovingDirections.UP);
 		}
 	}
 

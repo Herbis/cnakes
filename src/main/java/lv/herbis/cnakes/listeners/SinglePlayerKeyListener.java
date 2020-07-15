@@ -83,7 +83,7 @@ public class SinglePlayerKeyListener extends GLFWKeyCallback {
 		/* We can only start moving left, if we're not going right.*/
 		if (MovingDirections.getP1Direction() != MovingDirections.RIGHT && MovingDirections
 				.getP1Direction() != MovingDirections.LEFT) {
-			MovingDirections.setDirection(MovingDirections.PLAYER_1, MovingDirections.LEFT);
+			MovingDirections.setP1DirectionAndPushToQueue(MovingDirections.LEFT);
 		}
 	}
 
@@ -91,7 +91,7 @@ public class SinglePlayerKeyListener extends GLFWKeyCallback {
 		/* We can only start moving right, if we're not going left.*/
 		if (MovingDirections.getP1Direction() != MovingDirections.LEFT && MovingDirections
 				.getP1Direction() != MovingDirections.RIGHT) {
-			MovingDirections.setDirection(MovingDirections.PLAYER_1, MovingDirections.RIGHT);
+			MovingDirections.setP1DirectionAndPushToQueue(MovingDirections.RIGHT);
 		}
 	}
 
@@ -99,7 +99,7 @@ public class SinglePlayerKeyListener extends GLFWKeyCallback {
 		/* We can only start moving up, if we're not going down.*/
 		if (MovingDirections.getP1Direction() != MovingDirections.DOWN && MovingDirections
 				.getP1Direction() != MovingDirections.UP) {
-			MovingDirections.setDirection(MovingDirections.PLAYER_1, MovingDirections.UP);
+			MovingDirections.setP1DirectionAndPushToQueue(MovingDirections.UP);
 		}
 	}
 
@@ -107,7 +107,7 @@ public class SinglePlayerKeyListener extends GLFWKeyCallback {
 		/* We can only start moving down, if we're not going up.*/
 		if (MovingDirections.getP1Direction() != MovingDirections.UP && MovingDirections
 				.getP1Direction() != MovingDirections.DOWN) {
-			MovingDirections.setDirection(MovingDirections.PLAYER_1, MovingDirections.DOWN);
+			MovingDirections.setP1DirectionAndPushToQueue(MovingDirections.DOWN);
 		}
 	}
 
