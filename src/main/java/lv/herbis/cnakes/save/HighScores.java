@@ -1,5 +1,6 @@
 package lv.herbis.cnakes.save;
 
+import lv.herbis.cnakes.tools.DataUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -53,7 +54,7 @@ public class HighScores implements Serializable {
 			if (bottomScore == null || bottomScore.getScore() < score.getScore()) {
 				/* Add new score and sort. */
 				addHighScoreToList(score, true);
-				removeHighScoresAboveTheLimit();
+				DataUtil.removeItemsAboveIndex(getHighScoreList(), getLimit() - 1);
 				return true;
 			} else {
 				LOG.debug("Score lower than the bottom score.");
@@ -139,14 +140,5 @@ public class HighScores implements Serializable {
 	public HighScore getBottomScore() {
 		final int highScoreSize = getHighScoreList().size();
 		return highScoreSize > 0 ? getHighScoreList().get(highScoreSize - 1) : null;
-	}
-
-	public void removeHighScoresAboveTheLimit() {
-		final List<HighScore> list = getHighScoreList();
-		final int listMaxIndex = list.size() - 1;
-		final int indexLimit = getLimit() - 1;
-		if (listMaxIndex > indexLimit + 1) {
-			list.subList(indexLimit + 1, listMaxIndex + 1).clear();
-		}
 	}
 }
