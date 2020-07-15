@@ -15,7 +15,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.swing.filechooser.FileSystemView;
-import java.io.File;
+
+import java.nio.file.Path;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,8 +28,8 @@ import static org.lwjgl.glfw.GLFW.glfwSetKeyCallback;
 public class SinglePlayerLevelScreen {
 	private static final Logger LOG = LogManager.getLogger(SinglePlayerLevelScreen.class);
 
-	private static final String SAVE_FILE_PATH = FileSystemView.getFileSystemView().getDefaultDirectory()
-			.getPath() + File.separator + "My Games" + File.separator + "cnakes" + File.separator;
+	private static final Path SAVE_FILE_PATH = Path.of(FileSystemView.getFileSystemView().getDefaultDirectory()
+			.getPath(), "My Games", "cnakes");
 	private static final String HIGHSCORE_FILE = "classic.hs";
 	private static final int GAME_LENGTH = 1;
 
@@ -150,7 +151,7 @@ public class SinglePlayerLevelScreen {
 	 */
 	public void loadHighScores() {
 		try {
-			this.highScores = (HighScores) SerializationUtil.deserialize(SAVE_FILE_PATH, HIGHSCORE_FILE);
+			this.highScores = (HighScores) SerializationUtil.deserialize(SAVE_FILE_PATH.toString(), HIGHSCORE_FILE);
 		} catch (final Exception e) {
 			this.highScores = new HighScores(10);
 		}
@@ -226,7 +227,7 @@ public class SinglePlayerLevelScreen {
 					LOG.debug("Adding to high-scores.");
 					try {
 						SerializationUtil
-								.serialize(SinglePlayerLevelScreen.this.highScores, SAVE_FILE_PATH, HIGHSCORE_FILE);
+								.serialize(SinglePlayerLevelScreen.this.highScores, SAVE_FILE_PATH.toString(), HIGHSCORE_FILE);
 					} catch (final Exception e) {
 						LOG.error("Could not save high-score file.", e);
 					}
