@@ -1,6 +1,8 @@
 package lv.herbis.cnakes.tools;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 /**
  * This class is a utility class for performing the serialization and
@@ -18,11 +20,10 @@ public class SerializationUtil {
 	 * deserialize to Object from given file. We use the general Object so as
 	 * that it can work for any Java Class.
 	 */
-	public static Object deserialize(final String path, final String fileName) throws IOException, ClassNotFoundException {
-		final File file = new File(path);
-		file.mkdirs();
-		final FileInputStream fis = new FileInputStream(path + fileName);
-		final BufferedInputStream bis = new BufferedInputStream(fis);
+	public static Object deserialize(final String path,
+									 final String fileName) throws IOException, ClassNotFoundException {
+		Files.createDirectories(Path.of(path));
+		final BufferedInputStream bis = new BufferedInputStream(Files.newInputStream(Path.of(path, fileName)));
 		try (final ObjectInputStream ois = new ObjectInputStream(bis)) {
 			return ois.readObject();
 		}
@@ -33,10 +34,8 @@ public class SerializationUtil {
 	 * serialize the given object and save it to given file
 	 */
 	public static void serialize(final Object obj, final String path, final String fileName) throws IOException {
-		final File file = new File(path);
-		file.mkdirs();
-		final FileOutputStream fos = new FileOutputStream(path + fileName);
-		final BufferedOutputStream bos = new BufferedOutputStream(fos);
+		Files.createDirectories(Path.of(path));
+		final BufferedOutputStream bos = new BufferedOutputStream(Files.newOutputStream(Path.of(path, fileName)));
 		try (final ObjectOutputStream oos = new ObjectOutputStream(bos)) {
 			oos.writeObject(obj);
 		}

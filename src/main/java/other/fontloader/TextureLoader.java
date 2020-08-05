@@ -11,12 +11,13 @@ import java.awt.*;
 import java.awt.color.ColorSpace;
 import java.awt.image.*;
 import java.io.BufferedInputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.IntBuffer;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Hashtable;
 
@@ -254,8 +255,7 @@ public class TextureLoader {
 				return ImageIO.read(new BufferedInputStream(inputStream));
 			}
 		} else {
-			final File file = new File(ref);
-			return ImageIO.read(file);
+			return ImageIO.read(Files.newInputStream(Path.of(ref)));
 		}
 	}
 
