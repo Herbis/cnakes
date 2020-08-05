@@ -22,24 +22,24 @@ public abstract class SinglePlayerGameStatus implements GameStatus {
 	@Override
 	public void start() {
 		reset();
-		beingPlayed = true;
-		justStarted = true;
-		gameTimer.start();
+		this.beingPlayed = true;
+		this.justStarted = true;
+		this.gameTimer.start();
 	}
 
 
 	public long getScore() {
-		return score;
+		return this.score;
 	}
 
 
 	public long getSnakeLength() {
-		return snakeLength;
+		return this.snakeLength;
 	}
 
 
 	public long getBugsCollected() {
-		return bugsCollected;
+		return this.bugsCollected;
 	}
 
 
@@ -49,12 +49,12 @@ public abstract class SinglePlayerGameStatus implements GameStatus {
 
 
 	public void collectBug() {
-		bugsCollected++;
-		snakeLength++;
+		this.bugsCollected++;
+		this.snakeLength++;
 	}
 
 	public void setSnakeLength(final long length) {
-		snakeLength = length;
+		this.snakeLength = length;
 	}
 
 	public void setScore(final long score) {
@@ -62,8 +62,8 @@ public abstract class SinglePlayerGameStatus implements GameStatus {
 	}
 
 
-	public long addScore(final long add) {
-		return score += add;
+	public void addScore(final long add) {
+		this.score += add;
 	}
 
 
@@ -71,26 +71,26 @@ public abstract class SinglePlayerGameStatus implements GameStatus {
 	public void pause() {
 		/* Only attempt to pause if the game is being played. */
 		if (isBeingPlayed()) {
-			paused = !paused;
+			this.paused = !this.paused;
 
-			gameTimer.pause();
+			this.gameTimer.pause();
 		}
 	}
 
 
 	@Override
 	public boolean isPaused() {
-		return paused;
+		return this.paused;
 	}
 
 	@Override
 	public boolean isBeingPlayed() {
-		return beingPlayed;
+		return this.beingPlayed;
 	}
 
 
 	public boolean inBonus() {
-		return inBonus;
+		return this.inBonus;
 	}
 
 
@@ -100,8 +100,8 @@ public abstract class SinglePlayerGameStatus implements GameStatus {
 
 	@Override
 	public void end() {
-		ended = true;
-		beingPlayed = false;
+		this.ended = true;
+		this.beingPlayed = false;
 		afterEnd();
 	}
 
@@ -110,11 +110,11 @@ public abstract class SinglePlayerGameStatus implements GameStatus {
 
 	@Override
 	public boolean hasEnded() {
-		if (ended) {
+		if (this.ended) {
 			return true;
 		} else {
-			if (gameTimer != null) {
-				if (gameTimer.getTimeLeft() <= 0) {
+			if (this.gameTimer != null) {
+				if (this.gameTimer.getTimeLeft() <= 0) {
 					end();
 					return true;
 				} else {
@@ -128,20 +128,20 @@ public abstract class SinglePlayerGameStatus implements GameStatus {
 
 	@Override
 	public void reset() {
-		score = 0;
-		snakeLength = 5;
-		bugsCollected = 0;
-		inBonus = false;
-		ended = false;
-		paused = false;
-		beingPlayed = false;
-		justStarted = false;
+		this.score = 0;
+		this.snakeLength = 5;
+		this.bugsCollected = 0;
+		this.inBonus = false;
+		this.ended = false;
+		this.paused = false;
+		this.beingPlayed = false;
+		this.justStarted = false;
 
-		gameTimer = new Timer(gameLength);
+		this.gameTimer = new Timer(this.gameLength);
 	}
 
 	public Timer getTimer() {
-		return gameTimer;
+		return this.gameTimer;
 	}
 
 	/**
@@ -149,8 +149,8 @@ public abstract class SinglePlayerGameStatus implements GameStatus {
 	 */
 	@Override
 	public boolean hasJustStarted() {
-		if (justStarted) {
-			justStarted = false;
+		if (this.justStarted) {
+			this.justStarted = false;
 			return true;
 		} else {
 			return false;
