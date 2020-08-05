@@ -7,7 +7,7 @@ addons:
   sonarcloud:
     organization: "herbis"
 script:
-  - mvn clean verify sonar:sonar -Pcoverage -Dsonar.projectKey=herbis_cnakes
+  - mvn clean verify sonar:sonar -Pcoverage -Dsonar.projectKey=herbis_cnakes -Dsonar.java.source=11
   - mvn package
 cache:
   directories:
