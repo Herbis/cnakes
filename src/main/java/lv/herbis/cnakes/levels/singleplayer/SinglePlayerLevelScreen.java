@@ -27,7 +27,7 @@ import static org.lwjgl.glfw.GLFW.glfwSetKeyCallback;
 public class SinglePlayerLevelScreen {
 	private static final Logger LOG = LogManager.getLogger(SinglePlayerLevelScreen.class);
 
-	private static final String HIGHSCORE_FILE = "classic.hs";
+	private static final String HIGH_SCORE_FILE = "classic.hs";
 	private static final int GAME_LENGTH = 1;
 
 	private HighScores highScores;
@@ -148,7 +148,7 @@ public class SinglePlayerLevelScreen {
 	 */
 	public void loadHighScores() {
 		try {
-			this.highScores = (HighScores) SerializationUtil.deserialize(SAVE_FILE_PATH.toString(), HIGHSCORE_FILE);
+			this.highScores = (HighScores) SerializationUtil.deserialize(SAVE_FILE_PATH, HIGH_SCORE_FILE);
 		} catch (final Exception e) {
 			this.highScores = new HighScores(10);
 		}
@@ -224,7 +224,7 @@ public class SinglePlayerLevelScreen {
 					LOG.debug("Adding to high-scores.");
 					try {
 						SerializationUtil
-								.serialize(SinglePlayerLevelScreen.this.highScores, SAVE_FILE_PATH.toString(), HIGHSCORE_FILE);
+								.serialize(SinglePlayerLevelScreen.this.highScores, SAVE_FILE_PATH, HIGH_SCORE_FILE);
 					} catch (final Exception e) {
 						LOG.error("Could not save high-score file.", e);
 					}

@@ -20,10 +20,10 @@ public class SerializationUtil {
 	 * deserialize to Object from given file. We use the general Object so as
 	 * that it can work for any Java Class.
 	 */
-	public static Object deserialize(final String path,
+	public static Object deserialize(final Path path,
 									 final String fileName) throws IOException, ClassNotFoundException {
-		Files.createDirectories(Path.of(path));
-		final BufferedInputStream bis = new BufferedInputStream(Files.newInputStream(Path.of(path, fileName)));
+		Files.createDirectories(path);
+		final BufferedInputStream bis = new BufferedInputStream(Files.newInputStream(Path.of(path.toString(), fileName)));
 		try (final ObjectInputStream ois = new ObjectInputStream(bis)) {
 			return ois.readObject();
 		}
@@ -33,9 +33,9 @@ public class SerializationUtil {
 	/**
 	 * serialize the given object and save it to given file
 	 */
-	public static void serialize(final Object obj, final String path, final String fileName) throws IOException {
-		Files.createDirectories(Path.of(path));
-		final BufferedOutputStream bos = new BufferedOutputStream(Files.newOutputStream(Path.of(path, fileName)));
+	public static void serialize(final Object obj, final Path path, final String fileName) throws IOException {
+		Files.createDirectories(path);
+		final BufferedOutputStream bos = new BufferedOutputStream(Files.newOutputStream(Path.of(path.toString(), fileName)));
 		try (final ObjectOutputStream oos = new ObjectOutputStream(bos)) {
 			oos.writeObject(obj);
 		}
