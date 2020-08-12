@@ -9,8 +9,13 @@ import static org.lwjgl.glfw.GLFW.glfwSetWindowShouldClose;
 
 public class ExitGameMenuItem implements MenuItem {
 	private static final Logger LOG = LogManager.getLogger(ExitGameMenuItem.class);
-
 	private static final String NAME = "EXIT";
+
+	private final long windowId;
+
+	public ExitGameMenuItem(final long windowId) {
+		this.windowId = windowId;
+	}
 
 	@Override
 	public Color getColor() {
@@ -24,8 +29,8 @@ public class ExitGameMenuItem implements MenuItem {
 
 	@Override
 	public boolean enter() {
-		LOG.debug("Exiting the game.");
-		glfwSetWindowShouldClose(0, true);
+		LOG.debug("Exiting the game. Window {}", this.windowId);
+		glfwSetWindowShouldClose(this.windowId, true);
 		return true;
 	}
 }

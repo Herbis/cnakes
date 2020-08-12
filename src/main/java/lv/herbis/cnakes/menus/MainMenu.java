@@ -186,9 +186,8 @@ public class MainMenu implements Runnable {
 			try {
 				glfwPollEvents();
 			} catch (final NullPointerException e) {
-				LOG.warn("Exiting due to NullPointerException in Poll Events.");
+				LOG.warn("NullPointerException in Poll Events.");
 				LOG.debug(LOG_STACKTRACE, e);
-				System.exit(0);
 			}
 		}
 	}

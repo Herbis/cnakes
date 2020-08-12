@@ -31,7 +31,7 @@ public class MenuNavigation {
 						  final SoundManager soundManager) {
 		this.soundManager = soundManager;
 		final MenuItem startGameMenuItem = new StartGameMenuItem(configuration, this, windowId);
-		final MenuItem exitGameMenuItem = new ExitGameMenuItem();
+		final MenuItem exitGameMenuItem = new ExitGameMenuItem(windowId);
 		this.activeItem = startGameMenuItem;
 		this.menuItems = new MenuItem[]{startGameMenuItem, exitGameMenuItem};
 
@@ -48,7 +48,7 @@ public class MenuNavigation {
 			this.soundManager.addSoundSource(SoundConstants.MenuSounds.NAV_UP_DOWN_SOURCE, soundSource);
 
 		} catch (final Exception e) {
-			LOG.error("Sound  could not be created. Reason: {}", e.getMessage());
+			LOG.error("Sound could not be created. Reason: {}", e.getMessage());
 			LOG.debug(LOG_STACKTRACE, e);
 		}
 	}

@@ -57,7 +57,7 @@ public class SoundManager {
 		return this.soundSourceMap.get(name);
 	}
 
-	public void playSoundSourceIfNotAlreadyPlaying(final String name) {
+	public void playSoundSourceIfNotPlaying(final String name) {
 		final SoundSource soundSource = this.soundSourceMap.get(name);
 		if (soundSource != null && !soundSource.isPlaying()) {
 			soundSource.play();
