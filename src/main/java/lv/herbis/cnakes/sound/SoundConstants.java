@@ -8,6 +8,7 @@ public class SoundConstants {
 
 
 	public static class MenuSounds {
+
 		private MenuSounds() {
 			// Static access only
 		}
@@ -20,11 +21,19 @@ public class SoundConstants {
 	}
 
 	public static class GameplaySounds {
+
+		private GameplaySounds() {
+			// Static access only
+		}
+
 		public static final String COLLECT_BUG_SOURCE = "collect_bug";
 		public static final String COLLECT_BUG_PATH = "sounds/collect_bug.ogg";
 
 		public static final String BAD_ACTION_SOURCE = "bad_action";
 		public static final String BAD_ACTION_PATH = "sounds/bad_action.ogg";
+
+		public static final String EAT_TAIL_SOURCE = "eat_tail";
+		public static final String EAT_TAIL_PATH = "sounds/eat_tail.ogg";
 
 	}
 }

@@ -11,7 +11,7 @@ public abstract class SinglePlayerGameStatus implements GameStatus {
 	private long score = 0;
 	private long snakeLength = 5;
 	private long bugsCollected = 0;
-	private boolean inBonus = false;
+	private boolean inBonus = true;
 	private Timer gameTimer;
 	private long gameLength = 0;
 
@@ -131,7 +131,7 @@ public abstract class SinglePlayerGameStatus implements GameStatus {
 		this.score = 0;
 		this.snakeLength = 5;
 		this.bugsCollected = 0;
-		this.inBonus = false;
+		this.inBonus = true;
 		this.ended = false;
 		this.paused = false;
 		this.beingPlayed = false;

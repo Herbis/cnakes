@@ -115,6 +115,7 @@ public class SinglePlayerLevelScreen {
 				int bonus = 1;
 				if (this.gameStatus.inBonus()) {
 					bonus = GameRules.POINTS_PER_POINT;
+					this.soundManager.playSoundSource(SoundConstants.GameplaySounds.EAT_TAIL_SOURCE);
 				}
 
 				for (int till = index; till >= 0; till--) {
@@ -123,7 +124,6 @@ public class SinglePlayerLevelScreen {
 				}
 
 				this.gameStatus.setSnakeLength(this.body.size());
-				// TODO play sound
 			}
 		}
 	}
@@ -149,6 +149,8 @@ public class SinglePlayerLevelScreen {
 	private void initSounds() {
 		this.soundManager.createSound(SoundConstants.GameplaySounds.COLLECT_BUG_SOURCE,
 									  SoundConstants.GameplaySounds.COLLECT_BUG_PATH);
+		this.soundManager.createSound(SoundConstants.GameplaySounds.EAT_TAIL_SOURCE,
+									  SoundConstants.GameplaySounds.EAT_TAIL_PATH);
 		this.soundManager.createSound(SoundConstants.GameplaySounds.BAD_ACTION_SOURCE,
 									  SoundConstants.GameplaySounds.BAD_ACTION_PATH);
 	}
