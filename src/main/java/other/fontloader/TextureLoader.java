@@ -61,19 +61,12 @@ public class TextureLoader {
 	 * Create a new texture loader based on the game panel
 	 */
 	public TextureLoader() {
-		glAlphaColorModel = new ComponentColorModel(ColorSpace.getInstance(ColorSpace.CS_sRGB),
-				new int[]{8, 8, 8, 8},
-				true,
-				false,
-				TRANSLUCENT,
-				DataBuffer.TYPE_BYTE);
+		this.glAlphaColorModel = new ComponentColorModel(ColorSpace.getInstance(ColorSpace.CS_sRGB),
+														 new int[]{8, 8, 8, 8}, true, false, TRANSLUCENT,
+														 DataBuffer.TYPE_BYTE);
 
-		glColorModel = new ComponentColorModel(ColorSpace.getInstance(ColorSpace.CS_sRGB),
-				new int[]{8, 8, 8, 0},
-				false,
-				false,
-				OPAQUE,
-				DataBuffer.TYPE_BYTE);
+		this.glColorModel = new ComponentColorModel(ColorSpace.getInstance(ColorSpace.CS_sRGB), new int[]{8, 8, 8, 0},
+													false, false, OPAQUE, DataBuffer.TYPE_BYTE);
 	}
 
 	/**
@@ -86,7 +79,9 @@ public class TextureLoader {
 		try {
 			GL11.glGenTextures(tmp);
 		} catch (final NullPointerException e) {
-			LOG.fatal("Your system is not capable of running this game.\nPlease make sure your video drivers are current.", e);
+			LOG.fatal(
+					"Your system is not capable of running this game.\nPlease make sure your video drivers are current.",
+					e);
 			System.exit(0);
 		}
 		return tmp.get(0);
@@ -100,19 +95,18 @@ public class TextureLoader {
 	 * @throws IOException Indicates a failure to access the resource
 	 */
 	public Texture getTexture(final String resourceName, final boolean injar) throws IOException {
-		Texture tex = table.get(resourceName);
+		Texture tex = this.table.get(resourceName);
 
 		if (tex != null) {
 			return tex;
 		}
 
-		tex = getTexture(resourceName, injar,
-				TARGET, // target
-				DST_PIXEL_FORMAT,     // dst pixel format
-				MIN_FILTER, // min filter (unused)
-				MAG_FILTER);
+		tex = getTexture(resourceName, injar, TARGET, // target
+						 DST_PIXEL_FORMAT,     // dst pixel format
+						 MIN_FILTER, // min filter (unused)
+						 MAG_FILTER);
 
-		table.put(resourceName, tex);
+		this.table.put(resourceName, tex);
 
 		return tex;
 	}
@@ -129,11 +123,8 @@ public class TextureLoader {
 	 * @return The loaded texture
 	 * @throws IOException Indicates a failure to access the resource
 	 */
-	public Texture getTexture(final String resourceName, final boolean injar,
-							  final int target,
-							  final int dstPixelFormat,
-							  final int minFilter,
-							  final int magFilter) throws IOException {
+	public Texture getTexture(final String resourceName, final boolean injar, final int target,
+							  final int dstPixelFormat, final int minFilter, final int magFilter) throws IOException {
 
 		// create the texture ID for this texture
 		final int textureID = createTextureID();
@@ -165,7 +156,7 @@ public class TextureLoader {
 		}
 
 		gluBuild2DMipmaps(target, dstPixelFormat, get2Fold(bufferedImage.getWidth()),
-				get2Fold(bufferedImage.getHeight()), srcPixelFormat, GL11.GL_UNSIGNED_BYTE, textureBuffer);
+						  get2Fold(bufferedImage.getHeight()), srcPixelFormat, GL11.GL_UNSIGNED_BYTE, textureBuffer);
 
 		return texture;
 	}
@@ -215,10 +206,10 @@ public class TextureLoader {
 		// for a texture
 		if (bufferedImage.getColorModel().hasAlpha()) {
 			raster = Raster.createInterleavedRaster(DataBuffer.TYPE_BYTE, texWidth, texHeight, 4, null);
-			texImage = new BufferedImage(glAlphaColorModel, raster, false, new Hashtable<>());
+			texImage = new BufferedImage(this.glAlphaColorModel, raster, false, new Hashtable<>());
 		} else {
 			raster = Raster.createInterleavedRaster(DataBuffer.TYPE_BYTE, texWidth, texHeight, 3, null);
-			texImage = new BufferedImage(glColorModel, raster, false, new Hashtable<>());
+			texImage = new BufferedImage(this.glColorModel, raster, false, new Hashtable<>());
 		}
 
 		// copy the source image into the produced image
@@ -285,19 +276,18 @@ public class TextureLoader {
 	 * @return The loaded texture
 	 */
 	public Texture getTexture(final String resourceName, final BufferedImage resourceImage) {
-		Texture tex = table.get(resourceName);
+		Texture tex = this.table.get(resourceName);
 
 		if (tex != null) {
 			return tex;
 		}
 
-		tex = getTexture(resourceImage,
-				TARGET, // target
-				DST_PIXEL_FORMAT,     // dst pixel format
-				MIN_FILTER, // min filter (unused)
-				MAG_FILTER);
+		tex = getTexture(resourceImage, TARGET, // target
+						 DST_PIXEL_FORMAT,     // dst pixel format
+						 MIN_FILTER, // min filter (unused)
+						 MAG_FILTER);
 
-		table.put(resourceName, tex);
+		this.table.put(resourceName, tex);
 
 		return tex;
 	}
@@ -343,7 +333,7 @@ public class TextureLoader {
 		}
 
 		gluBuild2DMipmaps(target, dstPixelFormat, get2Fold(bufferedImage.getWidth()),
-				get2Fold(bufferedImage.getHeight()), srcPixelFormat, GL11.GL_UNSIGNED_BYTE, textureBuffer);
+						  get2Fold(bufferedImage.getHeight()), srcPixelFormat, GL11.GL_UNSIGNED_BYTE, textureBuffer);
 
 		return texture;
 	}
@@ -365,19 +355,18 @@ public class TextureLoader {
 	 * @return The loaded texture
 	 */
 	public Texture getNMMTexture(final String resourceName, final BufferedImage resourceImage) {
-		Texture tex = table.get(resourceName);
+		Texture tex = this.table.get(resourceName);
 
 		if (tex != null) {
 			return tex;
 		}
 
-		tex = getNMMTexture(resourceImage,
-				TARGET, // target
-				DST_PIXEL_FORMAT,     // dst pixel format
-				GL11.GL_NEAREST, // min filter (unused)
-				GL11.GL_LINEAR);
+		tex = getNMMTexture(resourceImage, TARGET, // target
+							DST_PIXEL_FORMAT,     // dst pixel format
+							GL11.GL_NEAREST, // min filter (unused)
+							GL11.GL_LINEAR);
 
-		table.put(resourceName, tex);
+		this.table.put(resourceName, tex);
 
 		return tex;
 	}
@@ -422,15 +411,8 @@ public class TextureLoader {
 		}
 
 		// produce a texture from the byte buffer
-		GL11.glTexImage2D(target,
-				0,
-				dstPixelFormat,
-				get2Fold(bufferedImage.getWidth()),
-				get2Fold(bufferedImage.getHeight()),
-				0,
-				srcPixelFormat,
-				GL11.GL_UNSIGNED_BYTE,
-				textureBuffer);
+		GL11.glTexImage2D(target, 0, dstPixelFormat, get2Fold(bufferedImage.getWidth()),
+						  get2Fold(bufferedImage.getHeight()), 0, srcPixelFormat, GL11.GL_UNSIGNED_BYTE, textureBuffer);
 
 		return texture;
 	}
@@ -600,8 +582,8 @@ public class TextureLoader {
 	}
 
 	public static int gluScaleImage(final int format, final int widthIn, final int heightIn, final int typeIn,
-									final ByteBuffer dataIn, final int widthOut, final int heightOut,
-									final int typeOut, final ByteBuffer dataOut) {
+									final ByteBuffer dataIn, final int widthOut, final int heightOut, final int typeOut,
+									final ByteBuffer dataOut) {
 
 		final int components = compPerPix(format);
 		if (components == -1) {
@@ -611,31 +593,62 @@ public class TextureLoader {
 		// Get glPixelStore state
 		final PixelStoreState pss = new PixelStoreState();
 
-		//Unpack the pixel data and convert to floating point
-		int rowlen;
-		if (pss.getUnpackRowLength() > 0) {
-			rowlen = pss.getUnpackRowLength();
-		} else {
-			rowlen = widthIn;
-		}
-
 		// Determine bytes per input type
 		final int sizeIn = determineBytesPerInputType(typeIn);
-		if (sizeIn == 0)
-		{
+		final int sizeOut = determineBytesPerInputType(typeOut);
+		if (sizeIn == 0 || sizeOut == 0) {
 			return GL_INVALID_ENUM;
 		}
 
-		int rowStride;
-
-		if (sizeIn >= pss.getUnpackAlignment()) {
-			rowStride = components * rowlen;
-		} else {
-			rowStride = pss.getUnpackAlignment() / sizeIn * ceil(components * rowlen * sizeIn, pss.getUnpackAlignment());
+		// temp image data
+		final float[] tempIn;
+		try {
+			tempIn = gluGenerateTempInputImageData(dataIn, typeIn, sizeIn, widthIn, heightIn, components, pss);
+		} catch (final IllegalArgumentException e) {
+			return GL_INVALID_ENUM;
 		}
 
-		// temp image data
+
+		final float[] tempOut = gluGenerateTempOutputImageData(tempIn, widthIn, heightIn, widthOut, heightOut,
+															   components);
+		gluConvertTempToOutputImageData(dataOut, tempOut, typeOut, sizeOut, widthOut, heightOut, components, pss);
+
+		return 0;
+	}
+
+	protected static int determineBytesPerInputType(final int type) {
+		switch (type) {
+			case GL_UNSIGNED_BYTE:
+				return 1;
+			case GL_FLOAT:
+				return 4;
+			default:
+				return 0;
+		}
+	}
+
+	protected static float[] gluGenerateTempInputImageData(final ByteBuffer dataIn, final int typeIn, final int sizeIn,
+														   final int widthIn, final int heightIn, final int components,
+														   final PixelStoreState pss) {
+
 		final float[] tempIn = new float[widthIn * heightIn * components];
+
+		//Unpack the pixel data and convert to floating point
+		final int rowLen;
+		if (pss.getUnpackRowLength() > 0) {
+			rowLen = pss.getUnpackRowLength();
+		} else {
+			rowLen = widthIn;
+		}
+
+
+		final int rowStride;
+		if (sizeIn >= pss.getUnpackAlignment()) {
+			rowStride = components * rowLen;
+		} else {
+			rowStride = pss.getUnpackAlignment() / sizeIn * ceil(components * rowLen * sizeIn,
+																 pss.getUnpackAlignment());
+		}
 
 		dataIn.rewind();
 
@@ -659,11 +672,17 @@ public class TextureLoader {
 			}
 		}
 
+		return tempIn;
+	}
+
+	protected static float[] gluGenerateTempOutputImageData(final float[] tempIn, final int widthIn, final int heightIn,
+															final int widthOut, final int heightOut,
+															final int components) {
+		final float[] c = new float[components];
+
 		// Do scaling
 		final float sx = (float) widthIn / widthOut;
 		final float sy = (float) heightIn / heightOut;
-
-		final float[] c = new float[components];
 
 		// temp image data
 		final float[] tempOut = new float[widthOut * heightOut * components];
@@ -686,7 +705,7 @@ public class TextureLoader {
 				for (int ix0 = x0; ix0 < x1; ix0++) {
 					for (int iy0 = y0; iy0 < y1; iy0++) {
 
-						int src = (iy0 * widthIn + ix0) * components;
+						final int src = (iy0 * widthIn + ix0) * components;
 
 						for (int ic = 0; ic < components; ic++) {
 							c[ic] += tempIn[src + ic];
@@ -701,7 +720,7 @@ public class TextureLoader {
 
 				if (readPix == 0) {
 					// Image is sized up, caused by non power of two texture as input
-					int src = (y0 * widthIn + x0) * components;
+					final int src = (y0 * widthIn + x0) * components;
 					for (int ic = 0; ic < components; ic++) {
 						tempOut[dst++] = tempIn[src + ic];
 					}
@@ -714,28 +733,30 @@ public class TextureLoader {
 			}
 		}
 
+		return tempOut;
+	}
+
+	protected static void gluConvertTempToOutputImageData(final ByteBuffer dataOut, final float[] tempOut,
+														  final int typeOut, final int sizeOut, final int widthOut,
+														  final int heightOut, final int components,
+														  final PixelStoreState pss) {
 
 		// Convert temp output
+		final int rowLen;
 		if (pss.getPackRowLength() > 0) {
-			rowlen = pss.getPackRowLength();
+			rowLen = pss.getPackRowLength();
 		} else {
-			rowlen = widthOut;
+			rowLen = widthOut;
 		}
 
-		// Determine bytes per output type
-		final int sizeout = determineBytesPerInputType(typeOut);
-		if (sizeout == 0)
-		{
-			return GL_INVALID_ENUM;
-		}
-
-		if (sizeout >= pss.getPackAlignment()) {
-			rowStride = components * rowlen;
+		final int rowStride;
+		if (sizeOut >= pss.getPackAlignment()) {
+			rowStride = components * rowLen;
 		} else {
-			rowStride = pss.getPackAlignment() / sizeout * ceil(components * rowlen * sizeout, pss.getPackAlignment());
+			rowStride = pss.getPackAlignment() / sizeOut * ceil(components * rowLen * sizeOut, pss.getPackAlignment());
 		}
 
-		q = 0;
+		int q = 0;
 		if (typeOut == GL_UNSIGNED_BYTE) {
 			for (int i = 0; i < heightOut; i++) {
 				int ubptr = i * rowStride + pss.getPackSkipRows() * rowStride + pss.getPackSkipPixels() * components;
@@ -754,20 +775,6 @@ public class TextureLoader {
 					fptr += 4;
 				}
 			}
-		}
-
-		return 0;
-	}
-
-	protected static int determineBytesPerInputType(final int type)
-	{
-		switch (type) {
-			case GL_UNSIGNED_BYTE:
-				return 1;
-			case GL_FLOAT:
-				return 4;
-			default:
-				return 0;
 		}
 	}
 
