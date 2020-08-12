@@ -123,7 +123,7 @@ public class SinglePlayerLevelScreen {
 				}
 
 				this.gameStatus.setSnakeLength(this.body.size());
-
+				// TODO play sound
 			}
 		}
 	}
@@ -338,11 +338,12 @@ public class SinglePlayerLevelScreen {
 		if (this.head.getX() + 1 < this.drawing.getPlayAreaXEndPoint()) {
 			processTailHits(this.head.getX() + 1, this.head.getY());
 			this.head = new PointCoordinates(this.head.getX() + 1, this.head.getY());
-		} else {
+		} else { // Snake hit the wall
 			this.gameStatus.setInBonus(false);
 
 			/* Set opposite direction. */
 			MovingDirections.setP1DirectionAndPushToQueue(MovingDirections.LEFT);
+			this.soundManager.playSoundSource(SoundConstants.GameplaySounds.BAD_ACTION_SOURCE);
 		}
 	}
 
@@ -350,11 +351,12 @@ public class SinglePlayerLevelScreen {
 		if (this.head.getX() - 1 >= 0) {
 			processTailHits(this.head.getX() - 1, this.head.getY());
 			this.head = new PointCoordinates(this.head.getX() - 1, this.head.getY());
-		} else {
+		} else { // Snake hit the wall
 			this.gameStatus.setInBonus(false);
 
 			/* Set opposite direction. */
 			MovingDirections.setP1DirectionAndPushToQueue(MovingDirections.RIGHT);
+			this.soundManager.playSoundSource(SoundConstants.GameplaySounds.BAD_ACTION_SOURCE);
 		}
 	}
 
@@ -362,11 +364,12 @@ public class SinglePlayerLevelScreen {
 		if (this.head.getY() + 1 < (this.drawing.getPlayAreaYEndPoint())) {
 			processTailHits(this.head.getX(), this.head.getY() + 1);
 			this.head = new PointCoordinates(this.head.getX(), this.head.getY() + 1);
-		} else {
+		} else { // Snake hit the wall
 			this.gameStatus.setInBonus(false);
 
 			/* Set opposite direction. */
 			MovingDirections.setP1DirectionAndPushToQueue(MovingDirections.DOWN);
+			this.soundManager.playSoundSource(SoundConstants.GameplaySounds.BAD_ACTION_SOURCE);
 		}
 	}
 
@@ -374,11 +377,12 @@ public class SinglePlayerLevelScreen {
 		if (this.head.getY() - 1 >= 0) {
 			processTailHits(this.head.getX(), this.head.getY() - 1);
 			this.head = new PointCoordinates(this.head.getX(), this.head.getY() - 1);
-		} else {
+		} else { // Snake hit the wall
 			this.gameStatus.setInBonus(false);
 
 			/* Set opposite direction. */
 			MovingDirections.setP1DirectionAndPushToQueue(MovingDirections.UP);
+			this.soundManager.playSoundSource(SoundConstants.GameplaySounds.BAD_ACTION_SOURCE);
 		}
 	}
 
