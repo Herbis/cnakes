@@ -599,7 +599,7 @@ public class TextureLoader {
 		return n * m;
 	}
 
-	public static int gluScaleImage(final int format, final int widthIn, final int heightIn, final int typein,
+	public static int gluScaleImage(final int format, final int widthIn, final int heightIn, final int typeIn,
 									final ByteBuffer dataIn, final int widthOut, final int heightOut,
 									final int typeOut, final ByteBuffer dataOut) {
 
@@ -620,53 +620,43 @@ public class TextureLoader {
 		}
 
 		// Determine bytes per input type
-		final int sizein;
-		switch (typein) {
-			case GL_UNSIGNED_BYTE:
-				sizein = 1;
-				break;
-			case GL_FLOAT:
-				sizein = 4;
-				break;
-			default:
-				return GL_INVALID_ENUM;
+		final int sizeIn = determineBytesPerInputType(typeIn);
+		if (sizeIn == 0)
+		{
+			return GL_INVALID_ENUM;
 		}
 
-		int rowstride;
+		int rowStride;
 
-		if (sizein >= pss.getUnpackAlignment()) {
-			rowstride = components * rowlen;
+		if (sizeIn >= pss.getUnpackAlignment()) {
+			rowStride = components * rowlen;
 		} else {
-			rowstride = pss.getUnpackAlignment() / sizein * ceil(components * rowlen * sizein, pss.getUnpackAlignment());
+			rowStride = pss.getUnpackAlignment() / sizeIn * ceil(components * rowlen * sizeIn, pss.getUnpackAlignment());
 		}
 
 		// temp image data
 		final float[] tempIn = new float[widthIn * heightIn * components];
 
-		switch (typein) {
-			case GL_UNSIGNED_BYTE:
-				int k = 0;
-				dataIn.rewind();
-				for (int i = 0; i < heightIn; i++) {
-					int ubptr = i * rowstride + pss.getUnpackSkipRows() * rowstride + pss.getUnpackSkipPixels() * components;
-					for (int j = 0; j < widthIn * components; j++) {
-						tempIn[k++] = dataIn.get(ubptr++) & 0xff;
-					}
+		dataIn.rewind();
+
+		int q = 0;
+		if (typeIn == GL_UNSIGNED_BYTE) {
+			for (int i = 0; i < heightIn; i++) {
+				int ubptr = i * rowStride + pss.getUnpackSkipRows() * rowStride + pss
+						.getUnpackSkipPixels() * components;
+				for (int j = 0; j < widthIn * components; j++) {
+					tempIn[q++] = dataIn.get(ubptr++) & 0xff;
 				}
-				break;
-			case GL_FLOAT:
-				int l = 0;
-				dataIn.rewind();
-				for (int i = 0; i < heightIn; i++) {
-					int fptr = 4 * (i * rowstride + pss.getUnpackSkipRows() * rowstride + pss.getUnpackSkipPixels() * components);
-					for (int j = 0; j < widthIn * components; j++) {
-						tempIn[l++] = dataIn.getFloat(fptr);
-						fptr += 4;
-					}
+			}
+		} else {
+			for (int i = 0; i < heightIn; i++) {
+				int fptr = sizeIn * (i * rowStride + pss.getUnpackSkipRows() * rowStride + pss
+						.getUnpackSkipPixels() * components);
+				for (int j = 0; j < widthIn * components; j++) {
+					tempIn[q++] = dataIn.getFloat(fptr);
+					fptr += sizeIn;
 				}
-				break;
-			default:
-				return 100900; //GLU_INVALID_ENUM
+			}
 		}
 
 		// Do scaling
@@ -733,51 +723,52 @@ public class TextureLoader {
 		}
 
 		// Determine bytes per output type
-		final int sizeout;
-		switch (typeOut) {
-			case GL_UNSIGNED_BYTE:
-				sizeout = 1;
-				break;
-			case GL_FLOAT:
-				sizeout = 4;
-				break;
-			default:
-				return GL_INVALID_ENUM;
+		final int sizeout = determineBytesPerInputType(typeOut);
+		if (sizeout == 0)
+		{
+			return GL_INVALID_ENUM;
 		}
 
 		if (sizeout >= pss.getPackAlignment()) {
-			rowstride = components * rowlen;
+			rowStride = components * rowlen;
 		} else {
-			rowstride = pss.getPackAlignment() / sizeout * ceil(components * rowlen * sizeout, pss.getPackAlignment());
+			rowStride = pss.getPackAlignment() / sizeout * ceil(components * rowlen * sizeout, pss.getPackAlignment());
 		}
 
-		switch (typeOut) {
-			case GL_UNSIGNED_BYTE:
-				int k = 0;
-				for (int i = 0; i < heightOut; i++) {
-					int ubptr = i * rowstride + pss.getPackSkipRows() * rowstride + pss.getPackSkipPixels() * components;
+		q = 0;
+		if (typeOut == GL_UNSIGNED_BYTE) {
+			for (int i = 0; i < heightOut; i++) {
+				int ubptr = i * rowStride + pss.getPackSkipRows() * rowStride + pss.getPackSkipPixels() * components;
 
-					for (int j = 0; j < widthOut * components; j++) {
-						dataOut.put(ubptr++, (byte) tempOut[k++]);
-					}
+				for (int j = 0; j < widthOut * components; j++) {
+					dataOut.put(ubptr++, (byte) tempOut[q++]);
 				}
-				break;
-			case GL_FLOAT:
-				int l = 0;
-				for (int i = 0; i < heightOut; i++) {
-					int fptr = 4 * (i * rowstride + pss.getPackSkipRows() * rowstride + pss.getPackSkipPixels() * components);
+			}
+		} else {
+			for (int i = 0; i < heightOut; i++) {
+				int fptr = 4 * (i * rowStride + pss.getPackSkipRows() * rowStride + pss
+						.getPackSkipPixels() * components);
 
-					for (int j = 0; j < widthOut * components; j++) {
-						dataOut.putFloat(fptr, tempOut[l++]);
-						fptr += 4;
-					}
+				for (int j = 0; j < widthOut * components; j++) {
+					dataOut.putFloat(fptr, tempOut[q++]);
+					fptr += 4;
 				}
-				break;
-			default:
-				return 100900; //GLU_INVALID_ENUM
+			}
 		}
 
 		return 0;
+	}
+
+	protected static int determineBytesPerInputType(final int type)
+	{
+		switch (type) {
+			case GL_UNSIGNED_BYTE:
+				return 1;
+			case GL_FLOAT:
+				return 4;
+			default:
+				return 0;
+		}
 	}
 
 	/**
