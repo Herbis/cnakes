@@ -4,15 +4,10 @@ import lv.herbis.cnakes.configuration.CnakesConfiguration;
 import lv.herbis.cnakes.menus.ExitGameMenuItem;
 import lv.herbis.cnakes.menus.MenuItem;
 import lv.herbis.cnakes.menus.StartGameMenuItem;
-import lv.herbis.cnakes.sound.SoundBuffer;
 import lv.herbis.cnakes.sound.SoundConstants;
 import lv.herbis.cnakes.sound.SoundManager;
-import lv.herbis.cnakes.sound.SoundSource;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.joml.Vector3f;
-
-import static lv.herbis.cnakes.constants.CnakesConstants.LOG_STACKTRACE;
 
 
 public class MenuNavigation {
@@ -30,7 +25,7 @@ public class MenuNavigation {
 	public MenuNavigation(final CnakesConfiguration configuration, final long windowId,
 						  final SoundManager soundManager) {
 		this.soundManager = soundManager;
-		final MenuItem startGameMenuItem = new StartGameMenuItem(configuration, this, windowId);
+		final MenuItem startGameMenuItem = new StartGameMenuItem(configuration, this, windowId, this.soundManager);
 		final MenuItem exitGameMenuItem = new ExitGameMenuItem(windowId);
 		this.activeItem = startGameMenuItem;
 		this.menuItems = new MenuItem[]{startGameMenuItem, exitGameMenuItem};
@@ -39,26 +34,10 @@ public class MenuNavigation {
 	}
 
 	private void initSounds() {
-		try {
-			final SoundBuffer navMoveSound = new SoundBuffer(SoundConstants.MenuSounds.NAV_UP_DOWN_PATH);
-			final SoundBuffer navEnterSound = new SoundBuffer(SoundConstants.MenuSounds.NAV_ENTER_PATH);
-
-			final SoundSource navMoveSoundSource = new SoundSource(false, false);
-			navMoveSoundSource.setPosition(new Vector3f(0, 0, 0));
-			navMoveSoundSource.setBuffer(navMoveSound.getBufferId());
-
-			final SoundSource navEnterSoundSource = new SoundSource(false, false);
-			navEnterSoundSource.setPosition(new Vector3f(0, 0, 0));
-			navEnterSoundSource.setBuffer(navEnterSound.getBufferId());
-
-			this.soundManager.addSoundBuffer(navEnterSound);
-			this.soundManager.addSoundSource(SoundConstants.MenuSounds.NAV_UP_DOWN_SOURCE, navMoveSoundSource);
-			this.soundManager.addSoundSource(SoundConstants.MenuSounds.NAV_ENTER_SOURCE, navEnterSoundSource);
-
-		} catch (final Exception e) {
-			LOG.error("Sound could not be created. Reason: {}", e.getMessage());
-			LOG.debug(LOG_STACKTRACE, e);
-		}
+		this.soundManager
+				.createSound(SoundConstants.MenuSounds.NAV_UP_DOWN_SOURCE, SoundConstants.MenuSounds.NAV_UP_DOWN_PATH);
+		this.soundManager
+				.createSound(SoundConstants.MenuSounds.NAV_ENTER_SOURCE, SoundConstants.MenuSounds.NAV_ENTER_PATH);
 	}
 
 	public void enterSelectedItem() {

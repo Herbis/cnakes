@@ -8,12 +8,13 @@ import lv.herbis.cnakes.listeners.SinglePlayerKeyListener;
 import lv.herbis.cnakes.movement.MovingDirections;
 import lv.herbis.cnakes.save.HighScore;
 import lv.herbis.cnakes.save.HighScores;
+import lv.herbis.cnakes.sound.SoundConstants;
+import lv.herbis.cnakes.sound.SoundManager;
 import lv.herbis.cnakes.staticaccess.GameRules;
 import lv.herbis.cnakes.status.SinglePlayerGameStatus;
 import lv.herbis.cnakes.tools.SerializationUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
 
 import java.security.SecureRandom;
 import java.util.ArrayList;
@@ -30,16 +31,16 @@ public class SinglePlayerLevelScreen {
 	private static final String HIGH_SCORE_FILE = "classic.hs";
 	private static final int GAME_LENGTH = 1;
 
-	private HighScores highScores;
 	private final CnakesConfiguration configuration;
-
-
 	private final long windowId;
+	private final SoundManager soundManager;
+
+	private HighScores highScores;
 
 	private int gameScale;
 	private int gameSpeedMs;
 
-	boolean halfCellReached = true;
+	private boolean halfCellReached = true;
 
 	private final Drawing drawing;
 	private SinglePlayerGameStatus gameStatus;
@@ -65,10 +66,12 @@ public class SinglePlayerLevelScreen {
 	long lastFPS;
 
 
-	public SinglePlayerLevelScreen(final CnakesConfiguration configuration, final long windowId) {
+	public SinglePlayerLevelScreen(final CnakesConfiguration configuration, final long windowId,
+								   final SoundManager soundManager) {
 		this.configuration = configuration;
 		this.windowId = windowId;
 		this.drawing = new Drawing(configuration);
+		this.soundManager = soundManager;
 		initConfiguration();
 	}
 
@@ -135,11 +138,19 @@ public class SinglePlayerLevelScreen {
 	 * Initializes the game.
 	 */
 	public void initGame() {
+		initSounds();
 		loadHighScores();
 		startGame();
 		glfwSetKeyCallback(this.windowId, new SinglePlayerKeyListener(this.gameStatus, this.windowId));
 		this.drawing.initFont("fonts/trs-million_rg.ttf");
 
+	}
+
+	private void initSounds() {
+		this.soundManager.createSound(SoundConstants.GameplaySounds.COLLECT_BUG_SOURCE,
+									  SoundConstants.GameplaySounds.COLLECT_BUG_PATH);
+		this.soundManager.createSound(SoundConstants.GameplaySounds.BAD_ACTION_SOURCE,
+									  SoundConstants.GameplaySounds.BAD_ACTION_PATH);
 	}
 
 
@@ -317,6 +328,7 @@ public class SinglePlayerLevelScreen {
 			if (this.head.equals(this.target)) {
 				this.gameStatus.collectBug();
 				this.gameStatus.setInBonus(true);
+				this.soundManager.playSoundSource(SoundConstants.GameplaySounds.COLLECT_BUG_SOURCE);
 				newTarget();
 			}
 		}

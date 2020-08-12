@@ -2,6 +2,7 @@ package lv.herbis.cnakes.sound;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.joml.Vector3f;
 import org.lwjgl.openal.AL;
 import org.lwjgl.openal.ALC;
 import org.lwjgl.openal.ALCCapabilities;
@@ -13,6 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static lv.herbis.cnakes.constants.CnakesConstants.LOG_STACKTRACE;
 import static org.lwjgl.openal.AL10.alDistanceModel;
 import static org.lwjgl.openal.ALC10.*;
 import static org.lwjgl.system.MemoryUtil.NULL;
@@ -55,6 +57,28 @@ public class SoundManager {
 
 	public SoundSource getSoundSource(final String name) {
 		return this.soundSourceMap.get(name);
+	}
+
+	public void createSound(final String name, final String path) {
+		final SoundSource source = this.soundSourceMap.get(name);
+		if (source != null) {
+			LOG.warn("Sound source '{}' already exists. Reusing existing one.", name);
+			return;
+		}
+
+		try {
+			final SoundBuffer newSound = new SoundBuffer(path);
+
+			final SoundSource newSource = new SoundSource(false, false);
+			newSource.setPosition(new Vector3f(0, 0, 0));
+			newSource.setBuffer(newSound.getBufferId());
+
+			addSoundBuffer(newSound);
+			addSoundSource(name, newSource);
+		} catch (Exception e) {
+			LOG.error("Could not create a new sound '{}' from path '{}'. Reason: {}", name, path, e.getMessage());
+			LOG.debug(LOG_STACKTRACE, e);
+		}
 	}
 
 	public void playSoundSourceIfNotPlaying(final String name) {
