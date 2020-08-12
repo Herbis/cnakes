@@ -14,6 +14,9 @@ public class SoundConstants {
 
 		public static final String NAV_UP_DOWN_SOURCE = "menu_up_down";
 		public static final String NAV_UP_DOWN_PATH = "sounds/menu_move.ogg";
+
+		public static final String NAV_ENTER_SOURCE = "menu_enter";
+		public static final String NAV_ENTER_PATH = "sounds/menu_select.ogg";
 	}
 
 	public static class GameplaySounds {

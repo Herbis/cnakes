@@ -42,7 +42,7 @@ public class MenuKeyListener extends GLFWKeyCallback {
 		} else if (key == GLFW_KEY_DOWN) {
 			this.navigation.moveDown();
 		} else if (key == GLFW_KEY_ENTER) {
-			this.navigation.getActiveItem().enter();
+			this.navigation.enterSelectedItem();
 		} else if (key == GLFW_KEY_ESCAPE) {
 			LOG.debug("Exiting the game.");
 			glfwSetWindowShouldClose(this.windowId, true);

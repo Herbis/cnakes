@@ -40,16 +40,30 @@ public class MenuNavigation {
 
 	private void initSounds() {
 		try {
-			final SoundBuffer soundBuffer = new SoundBuffer(SoundConstants.MenuSounds.NAV_UP_DOWN_PATH);
-			final SoundSource soundSource = new SoundSource(false, false);
-			soundSource.setPosition(new Vector3f(0, 0, 0));
-			soundSource.setBuffer(soundBuffer.getBufferId());
-			this.soundManager.addSoundBuffer(soundBuffer);
-			this.soundManager.addSoundSource(SoundConstants.MenuSounds.NAV_UP_DOWN_SOURCE, soundSource);
+			final SoundBuffer navMoveSound = new SoundBuffer(SoundConstants.MenuSounds.NAV_UP_DOWN_PATH);
+			final SoundBuffer navEnterSound = new SoundBuffer(SoundConstants.MenuSounds.NAV_ENTER_PATH);
+
+			final SoundSource navMoveSoundSource = new SoundSource(false, false);
+			navMoveSoundSource.setPosition(new Vector3f(0, 0, 0));
+			navMoveSoundSource.setBuffer(navMoveSound.getBufferId());
+
+			final SoundSource navEnterSoundSource = new SoundSource(false, false);
+			navEnterSoundSource.setPosition(new Vector3f(0, 0, 0));
+			navEnterSoundSource.setBuffer(navEnterSound.getBufferId());
+
+			this.soundManager.addSoundBuffer(navEnterSound);
+			this.soundManager.addSoundSource(SoundConstants.MenuSounds.NAV_UP_DOWN_SOURCE, navMoveSoundSource);
+			this.soundManager.addSoundSource(SoundConstants.MenuSounds.NAV_ENTER_SOURCE, navEnterSoundSource);
 
 		} catch (final Exception e) {
 			LOG.error("Sound could not be created. Reason: {}", e.getMessage());
 			LOG.debug(LOG_STACKTRACE, e);
+		}
+	}
+
+	public void enterSelectedItem() {
+		if (this.activeItem.enter()) {
+			this.soundManager.playSoundSource(SoundConstants.MenuSounds.NAV_ENTER_SOURCE);
 		}
 	}
 
