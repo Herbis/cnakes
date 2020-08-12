@@ -6,13 +6,9 @@ import lv.herbis.cnakes.menus.MenuItem;
 import lv.herbis.cnakes.menus.StartGameMenuItem;
 import lv.herbis.cnakes.sound.SoundConstants;
 import lv.herbis.cnakes.sound.SoundManager;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 
 public class MenuNavigation {
-
-	private static final Logger LOG = LogManager.getLogger(MenuNavigation.class);
 
 	private final SoundManager soundManager;
 	private final MenuItem[] menuItems;

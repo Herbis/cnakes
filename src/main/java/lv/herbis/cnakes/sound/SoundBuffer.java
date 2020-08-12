@@ -19,15 +19,14 @@ public class SoundBuffer {
 
 	private ShortBuffer pcm = null;
 
-	private ByteBuffer vorbis = null;
 
 	public SoundBuffer(final String file) throws Exception {
 		this.bufferId = alGenBuffers();
 		try (final STBVorbisInfo info = STBVorbisInfo.malloc()) {
-			final ShortBuffer pcm = readVorbis(file, 32 * 1024, info);
+			final ShortBuffer tempPcm = readVorbis(file, 32 * 1024, info);
 
 			// Copy to buffer
-			alBufferData(this.bufferId, info.channels() == 1 ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16, pcm,
+			alBufferData(this.bufferId, info.channels() == 1 ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16, tempPcm,
 						 info.sample_rate());
 		}
 	}
@@ -46,9 +45,9 @@ public class SoundBuffer {
 	private ShortBuffer readVorbis(final String resource, final int bufferSize,
 								   final STBVorbisInfo info) throws IOException {
 		try (final MemoryStack stack = MemoryStack.stackPush()) {
-			this.vorbis = DataUtil.ioResourceToByteBuffer(resource, bufferSize);
+			final ByteBuffer vorbis = DataUtil.ioResourceToByteBuffer(resource, bufferSize);
 			final IntBuffer error = stack.mallocInt(1);
-			final long decoder = stb_vorbis_open_memory(this.vorbis, error, null);
+			final long decoder = stb_vorbis_open_memory(vorbis, error, null);
 			if (decoder == NULL) {
 				throw new RuntimeException("Failed to open Ogg Vorbis file. Error: " + error.get(0));
 			}
