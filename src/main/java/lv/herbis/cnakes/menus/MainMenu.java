@@ -5,6 +5,8 @@ import lv.herbis.cnakes.draw.Drawing;
 import lv.herbis.cnakes.levels.singleplayer.SinglePlayerLevelScreen;
 import lv.herbis.cnakes.listeners.MenuKeyListener;
 import lv.herbis.cnakes.movement.MenuNavigation;
+import lv.herbis.cnakes.sound.SoundListener;
+import lv.herbis.cnakes.sound.SoundManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.glfw.GLFWErrorCallback;
@@ -34,11 +36,14 @@ public class MainMenu implements Runnable {
 	private int screenHeight;
 	private int gameScale;
 
+	private final SoundManager soundManager;
+
 	private SinglePlayerLevelScreen levelScreen;
 
 	public MainMenu(final CnakesConfiguration configuration) {
 		this.configuration = configuration;
 		this.drawing = new Drawing(configuration);
+		this.soundManager = new SoundManager();
 		initConfiguration();
 	}
 
@@ -53,6 +58,7 @@ public class MainMenu implements Runnable {
 	 * Cleans up (releases) the resources and destroys the window.
 	 */
 	private void cleanUp() {
+		this.soundManager.cleanup();
 		// set cursor back to normal
 		glfwSetInputMode(this.windowId, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 
@@ -134,6 +140,7 @@ public class MainMenu implements Runnable {
 	public void run() {
 		initDisplay();
 		initGL();
+		initSound();
 		initMenu();
 		this.drawing.initFont("fonts/trs-million_rg.ttf");
 		gameLoop();
@@ -144,8 +151,15 @@ public class MainMenu implements Runnable {
 	 * Initializes the game.
 	 */
 	private void initMenu() {
-		this.navigation = new MenuNavigation(this.configuration, this.windowId);
+		this.navigation = new MenuNavigation(this.configuration, this.windowId, this.soundManager);
 		glfwSetKeyCallback(this.windowId, new MenuKeyListener(this.navigation, this.windowId));
+	}
+
+	private void initSound() {
+		this.soundManager.init();
+
+		final SoundListener soundListener = new SoundListener();
+		this.soundManager.setListener(soundListener);
 	}
 
 	/**
