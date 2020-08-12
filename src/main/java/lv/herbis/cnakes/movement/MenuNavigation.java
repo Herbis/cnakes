@@ -4,7 +4,7 @@ import lv.herbis.cnakes.configuration.CnakesConfiguration;
 import lv.herbis.cnakes.menus.ExitGameMenuItem;
 import lv.herbis.cnakes.menus.MenuItem;
 import lv.herbis.cnakes.menus.StartGameMenuItem;
-import lv.herbis.cnakes.sound.SoundConstants;
+import lv.herbis.cnakes.constants.SoundConstants;
 import lv.herbis.cnakes.sound.SoundManager;
 
 

@@ -7,6 +7,7 @@ import org.lwjgl.openal.AL;
 import org.lwjgl.openal.ALC;
 import org.lwjgl.openal.ALCCapabilities;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
@@ -75,7 +76,7 @@ public class SoundManager {
 
 			addSoundBuffer(newSound);
 			addSoundSource(name, newSource);
-		} catch (Exception e) {
+		} catch (final IOException e) {
 			LOG.error("Could not create a new sound '{}' from path '{}'. Reason: {}", name, path, e.getMessage());
 			LOG.debug(LOG_STACKTRACE, e);
 		}

@@ -1,4 +1,4 @@
-package lv.herbis.cnakes.sound;
+package lv.herbis.cnakes.constants;
 
 public class SoundConstants {
 

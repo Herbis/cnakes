@@ -20,7 +20,7 @@ public class SoundBuffer {
 	private ShortBuffer pcm = null;
 
 
-	public SoundBuffer(final String file) throws Exception {
+	public SoundBuffer(final String file) throws IOException {
 		this.bufferId = alGenBuffers();
 		try (final STBVorbisInfo info = STBVorbisInfo.malloc()) {
 			final ShortBuffer tempPcm = readVorbis(file, 32 * 1024, info);
@@ -49,7 +49,7 @@ public class SoundBuffer {
 			final IntBuffer error = stack.mallocInt(1);
 			final long decoder = stb_vorbis_open_memory(vorbis, error, null);
 			if (decoder == NULL) {
-				throw new RuntimeException("Failed to open Ogg Vorbis file. Error: " + error.get(0));
+				throw new IOException("Failed to open Ogg Vorbis file. Error: " + error.get(0));
 			}
 
 			stb_vorbis_get_info(decoder, info);

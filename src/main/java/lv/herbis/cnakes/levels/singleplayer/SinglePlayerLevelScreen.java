@@ -8,7 +8,7 @@ import lv.herbis.cnakes.listeners.SinglePlayerKeyListener;
 import lv.herbis.cnakes.movement.MovingDirections;
 import lv.herbis.cnakes.save.HighScore;
 import lv.herbis.cnakes.save.HighScores;
-import lv.herbis.cnakes.sound.SoundConstants;
+import lv.herbis.cnakes.constants.SoundConstants;
 import lv.herbis.cnakes.sound.SoundManager;
 import lv.herbis.cnakes.staticaccess.GameRules;
 import lv.herbis.cnakes.status.SinglePlayerGameStatus;
