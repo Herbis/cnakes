@@ -608,23 +608,19 @@ public class TextureLoader {
 			return 100900; //GLU_INVALID_ENUM
 		}
 
-		int i;
-		int j;
-		int k;
-		final float[] tempIn;
-		final float[] tempOut;
-		final float sx;
-		final float sy;
-		final int sizein;
-		final int sizeout;
-		int rowstride;
-		int rowlen;
+		// Get glPixelStore state
+		final PixelStoreState pss = new PixelStoreState();
 
-		// temp image data
-		tempIn = new float[widthIn * heightIn * components];
-		tempOut = new float[widthOut * heightOut * components];
+		//Unpack the pixel data and convert to floating point
+		int rowlen;
+		if (pss.getUnpackRowLength() > 0) {
+			rowlen = pss.getUnpackRowLength();
+		} else {
+			rowlen = widthIn;
+		}
 
 		// Determine bytes per input type
+		final int sizein;
 		switch (typein) {
 			case GL_UNSIGNED_BYTE:
 				sizein = 1;
@@ -636,27 +632,7 @@ public class TextureLoader {
 				return GL_INVALID_ENUM;
 		}
 
-		// Determine bytes per output type
-		switch (typeOut) {
-			case GL_UNSIGNED_BYTE:
-				sizeout = 1;
-				break;
-			case GL_FLOAT:
-				sizeout = 4;
-				break;
-			default:
-				return GL_INVALID_ENUM;
-		}
-
-		// Get glPixelStore state
-		final PixelStoreState pss = new PixelStoreState();
-
-		//Unpack the pixel data and convert to floating point
-		if (pss.getUnpackRowLength() > 0) {
-			rowlen = pss.getUnpackRowLength();
-		} else {
-			rowlen = widthIn;
-		}
+		int rowstride;
 
 		if (sizein >= pss.getUnpackAlignment()) {
 			rowstride = components * rowlen;
@@ -664,24 +640,27 @@ public class TextureLoader {
 			rowstride = pss.getUnpackAlignment() / sizein * ceil(components * rowlen * sizein, pss.getUnpackAlignment());
 		}
 
+		// temp image data
+		final float[] tempIn = new float[widthIn * heightIn * components];
+
 		switch (typein) {
 			case GL_UNSIGNED_BYTE:
-				k = 0;
+				int k = 0;
 				dataIn.rewind();
-				for (i = 0; i < heightIn; i++) {
+				for (int i = 0; i < heightIn; i++) {
 					int ubptr = i * rowstride + pss.getUnpackSkipRows() * rowstride + pss.getUnpackSkipPixels() * components;
-					for (j = 0; j < widthIn * components; j++) {
+					for (int j = 0; j < widthIn * components; j++) {
 						tempIn[k++] = dataIn.get(ubptr++) & 0xff;
 					}
 				}
 				break;
 			case GL_FLOAT:
-				k = 0;
+				int l = 0;
 				dataIn.rewind();
-				for (i = 0; i < heightIn; i++) {
+				for (int i = 0; i < heightIn; i++) {
 					int fptr = 4 * (i * rowstride + pss.getUnpackSkipRows() * rowstride + pss.getUnpackSkipPixels() * components);
-					for (j = 0; j < widthIn * components; j++) {
-						tempIn[k++] = dataIn.getFloat(fptr);
+					for (int j = 0; j < widthIn * components; j++) {
+						tempIn[l++] = dataIn.getFloat(fptr);
 						fptr += 4;
 					}
 				}
@@ -691,12 +670,13 @@ public class TextureLoader {
 		}
 
 		// Do scaling
-		sx = (float) widthIn / widthOut;
-		sy = (float) heightIn / heightOut;
+		final float sx = (float) widthIn / widthOut;
+		final float sy = (float) heightIn / heightOut;
 
 		final float[] c = new float[components];
-		int src;
-		int dst;
+
+		// temp image data
+		final float[] tempOut = new float[widthOut * heightOut * components];
 
 		for (int iy = 0; iy < heightOut; iy++) {
 			for (int ix = 0; ix < widthOut; ix++) {
@@ -716,7 +696,7 @@ public class TextureLoader {
 				for (int ix0 = x0; ix0 < x1; ix0++) {
 					for (int iy0 = y0; iy0 < y1; iy0++) {
 
-						src = (iy0 * widthIn + ix0) * components;
+						int src = (iy0 * widthIn + ix0) * components;
 
 						for (int ic = 0; ic < components; ic++) {
 							c[ic] += tempIn[src + ic];
@@ -727,17 +707,17 @@ public class TextureLoader {
 				}
 
 				// store weighted pixel
-				dst = (iy * widthOut + ix) * components;
+				int dst = (iy * widthOut + ix) * components;
 
 				if (readPix == 0) {
 					// Image is sized up, caused by non power of two texture as input
-					src = (y0 * widthIn + x0) * components;
+					int src = (y0 * widthIn + x0) * components;
 					for (int ic = 0; ic < components; ic++) {
 						tempOut[dst++] = tempIn[src + ic];
 					}
 				} else {
 					// sized down
-					for (k = 0; k < components; k++) {
+					for (int k = 0; k < components; k++) {
 						tempOut[dst++] = c[k] / readPix;
 					}
 				}
@@ -752,6 +732,19 @@ public class TextureLoader {
 			rowlen = widthOut;
 		}
 
+		// Determine bytes per output type
+		final int sizeout;
+		switch (typeOut) {
+			case GL_UNSIGNED_BYTE:
+				sizeout = 1;
+				break;
+			case GL_FLOAT:
+				sizeout = 4;
+				break;
+			default:
+				return GL_INVALID_ENUM;
+		}
+
 		if (sizeout >= pss.getPackAlignment()) {
 			rowstride = components * rowlen;
 		} else {
@@ -760,22 +753,22 @@ public class TextureLoader {
 
 		switch (typeOut) {
 			case GL_UNSIGNED_BYTE:
-				k = 0;
-				for (i = 0; i < heightOut; i++) {
+				int k = 0;
+				for (int i = 0; i < heightOut; i++) {
 					int ubptr = i * rowstride + pss.getPackSkipRows() * rowstride + pss.getPackSkipPixels() * components;
 
-					for (j = 0; j < widthOut * components; j++) {
+					for (int j = 0; j < widthOut * components; j++) {
 						dataOut.put(ubptr++, (byte) tempOut[k++]);
 					}
 				}
 				break;
 			case GL_FLOAT:
-				k = 0;
-				for (i = 0; i < heightOut; i++) {
+				int l = 0;
+				for (int i = 0; i < heightOut; i++) {
 					int fptr = 4 * (i * rowstride + pss.getPackSkipRows() * rowstride + pss.getPackSkipPixels() * components);
 
-					for (j = 0; j < widthOut * components; j++) {
-						dataOut.putFloat(fptr, tempOut[k++]);
+					for (int j = 0; j < widthOut * components; j++) {
+						dataOut.putFloat(fptr, tempOut[l++]);
 						fptr += 4;
 					}
 				}
