@@ -155,9 +155,12 @@ public class TextureLoader {
 			GL11.glTexParameteri(target, GL11.GL_TEXTURE_MAG_FILTER, magFilter);
 		}
 
-		gluBuild2DMipmaps(target, dstPixelFormat, get2Fold(bufferedImage.getWidth()),
+		final int returnValue = gluBuild2DMipmaps(target, dstPixelFormat, get2Fold(bufferedImage.getWidth()),
 						  get2Fold(bufferedImage.getHeight()), srcPixelFormat, GL11.GL_UNSIGNED_BYTE, textureBuffer);
-
+		if (returnValue != 0)
+		{
+			LOG.warn("Return value for gluBuild2DMipmaps is {}. Resource name: {}", returnValue, resourceName);
+		}
 		return texture;
 	}
 
@@ -332,8 +335,12 @@ public class TextureLoader {
 			GL11.glTexParameteri(target, GL11.GL_TEXTURE_MAG_FILTER, magFilter);
 		}
 
-		gluBuild2DMipmaps(target, dstPixelFormat, get2Fold(bufferedImage.getWidth()),
+		final int returnValue = gluBuild2DMipmaps(target, dstPixelFormat, get2Fold(bufferedImage.getWidth()),
 						  get2Fold(bufferedImage.getHeight()), srcPixelFormat, GL11.GL_UNSIGNED_BYTE, textureBuffer);
+		if (returnValue != 0)
+		{
+			LOG.warn("Return value for gluBuild2DMipmaps in getTexture is {}. Texture ID: {}", returnValue, textureID);
+		}
 
 		return texture;
 	}
@@ -424,12 +431,12 @@ public class TextureLoader {
 	public static int gluBuild2DMipmaps(final int target, final int components, final int width, final int height,
 										final int format, final int type, final ByteBuffer data) {
 		if (width < 1 || height < 1) {
-			return 100901; //GLU_INVALID_VALUE
+			return GL_INVALID_VALUE;
 		}
 
-		final int bpp = bytesPerPixel(format, type);
-		if (bpp == 0) {
-			return 100900; //GLU_INVALID_ENUM
+		final int bytesPerPixel = bytesPerPixel(format, type);
+		if (bytesPerPixel == 0) {
+			return GL_INVALID_ENUM;
 		}
 
 		final int maxSize = glGetIntegerv(GL_MAX_TEXTURE_SIZE);
@@ -447,73 +454,81 @@ public class TextureLoader {
 		// Get current glPixelStore state
 		final PixelStoreState pss = new PixelStoreState();
 
-		// set pixel packing
-		glPixelStorei(GL_PACK_ROW_LENGTH, 0);
-		glPixelStorei(GL_PACK_ALIGNMENT, 1);
-		glPixelStorei(GL_PACK_SKIP_ROWS, 0);
-		glPixelStorei(GL_PACK_SKIP_PIXELS, 0);
+		setPixelUnpacking();
 
-		ByteBuffer image;
+		final ByteBuffer image;
 		int retVal = 0;
 		boolean done = false;
 
 		if (w != width || h != height) {
 			// must rescale image to get "top" mipmap texture image
-			image = BufferUtils.createByteBuffer((w + 4) * h * bpp);
+			image = BufferUtils.createByteBuffer((w + 4) * h * bytesPerPixel);
 			final int error = gluScaleImage(format, width, height, type, data, w, h, type, image);
 			if (error != 0) {
 				retVal = error;
 				done = true;
 			}
 
-			/* set pixel unpacking */
-			glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
-			glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-			glPixelStorei(GL_UNPACK_SKIP_ROWS, 0);
-			glPixelStorei(GL_UNPACK_SKIP_PIXELS, 0);
+			setPixelUnpacking();
 		} else {
 			image = data;
 		}
 
+		if (!done) {
+			gluBuild2DMipmapsFinishScaling(target, components, image, w, h, format, type, data, bytesPerPixel);
+		}
+
+
+		// Restore original glPixelStore state
+		pss.save();
+
+		return retVal;
+	}
+
+	public static int gluBuild2DMipmapsFinishScaling(final int target, final int components, final ByteBuffer image,
+											  		 final int scaleWidth, final int scaleHeight, final int format,
+											  		 final int type, final ByteBuffer data, final int bytesPerPixel) {
 		ByteBuffer bufferA = null;
 		ByteBuffer bufferB = null;
-
 		int level = 0;
+		boolean done = false;
+		int retVal = 0;
+
+		ByteBuffer currentImage = image;
+		int w = scaleWidth;
+		int h = scaleHeight;
+
 		while (!done) {
-			if (image != data) {
-				/* set pixel unpacking */
-				glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
-				glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-				glPixelStorei(GL_UNPACK_SKIP_ROWS, 0);
-				glPixelStorei(GL_UNPACK_SKIP_PIXELS, 0);
+			if (currentImage != data) {
+				setPixelUnpacking();
 			}
 
-			glTexImage2D(target, level, components, w, h, 0, format, type, image);
+			glTexImage2D(target, level, components, w, h, 0, format, type, currentImage);
 
 			if (w == 1 && h == 1) {
 				break;
 			}
 
-			final int newW = (w < 2) ? 1 : w >> 1;
-			final int newH = (h < 2) ? 1 : h >> 1;
+			final int newW = computeNewSizeBits(w);
+			final int newH = computeNewSizeBits(h);
 
 			final ByteBuffer newImage;
 
 			if (bufferA == null) {
-				newImage = (bufferA = BufferUtils.createByteBuffer((newW + 4) * newH * bpp));
+				newImage = (bufferA = BufferUtils.createByteBuffer((newW + 4) * newH * bytesPerPixel));
 			} else if (bufferB == null) {
-				newImage = (bufferB = BufferUtils.createByteBuffer((newW + 4) * newH * bpp));
+				newImage = (bufferB = BufferUtils.createByteBuffer((newW + 4) * newH * bytesPerPixel));
 			} else {
 				newImage = bufferB;
 			}
 
-			final int error = gluScaleImage(format, w, h, type, image, newW, newH, type, newImage);
+			final int error = gluScaleImage(format, w, h, type, currentImage, newW, newH, type, newImage);
 			if (error != 0) {
 				retVal = error;
 				done = true;
 			}
 
-			image = newImage;
+			currentImage = newImage;
 			if (bufferB != null) {
 				bufferB = bufferA;
 			}
@@ -523,10 +538,19 @@ public class TextureLoader {
 			level++;
 		}
 
-		// Restore original glPixelStore state
-		pss.save();
-
 		return retVal;
+	}
+
+	protected static int computeNewSizeBits(final int size)
+	{
+		return (size < 2) ? 1 : size >> 1;
+	}
+
+	protected static void setPixelUnpacking() {
+		glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
+		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+		glPixelStorei(GL_UNPACK_SKIP_ROWS, 0);
+		glPixelStorei(GL_UNPACK_SKIP_PIXELS, 0);
 	}
 
 	protected static int bytesPerPixel(final int format, final int type) {
