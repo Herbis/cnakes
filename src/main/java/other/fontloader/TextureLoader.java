@@ -741,7 +741,7 @@ public class TextureLoader {
 				final int readPix = createWeightedPixel(tempIn, ix, iy, x0, y0, sx, sy, widthIn, c, components);
 
 				// store weighted pixel
-				int destPixelStart = (iy * widthOut + ix) * components;
+				final int destPixelStart = (iy * widthOut + ix) * components;
 
 				if (readPix == 0) {
 					// Image is sized up, caused by non power of two texture as input
@@ -780,9 +780,8 @@ public class TextureLoader {
 		return readPixelCount;
 	}
 
-	protected static void sizeUpImagePixels(final float[] tempIn, final float[] tempOut, final int x0,
-										   final int y0, final int widthIn, final int components, final int destPixelStart)
-	{
+	protected static void sizeUpImagePixels(final float[] tempIn, final float[] tempOut, final int x0, final int y0,
+											final int widthIn, final int components, final int destPixelStart) {
 		int dst = destPixelStart;
 		final int src = (y0 * widthIn + x0) * components;
 		for (int ic = 0; ic < components; ic++) {
@@ -790,9 +789,8 @@ public class TextureLoader {
 		}
 	}
 
-	protected static void sizeDownImagePixels(final float[] tempOut, final float[] componentArray,
-											  final int components, final int destPixelStart, final int readPixels)
-	{
+	protected static void sizeDownImagePixels(final float[] tempOut, final float[] componentArray, final int components,
+											  final int destPixelStart, final int readPixels) {
 		int dst = destPixelStart;
 		for (int k = 0; k < components; k++) {
 			tempOut[dst++] = componentArray[k] / readPixels;
@@ -819,24 +817,41 @@ public class TextureLoader {
 			rowStride = pss.getPackAlignment() / sizeOut * ceil(components * rowLen * sizeOut, pss.getPackAlignment());
 		}
 
-		int q = 0;
 		if (typeOut == GL_UNSIGNED_BYTE) {
-			for (int i = 0; i < heightOut; i++) {
-				int ubptr = i * rowStride + pss.getPackSkipRows() * rowStride + pss.getPackSkipPixels() * components;
-
-				for (int j = 0; j < widthOut * components; j++) {
-					dataOut.put(ubptr++, (byte) tempOut[q++]);
-				}
-			}
+			gluConvertTempToOutputImageDataUnsignedByte(dataOut, tempOut, widthOut, heightOut, rowStride, components,
+														pss);
 		} else {
-			for (int i = 0; i < heightOut; i++) {
-				int fptr = 4 * (i * rowStride + pss.getPackSkipRows() * rowStride + pss
-						.getPackSkipPixels() * components);
+			gluConvertTempToOutputImageDataSizedByte(dataOut, tempOut, widthOut, heightOut, rowStride, components, pss);
+		}
+	}
 
-				for (int j = 0; j < widthOut * components; j++) {
-					dataOut.putFloat(fptr, tempOut[q++]);
-					fptr += 4;
-				}
+	protected static void gluConvertTempToOutputImageDataUnsignedByte(final ByteBuffer dataOut, final float[] tempOut,
+																	  final int widthOut, final int heightOut,
+																	  final int rowStride, final int components,
+																	  final PixelStoreState pss) {
+		int q = 0;
+
+		for (int i = 0; i < heightOut; i++) {
+			int ubptr = i * rowStride + pss.getPackSkipRows() * rowStride + pss.getPackSkipPixels() * components;
+
+			for (int j = 0; j < widthOut * components; j++) {
+				dataOut.put(ubptr++, (byte) tempOut[q++]);
+			}
+		}
+	}
+
+	protected static void gluConvertTempToOutputImageDataSizedByte(final ByteBuffer dataOut, final float[] tempOut,
+																   final int widthOut, final int heightOut,
+																   final int rowStride, final int components,
+																   final PixelStoreState pss) {
+		int q = 0;
+
+		for (int i = 0; i < heightOut; i++) {
+			int fptr = 4 * (i * rowStride + pss.getPackSkipRows() * rowStride + pss.getPackSkipPixels() * components);
+
+			for (int j = 0; j < widthOut * components; j++) {
+				dataOut.putFloat(fptr, tempOut[q++]);
+				fptr += 4;
 			}
 		}
 	}
