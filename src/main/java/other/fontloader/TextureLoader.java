@@ -156,9 +156,9 @@ public class TextureLoader {
 		}
 
 		final int returnValue = gluBuild2DMipmaps(target, dstPixelFormat, get2Fold(bufferedImage.getWidth()),
-						  get2Fold(bufferedImage.getHeight()), srcPixelFormat, GL11.GL_UNSIGNED_BYTE, textureBuffer);
-		if (returnValue != 0)
-		{
+												  get2Fold(bufferedImage.getHeight()), srcPixelFormat,
+												  GL11.GL_UNSIGNED_BYTE, textureBuffer);
+		if (returnValue != 0) {
 			LOG.warn("Return value for gluBuild2DMipmaps is {}. Resource name: {}", returnValue, resourceName);
 		}
 		return texture;
@@ -336,9 +336,9 @@ public class TextureLoader {
 		}
 
 		final int returnValue = gluBuild2DMipmaps(target, dstPixelFormat, get2Fold(bufferedImage.getWidth()),
-						  get2Fold(bufferedImage.getHeight()), srcPixelFormat, GL11.GL_UNSIGNED_BYTE, textureBuffer);
-		if (returnValue != 0)
-		{
+												  get2Fold(bufferedImage.getHeight()), srcPixelFormat,
+												  GL11.GL_UNSIGNED_BYTE, textureBuffer);
+		if (returnValue != 0) {
 			LOG.warn("Return value for gluBuild2DMipmaps in getTexture is {}. Texture ID: {}", returnValue, textureID);
 		}
 
@@ -475,7 +475,7 @@ public class TextureLoader {
 		}
 
 		if (!done) {
-			gluBuild2DMipmapsFinishScaling(target, components, image, w, h, format, type, data, bytesPerPixel);
+			retVal = gluBuild2DMipmapsFinishScaling(target, components, image, w, h, format, type, data, bytesPerPixel);
 		}
 
 
@@ -486,8 +486,8 @@ public class TextureLoader {
 	}
 
 	public static int gluBuild2DMipmapsFinishScaling(final int target, final int components, final ByteBuffer image,
-											  		 final int scaleWidth, final int scaleHeight, final int format,
-											  		 final int type, final ByteBuffer data, final int bytesPerPixel) {
+													 final int scaleWidth, final int scaleHeight, final int format,
+													 final int type, final ByteBuffer data, final int bytesPerPixel) {
 		ByteBuffer bufferA = null;
 		ByteBuffer bufferB = null;
 		int level = 0;
@@ -541,8 +541,7 @@ public class TextureLoader {
 		return retVal;
 	}
 
-	protected static int computeNewSizeBits(final int size)
-	{
+	protected static int computeNewSizeBits(final int size) {
 		return (size < 2) ? 1 : size >> 1;
 	}
 
@@ -655,7 +654,6 @@ public class TextureLoader {
 														   final int widthIn, final int heightIn, final int components,
 														   final PixelStoreState pss) {
 
-		final float[] tempIn = new float[widthIn * heightIn * components];
 
 		//Unpack the pixel data and convert to floating point
 		final int rowLen;
@@ -676,27 +674,44 @@ public class TextureLoader {
 
 		dataIn.rewind();
 
-		int q = 0;
+		final float[] tempIn = new float[widthIn * heightIn * components];
+
 		if (typeIn == GL_UNSIGNED_BYTE) {
-			for (int i = 0; i < heightIn; i++) {
-				int ubptr = i * rowStride + pss.getUnpackSkipRows() * rowStride + pss
-						.getUnpackSkipPixels() * components;
-				for (int j = 0; j < widthIn * components; j++) {
-					tempIn[q++] = dataIn.get(ubptr++) & 0xff;
-				}
-			}
+			gluGenerateTempInputImageDataForUnsignedByte(dataIn, widthIn, heightIn, rowStride, tempIn, components, pss);
 		} else {
-			for (int i = 0; i < heightIn; i++) {
-				int fptr = sizeIn * (i * rowStride + pss.getUnpackSkipRows() * rowStride + pss
-						.getUnpackSkipPixels() * components);
-				for (int j = 0; j < widthIn * components; j++) {
-					tempIn[q++] = dataIn.getFloat(fptr);
-					fptr += sizeIn;
-				}
-			}
+			gluGenerateTempInputImageDataForSizedByte(dataIn, widthIn, heightIn, rowStride, sizeIn, tempIn, components,
+													  pss);
 		}
 
 		return tempIn;
+	}
+
+	protected static void gluGenerateTempInputImageDataForUnsignedByte(final ByteBuffer dataIn, final int widthIn,
+																	   final int heightIn, final int rowStride,
+																	   final float[] tempIn, final int components,
+																	   final PixelStoreState pss) {
+		int q = 0;
+		for (int i = 0; i < heightIn; i++) {
+			int ubptr = i * rowStride + pss.getUnpackSkipRows() * rowStride + pss.getUnpackSkipPixels() * components;
+			for (int j = 0; j < widthIn * components; j++) {
+				tempIn[q++] = dataIn.get(ubptr++) & 0xff;
+			}
+		}
+	}
+
+	protected static void gluGenerateTempInputImageDataForSizedByte(final ByteBuffer dataIn, final int widthIn,
+																	final int heightIn, final int rowStride,
+																	final int sizeIn, final float[] tempIn,
+																	final int components, final PixelStoreState pss) {
+		int q = 0;
+		for (int i = 0; i < heightIn; i++) {
+			int fptr = sizeIn * (i * rowStride + pss.getUnpackSkipRows() * rowStride + pss
+					.getUnpackSkipPixels() * components);
+			for (int j = 0; j < widthIn * components; j++) {
+				tempIn[q++] = dataIn.getFloat(fptr);
+				fptr += sizeIn;
+			}
+		}
 	}
 
 	protected static float[] gluGenerateTempOutputImageData(final float[] tempIn, final int widthIn, final int heightIn,
@@ -714,11 +729,8 @@ public class TextureLoader {
 		for (int iy = 0; iy < heightOut; iy++) {
 			for (int ix = 0; ix < widthOut; ix++) {
 				final int x0 = (int) (ix * sx);
-				final int x1 = (int) ((ix + 1) * sx);
 				final int y0 = (int) (iy * sy);
-				final int y1 = (int) ((iy + 1) * sy);
 
-				int readPix = 0;
 
 				// reset weighted pixel
 				for (int ic = 0; ic < components; ic++) {
@@ -726,38 +738,65 @@ public class TextureLoader {
 				}
 
 				// create weighted pixel
-				for (int ix0 = x0; ix0 < x1; ix0++) {
-					for (int iy0 = y0; iy0 < y1; iy0++) {
-
-						final int src = (iy0 * widthIn + ix0) * components;
-
-						for (int ic = 0; ic < components; ic++) {
-							c[ic] += tempIn[src + ic];
-						}
-
-						readPix++;
-					}
-				}
+				final int readPix = createWeightedPixel(tempIn, ix, iy, x0, y0, sx, sy, widthIn, c, components);
 
 				// store weighted pixel
-				int dst = (iy * widthOut + ix) * components;
+				int destPixelStart = (iy * widthOut + ix) * components;
 
 				if (readPix == 0) {
 					// Image is sized up, caused by non power of two texture as input
-					final int src = (y0 * widthIn + x0) * components;
-					for (int ic = 0; ic < components; ic++) {
-						tempOut[dst++] = tempIn[src + ic];
-					}
+					sizeUpImagePixels(tempIn, tempOut, x0, y0, widthIn, components, destPixelStart);
 				} else {
 					// sized down
-					for (int k = 0; k < components; k++) {
-						tempOut[dst++] = c[k] / readPix;
-					}
+					sizeDownImagePixels(tempOut, c, components, destPixelStart, readPix);
 				}
 			}
 		}
 
 		return tempOut;
+	}
+
+	protected static int createWeightedPixel(final float[] tempIn, final int ix, final int iy, final int x0,
+											 final int y0, final float scaleX, final float scaleY, final int widthIn,
+											 final float[] componentArray, final int components) {
+
+		final int x1 = (int) ((ix + 1) * scaleX);
+		final int y1 = (int) ((iy + 1) * scaleY);
+
+		int readPixelCount = 0;
+		for (int ix0 = x0; ix0 < x1; ix0++) {
+			for (int iy0 = y0; iy0 < y1; iy0++) {
+
+				final int src = (iy0 * widthIn + ix0) * components;
+
+				for (int ic = 0; ic < components; ic++) {
+					componentArray[ic] += tempIn[src + ic];
+				}
+
+				readPixelCount++;
+			}
+		}
+
+		return readPixelCount;
+	}
+
+	protected static void sizeUpImagePixels(final float[] tempIn, final float[] tempOut, final int x0,
+										   final int y0, final int widthIn, final int components, final int destPixelStart)
+	{
+		int dst = destPixelStart;
+		final int src = (y0 * widthIn + x0) * components;
+		for (int ic = 0; ic < components; ic++) {
+			tempOut[dst++] = tempIn[src + ic];
+		}
+	}
+
+	protected static void sizeDownImagePixels(final float[] tempOut, final float[] componentArray,
+											  final int components, final int destPixelStart, final int readPixels)
+	{
+		int dst = destPixelStart;
+		for (int k = 0; k < components; k++) {
+			tempOut[dst++] = componentArray[k] / readPixels;
+		}
 	}
 
 	protected static void gluConvertTempToOutputImageData(final ByteBuffer dataOut, final float[] tempOut,
