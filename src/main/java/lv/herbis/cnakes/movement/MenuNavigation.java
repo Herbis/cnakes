@@ -2,6 +2,7 @@ package lv.herbis.cnakes.movement;
 
 import lv.herbis.cnakes.configuration.CnakesConfiguration;
 import lv.herbis.cnakes.menus.ExitGameMenuItem;
+import lv.herbis.cnakes.menus.HighScoreGameMenuItem;
 import lv.herbis.cnakes.menus.MenuItem;
 import lv.herbis.cnakes.menus.StartGameMenuItem;
 import lv.herbis.cnakes.constants.SoundConstants;
@@ -22,9 +23,10 @@ public class MenuNavigation {
 						  final SoundManager soundManager) {
 		this.soundManager = soundManager;
 		final MenuItem startGameMenuItem = new StartGameMenuItem(configuration, this, windowId, this.soundManager);
+		final MenuItem highScoresMenuItem = new HighScoreGameMenuItem(this, windowId);
 		final MenuItem exitGameMenuItem = new ExitGameMenuItem(windowId);
 		this.activeItem = startGameMenuItem;
-		this.menuItems = new MenuItem[]{startGameMenuItem, exitGameMenuItem};
+		this.menuItems = new MenuItem[]{startGameMenuItem, highScoresMenuItem, exitGameMenuItem};
 
 		initSounds();
 	}
