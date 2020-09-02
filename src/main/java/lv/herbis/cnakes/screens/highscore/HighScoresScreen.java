@@ -34,10 +34,7 @@ public class HighScoresScreen implements CnakesScreen {
 	private final CnakesConfiguration configuration;
 	private final long windowId;
 	private final SoundManager soundManager;
-	private int screenWidth;
-	private int screenWidthScaled;
 	private int screenWidthCenterScaled;
-	private int screenHeight;
 	private int screenHeightScaled;
 
 
@@ -50,7 +47,6 @@ public class HighScoresScreen implements CnakesScreen {
 	private float titleLocation;
 
 	private final Drawing drawing;
-	private int gameScale;
 
 	private Pagination pagination;
 	private int currentPage = 1;
@@ -67,12 +63,12 @@ public class HighScoresScreen implements CnakesScreen {
 	}
 
 	private void initConfiguration() {
-		this.gameScale = this.configuration.getVideo().getScale();
-		this.screenWidth = this.configuration.getVideo().getResolution().getHorizontal();
-		this.screenHeight = this.configuration.getVideo().getResolution().getVertical();
-		this.screenWidthScaled = this.screenWidth / this.gameScale;
-		this.screenHeightScaled = this.screenHeight / this.gameScale;
-		this.screenWidthCenterScaled = this.screenWidthScaled / 2;
+		final int gameScale = this.configuration.getVideo().getScale();
+		final int screenWidth = this.configuration.getVideo().getResolution().getHorizontal();
+		final int screenHeight = this.configuration.getVideo().getResolution().getVertical();
+		final int screenWidthScaled = screenWidth / gameScale;
+		this.screenHeightScaled = screenHeight / gameScale;
+		this.screenWidthCenterScaled = screenWidthScaled / 2;
 	}
 
 	/**
@@ -107,8 +103,7 @@ public class HighScoresScreen implements CnakesScreen {
 		for (int i = 0; i < LINES_PER_PAGE; i++) {
 			final int entryIndex = i + ((this.pagination.getPage() - 1) * LINES_PER_PAGE);
 
-			if (entryIndex >= highScoreList.size())
-			{
+			if (entryIndex >= highScoreList.size()) {
 				break;
 			}
 
@@ -161,8 +156,7 @@ public class HighScoresScreen implements CnakesScreen {
 	 */
 	@Override
 	public void update() {
-		if (this.currentPage != this.pagination.getPage())
-		{
+		if (this.currentPage != this.pagination.getPage()) {
 			initScorePage();
 		}
 		render();

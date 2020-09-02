@@ -1,19 +1,17 @@
 package lv.herbis.cnakes.listeners;
 
 import lv.herbis.cnakes.entities.Pagination;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.lwjgl.glfw.GLFWKeyCallback;
+
+import java.util.Objects;
 
 import static org.lwjgl.glfw.GLFW.*;
 
 public class HighScoreScreenKeyListener extends GLFWKeyCallback {
-	private static final Logger LOG = LogManager.getLogger(HighScoreScreenKeyListener.class);
 
 	private final Pagination pagination;
 
-	public HighScoreScreenKeyListener(final Pagination pagination)
-	{
+	public HighScoreScreenKeyListener(final Pagination pagination) {
 		this.pagination = pagination;
 	}
 
@@ -33,8 +31,16 @@ public class HighScoreScreenKeyListener extends GLFWKeyCallback {
 			this.pagination.previousPage();
 		} else if (key == GLFW_KEY_RIGHT) {
 			this.pagination.nextPage();
-		} else if (key == GLFW_KEY_ESCAPE) {
-			// TODO back to menu
 		}
+	}
+
+	@Override
+	public boolean equals(final Object o) {
+		return this == o;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(super.hashCode());
 	}
 }
