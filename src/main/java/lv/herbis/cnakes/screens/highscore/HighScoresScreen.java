@@ -75,7 +75,6 @@ public class HighScoresScreen implements CnakesScreen {
 		this.screenWidthCenterScaled = this.screenWidthScaled / 2;
 	}
 
-
 	/**
 	 * Initializes the screen.
 	 */
@@ -86,7 +85,7 @@ public class HighScoresScreen implements CnakesScreen {
 		loadHighScores();
 		initPagination();
 		initScorePage();
-		glfwSetKeyCallback(this.windowId, new HighScoreScreenKeyListener());
+		glfwSetKeyCallback(this.windowId, new HighScoreScreenKeyListener(this.pagination));
 		this.drawing.initFont("fonts/trs-million_rg.ttf");
 
 	}
@@ -97,7 +96,6 @@ public class HighScoresScreen implements CnakesScreen {
 												 .intValue());
 	}
 
-
 	protected void initScorePage() {
 		final float screenUnit = this.screenHeightScaled / DRAW_ROWS;
 		this.titleLocation = this.screenHeightScaled;
@@ -107,8 +105,14 @@ public class HighScoresScreen implements CnakesScreen {
 		final List<HighScoreLine> lines = new LinkedList<>();
 
 		for (int i = 0; i < LINES_PER_PAGE; i++) {
+			final int entryIndex = i + ((this.pagination.getPage() - 1) * LINES_PER_PAGE);
 
-			final HighScore highScore = highScoreList.get(i + ((this.pagination.getPage() - 1) * LINES_PER_PAGE));
+			if (entryIndex >= highScoreList.size())
+			{
+				break;
+			}
+
+			final HighScore highScore = highScoreList.get(entryIndex);
 
 			final float highScoreLocation = this.screenHeightScaled - (screenUnit * (i + 2));
 			final String timeStamp = this.hsDateFormat
@@ -124,12 +128,10 @@ public class HighScoresScreen implements CnakesScreen {
 		this.pageTextYLocation = this.screenHeightScaled - (screenUnit * (DRAW_ROWS - 1));
 	}
 
-
 	private void initSounds() {
 		this.soundManager.createSound(SoundConstants.GameplaySounds.BAD_ACTION_SOURCE,
 									  SoundConstants.GameplaySounds.BAD_ACTION_PATH);
 	}
-
 
 	/**
 	 * Loads High Scores from a file to the local class.
@@ -139,7 +141,6 @@ public class HighScoresScreen implements CnakesScreen {
 
 		this.drawing.updateHighScores(this.highScores);
 	}
-
 
 	/**
 	 * Renders all that needs to be rendered for this game.
@@ -155,16 +156,19 @@ public class HighScoresScreen implements CnakesScreen {
 		this.drawing.drawText(this.pageText, 1, this.screenWidthCenterScaled, this.pageTextYLocation, Color.CYAN, true);
 	}
 
-
 	/**
 	 * Updates the game.
 	 */
 	@Override
 	public void update() {
+		if (this.currentPage != this.pagination.getPage())
+		{
+			initScorePage();
+		}
 		render();
 	}
 
-	class HighScoreLine {
+	static class HighScoreLine {
 		private final String text;
 		private final float locationX;
 		private final float locationY;
