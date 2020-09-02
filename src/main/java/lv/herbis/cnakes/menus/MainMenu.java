@@ -218,15 +218,9 @@ public class MainMenu implements Runnable {
 				color = Color.GRAY;
 			}
 
-			glEnable(GL_TEXTURE_2D);
-
-
 			final int difference = i - centerItemIndex;
 			final int slot = (centerSlot + difference);
 			this.drawing.drawText(item.getName(), itemSize, xLoc, scaledHeight - (slot * 3) + adjustment, color, true);
-
-
-			glDisable(GL_TEXTURE_2D);
 		}
 	}
 }

@@ -1,6 +1,9 @@
 package lv.herbis.cnakes.menus;
 
+import lv.herbis.cnakes.configuration.CnakesConfiguration;
 import lv.herbis.cnakes.movement.MenuNavigation;
+import lv.herbis.cnakes.screens.highscore.HighScoresScreen;
+import lv.herbis.cnakes.sound.SoundManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -12,10 +15,15 @@ public class HighScoreGameMenuItem implements MenuItem {
 
 	private final long windowId;
 	private final MenuNavigation menuNavigation;
+	private final CnakesConfiguration configuration;
+	private final SoundManager soundManager;
 
-	public HighScoreGameMenuItem(final MenuNavigation menuNavigation, final long windowId) {
+	public HighScoreGameMenuItem(final CnakesConfiguration configuration, final MenuNavigation menuNavigation,
+								 final long windowId, final SoundManager soundManager) {
 		this.menuNavigation = menuNavigation;
 		this.windowId = windowId;
+		this.configuration = configuration;
+		this.soundManager = soundManager;
 	}
 
 	@Override
@@ -31,6 +39,12 @@ public class HighScoreGameMenuItem implements MenuItem {
 	@Override
 	public boolean enter() {
 		LOG.debug("Showing high-scores. Window {}", this.windowId);
+
+		getMenuNavigation().setPendingItem(new HighScoresScreen(configuration, windowId, soundManager));
 		return true;
+	}
+
+	public MenuNavigation getMenuNavigation() {
+		return menuNavigation;
 	}
 }

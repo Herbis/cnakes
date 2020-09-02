@@ -112,11 +112,6 @@ public class ScoreboardDrawing {
 
 		glEnd();
 
-		/* Draw numbers */
-		glEnable(GL_TEXTURE_2D);
-		glEnable(GL_ALPHA);
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 		/* "Bugs Eaten" number */
 		this.drawing.drawText(String.valueOf(gameStatus.getBugsCollected()), 1, this.bugsEatenTextXLocation,
@@ -138,7 +133,6 @@ public class ScoreboardDrawing {
 		if (gameStatus.isPaused()) {
 			this.drawing.drawText("PAUSED", 2, this.gamePausedXLocation, this.gamePausedYLocation, Color.YELLOW, true);
 		}
-		glDisable(GL_TEXTURE_2D);
 
 		drawTime(gameStatus);
 	}
@@ -149,11 +143,6 @@ public class ScoreboardDrawing {
 	 */
 	public void drawTime(final SinglePlayerGameStatus gameStatus) {
 		/* Draw numbers */
-		glEnable(GL_TEXTURE_2D);
-		glEnable(GL_ALPHA);
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
 		final Timer currentTimer = gameStatus.getTimer();
 		if (currentTimer == null) {
 			/* If the current Timer is null, the game was never started. */
@@ -176,8 +165,6 @@ public class ScoreboardDrawing {
 									  true);
 			}
 		}
-
-		glDisable(GL_TEXTURE_2D);
 	}
 
 	public void updateHighScores(final HighScores highScores) {
