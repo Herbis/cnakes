@@ -1,4 +1,4 @@
-package lv.herbis.cnakes.levels.singleplayer;
+package lv.herbis.cnakes.screens.singleplayer;
 
 import lv.herbis.cnakes.configuration.CnakesConfiguration;
 import lv.herbis.cnakes.draw.Drawing;
@@ -9,9 +9,11 @@ import lv.herbis.cnakes.movement.MovingDirections;
 import lv.herbis.cnakes.save.HighScore;
 import lv.herbis.cnakes.save.HighScores;
 import lv.herbis.cnakes.constants.SoundConstants;
+import lv.herbis.cnakes.screens.CnakesScreen;
 import lv.herbis.cnakes.sound.SoundManager;
 import lv.herbis.cnakes.staticaccess.GameRules;
 import lv.herbis.cnakes.status.SinglePlayerGameStatus;
+import lv.herbis.cnakes.tools.DataUtil;
 import lv.herbis.cnakes.tools.SerializationUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -21,14 +23,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import static lv.herbis.cnakes.constants.CnakesConstants.HIGH_SCORE_FILE;
 import static lv.herbis.cnakes.constants.CnakesConstants.SAVE_FILE_PATH;
 import static org.lwjgl.glfw.GLFW.glfwSetKeyCallback;
 
 
-public class SinglePlayerLevelScreen {
+public class SinglePlayerLevelScreen implements CnakesScreen {
 	private static final Logger LOG = LogManager.getLogger(SinglePlayerLevelScreen.class);
 
-	private static final String HIGH_SCORE_FILE = "classic.hs";
 	private static final int GAME_LENGTH = 1;
 
 	private final CnakesConfiguration configuration;
@@ -83,21 +85,11 @@ public class SinglePlayerLevelScreen {
 	 * @return milliseconds passed since last frame
 	 */
 	public int getDelta() {
-		final long time = getTime();
+		final long time = DataUtil.getTime();
 		final int delta = (int) (time - this.lastFrame);
 		this.lastFrame = time;
 
 		return delta;
-	}
-
-
-	/**
-	 * Get the accurate system time
-	 *
-	 * @return The system time in milliseconds
-	 */
-	public long getTime() {
-		return System.nanoTime() / 1000000;
 	}
 
 
@@ -135,9 +127,9 @@ public class SinglePlayerLevelScreen {
 
 
 	/**
-	 * Initializes the game.
+	 * Initializes the Screen.
 	 */
-	public void initGame() {
+	public void initScreen() {
 		initSounds();
 		loadHighScores();
 		startGame();
@@ -160,12 +152,7 @@ public class SinglePlayerLevelScreen {
 	 * Loads High Scores from a file to the local class.
 	 */
 	public void loadHighScores() {
-		try {
-			this.highScores = (HighScores) SerializationUtil.deserialize(SAVE_FILE_PATH, HIGH_SCORE_FILE);
-		} catch (final Exception e) {
-			this.highScores = new HighScores(10);
-		}
-
+		this.highScores = DataUtil.loadHighScores(10);
 		this.drawing.updateHighScores(this.highScores);
 	}
 
@@ -298,7 +285,7 @@ public class SinglePlayerLevelScreen {
 	 * Calculate the FPS and set it in the title bar
 	 */
 	public void updateFPS() {
-		if (getTime() - this.lastFPS > 1000) {
+		if (DataUtil.getTime() - this.lastFPS > 1000) {
 			this.fps = 0;
 			this.lastFPS += 1000;
 		}
