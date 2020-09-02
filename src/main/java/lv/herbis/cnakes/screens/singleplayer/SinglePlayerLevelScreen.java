@@ -152,7 +152,7 @@ public class SinglePlayerLevelScreen implements CnakesScreen {
 	 * Loads High Scores from a file to the local class.
 	 */
 	public void loadHighScores() {
-		this.highScores = DataUtil.loadHighScores(10);
+		this.highScores = DataUtil.loadHighScores(100);
 		this.drawing.updateHighScores(this.highScores);
 	}
 

@@ -3,6 +3,7 @@ package lv.herbis.cnakes.screens.highscore;
 import lv.herbis.cnakes.configuration.CnakesConfiguration;
 import lv.herbis.cnakes.constants.SoundConstants;
 import lv.herbis.cnakes.draw.Drawing;
+import lv.herbis.cnakes.entities.Pagination;
 import lv.herbis.cnakes.listeners.HighScoreScreenKeyListener;
 import lv.herbis.cnakes.save.HighScore;
 import lv.herbis.cnakes.save.HighScores;
@@ -14,7 +15,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.awt.*;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.format.DateTimeFormatter;
+import java.util.LinkedList;
 import java.util.List;
 
 import static org.lwjgl.glfw.GLFW.glfwSetKeyCallback;
@@ -22,6 +26,10 @@ import static org.lwjgl.glfw.GLFW.glfwSetKeyCallback;
 
 public class HighScoresScreen implements CnakesScreen {
 	private static final Logger LOG = LogManager.getLogger(HighScoresScreen.class);
+
+	private static final float DRAW_ROWS = 14f;
+	private static final int LINES_PER_PAGE = 10;
+	private static final String TITLE_TEXT = "High Scores!";
 
 	private final CnakesConfiguration configuration;
 	private final long windowId;
@@ -32,13 +40,22 @@ public class HighScoresScreen implements CnakesScreen {
 	private int screenHeight;
 	private int screenHeightScaled;
 
+
 	private final DateTimeFormatter hsDateFormat = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
 
 	private HighScores highScores;
+	private List<HighScoreLine> highScoreLines;
+
+	private float titleLocation;
 
 	private final Drawing drawing;
 	private int gameScale;
+
+	private Pagination pagination;
+	private int currentPage = 1;
+	private String pageText;
+	private float pageTextYLocation;
 
 	public HighScoresScreen(final CnakesConfiguration configuration, final long windowId,
 							final SoundManager soundManager) {
@@ -62,14 +79,51 @@ public class HighScoresScreen implements CnakesScreen {
 	/**
 	 * Initializes the screen.
 	 */
+	@Override
 	public void initScreen() {
 		LOG.debug("initScreen() of {} called.", HighScoresScreen.class.getName());
 		initSounds();
 		loadHighScores();
+		initPagination();
+		initScorePage();
 		glfwSetKeyCallback(this.windowId, new HighScoreScreenKeyListener());
 		this.drawing.initFont("fonts/trs-million_rg.ttf");
 
 	}
+
+	private void initPagination() {
+		this.pagination = new Pagination(BigDecimal.valueOf(this.highScores.getHighScoreCount())
+												 .divide(BigDecimal.valueOf(LINES_PER_PAGE), RoundingMode.CEILING)
+												 .intValue());
+	}
+
+
+	protected void initScorePage() {
+		final float screenUnit = this.screenHeightScaled / DRAW_ROWS;
+		this.titleLocation = this.screenHeightScaled;
+		this.currentPage = this.pagination.getPage();
+
+		final List<HighScore> highScoreList = this.highScores.getHighScoreList();
+		final List<HighScoreLine> lines = new LinkedList<>();
+
+		for (int i = 0; i < LINES_PER_PAGE; i++) {
+
+			final HighScore highScore = highScoreList.get(i + ((this.pagination.getPage() - 1) * LINES_PER_PAGE));
+
+			final float highScoreLocation = this.screenHeightScaled - (screenUnit * (i + 2));
+			final String timeStamp = this.hsDateFormat
+					.format(ConversionUtil.millisecondsToLocalDateTime(highScore.getTimestamp()));
+			final HighScoreLine line = new HighScoreLine(
+					String.format("%s: %s [%s]", highScore.getUsername(), highScore.getScore(), timeStamp),
+					this.screenWidthCenterScaled, highScoreLocation, Color.BLUE);
+			lines.add(line);
+		}
+
+		this.highScoreLines = lines;
+		this.pageText = String.format("%d/%d", this.currentPage, this.pagination.getPageCount());
+		this.pageTextYLocation = this.screenHeightScaled - (screenUnit * (DRAW_ROWS - 1));
+	}
+
 
 	private void initSounds() {
 		this.soundManager.createSound(SoundConstants.GameplaySounds.BAD_ACTION_SOURCE,
@@ -81,7 +135,7 @@ public class HighScoresScreen implements CnakesScreen {
 	 * Loads High Scores from a file to the local class.
 	 */
 	public void loadHighScores() {
-		this.highScores = DataUtil.loadHighScores(10);
+		this.highScores = DataUtil.loadHighScores(100);
 
 		this.drawing.updateHighScores(this.highScores);
 	}
@@ -91,29 +145,53 @@ public class HighScoresScreen implements CnakesScreen {
 	 * Renders all that needs to be rendered for this game.
 	 */
 	private void render() {
+		this.drawing.drawText(TITLE_TEXT, 2, this.screenWidthCenterScaled, this.titleLocation, Color.CYAN, true);
 
-		final float screenUnit = this.screenHeightScaled / 12f;
-
-		final float titleLocation = this.screenHeightScaled;
-		this.drawing.drawText("High Scores!", 2, this.screenWidthCenterScaled, titleLocation, Color.CYAN, true);
-
-		final List<HighScore> highScoreList = this.highScores.getHighScoreList();
-		for (int i = 0; i < highScoreList.size(); i++) {
-			final HighScore highScore = highScoreList.get(i);
-			final float highScoreLocation = this.screenHeightScaled - (screenUnit * (i + 2));
-			this.drawing.drawText(String.format("%s: %s [%s]", highScore.getUsername(), highScore.getScore(), this.hsDateFormat
-					.format(ConversionUtil.millisecondsToLocalDateTime(highScore.getTimestamp()))), 1, this.screenWidthCenterScaled, highScoreLocation, Color.BLUE, true);
+		final List<HighScoreLine> lines = this.highScoreLines;
+		for (final HighScoreLine line : lines) {
+			this.drawing.drawText(line.getText(), 1, line.getLocationX(), line.getLocationY(), Color.BLUE, true);
 		}
 
-
+		this.drawing.drawText(this.pageText, 1, this.screenWidthCenterScaled, this.pageTextYLocation, Color.CYAN, true);
 	}
 
 
 	/**
 	 * Updates the game.
 	 */
+	@Override
 	public void update() {
 		render();
+	}
+
+	class HighScoreLine {
+		private final String text;
+		private final float locationX;
+		private final float locationY;
+		private final Color color;
+
+		public HighScoreLine(final String text, final float locationX, final float locationY, final Color color) {
+			this.text = text;
+			this.locationX = locationX;
+			this.locationY = locationY;
+			this.color = color;
+		}
+
+		public String getText() {
+			return this.text;
+		}
+
+		public float getLocationX() {
+			return this.locationX;
+		}
+
+		public float getLocationY() {
+			return this.locationY;
+		}
+
+		public Color getColor() {
+			return this.color;
+		}
 	}
 
 }
