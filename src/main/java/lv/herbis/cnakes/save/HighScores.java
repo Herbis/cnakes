@@ -46,6 +46,14 @@ public class HighScores implements Serializable {
 	 * @return Returns true if user's score was added to the list, false otherwise.
 	 */
 	public boolean addHighScore(final HighScore score) {
+
+		/* Don't add 0 and below as high score. */
+		if (score.getScore() <= 0) {
+			LOG.debug("HighScore for player '{}' of {} not added because it's zero or below.",
+					  score.getUsername(), score.getScore());
+			return false;
+		}
+
 		final int highScoreSize = getHighScoreList().size();
 		/* Check if high-score list has reached (or is over) the limit. */
 		if (getLimit() <= highScoreSize) {
