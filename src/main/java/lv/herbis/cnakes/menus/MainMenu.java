@@ -2,7 +2,7 @@ package lv.herbis.cnakes.menus;
 
 import lv.herbis.cnakes.configuration.CnakesConfiguration;
 import lv.herbis.cnakes.draw.Drawing;
-import lv.herbis.cnakes.levels.singleplayer.SinglePlayerLevelScreen;
+import lv.herbis.cnakes.screens.CnakesScreen;
 import lv.herbis.cnakes.listeners.MenuKeyListener;
 import lv.herbis.cnakes.movement.MenuNavigation;
 import lv.herbis.cnakes.sound.SoundListener;
@@ -38,7 +38,7 @@ public class MainMenu implements Runnable {
 
 	private final SoundManager soundManager;
 
-	private SinglePlayerLevelScreen levelScreen;
+	private CnakesScreen cnakesScreen;
 
 	public MainMenu(final CnakesConfiguration configuration) {
 		this.configuration = configuration;
@@ -168,16 +168,16 @@ public class MainMenu implements Runnable {
 	private void gameLoop() {
 		while (!glfwWindowShouldClose(this.windowId)) {
 			final Object pendingItem = this.navigation.usePendingItem();
-			if (pendingItem instanceof SinglePlayerLevelScreen) {
-				this.levelScreen = (SinglePlayerLevelScreen) pendingItem;
-				this.levelScreen.initGame();
+			if (pendingItem instanceof CnakesScreen) {
+				this.cnakesScreen = (CnakesScreen) pendingItem;
+				this.cnakesScreen.initScreen();
 			}
 
 			glClear(GL_COLOR_BUFFER_BIT);
 
-			if (this.levelScreen != null) {
+			if (this.cnakesScreen != null) {
 				// maybe need to use a separate SCREEN interface.
-				this.levelScreen.update();
+				this.cnakesScreen.update();
 			} else {
 				update();
 			}
@@ -218,15 +218,9 @@ public class MainMenu implements Runnable {
 				color = Color.GRAY;
 			}
 
-			glEnable(GL_TEXTURE_2D);
-
-
 			final int difference = i - centerItemIndex;
 			final int slot = (centerSlot + difference);
 			this.drawing.drawText(item.getName(), itemSize, xLoc, scaledHeight - (slot * 3) + adjustment, color, true);
-
-
-			glDisable(GL_TEXTURE_2D);
 		}
 	}
 }

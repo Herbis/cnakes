@@ -495,13 +495,17 @@ public class Drawing {
 
 	public void drawText(final String text, final float size, final float x, final float y, final Color color,
 						 final boolean centered) {
+		glEnable(GL_TEXTURE_2D);
 		this.gameFont.drawText(text, this.gameScale * size, x * this.gameScale, y * this.gameScale, 0, color, 0, 0, 0, centered);
+		glDisable(GL_TEXTURE_2D);
 	}
 
 	public void drawOutlinedText(final String text, final float size, final float x, final float y, final Color color,
 								 final Color outlineColor, final boolean centered) {
+		glEnable(GL_TEXTURE_2D);
 		this.gameFont.drawOutlinedText(text, this.gameScale * size, x * this.gameScale, y * this.gameScale, 0, color, outlineColor, 0, 0, 0,
 									   centered);
+		glDisable(GL_TEXTURE_2D);
 	}
 
 	/**
@@ -550,11 +554,10 @@ public class Drawing {
 		if (direction == Direction.DOWN || direction == Direction.UP) {
 			/* draw brighter */
 			glColor3f(0.42f, 0.49f, 0.35f);
-			drawPlayGridLine(x, x, y1, y2);
-		} else {
-			/* draw regular line */
-			drawPlayGridLine(x, x, y1, y2);
 		}
+
+		/* draw regular line */
+		drawPlayGridLine(x, x, y1, y2);
 	}
 
 	public int getPlayAreaXEndPoint() {

@@ -1,7 +1,7 @@
 package lv.herbis.cnakes.menus;
 
 import lv.herbis.cnakes.configuration.CnakesConfiguration;
-import lv.herbis.cnakes.levels.singleplayer.SinglePlayerLevelScreen;
+import lv.herbis.cnakes.screens.singleplayer.SinglePlayerLevelScreen;
 import lv.herbis.cnakes.movement.MenuNavigation;
 import lv.herbis.cnakes.sound.SoundManager;
 

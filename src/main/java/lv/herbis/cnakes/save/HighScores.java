@@ -46,6 +46,14 @@ public class HighScores implements Serializable {
 	 * @return Returns true if user's score was added to the list, false otherwise.
 	 */
 	public boolean addHighScore(final HighScore score) {
+
+		/* Don't add 0 and below as high score. */
+		if (score.getScore() <= 0) {
+			LOG.debug("HighScore for player '{}' of {} not added because it's zero or below.",
+					  score.getUsername(), score.getScore());
+			return false;
+		}
+
 		final int highScoreSize = getHighScoreList().size();
 		/* Check if high-score list has reached (or is over) the limit. */
 		if (getLimit() <= highScoreSize) {
@@ -105,6 +113,11 @@ public class HighScores implements Serializable {
 		if (newLimit <= 0) {
 			throw new IllegalArgumentException("HighScore limit invalid: " + newLimit);
 		}
+		else if (this.limit != newLimit && getHighScoreCount() > newLimit)
+		{
+			this.highScoreList = new ArrayList<>(getHighScoreList().subList(0, newLimit));
+		}
+
 		this.limit = newLimit;
 	}
 
@@ -128,7 +141,7 @@ public class HighScores implements Serializable {
 	 * @return HighScore object that is the first (top) in the List of scores.
 	 */
 	public HighScore getTopScore() {
-		return getHighScoreList().isEmpty() ? null : getHighScoreList().get(0);
+		return hasHighScores() ? getHighScoreList().get(0) : null;
 	}
 
 
@@ -138,7 +151,25 @@ public class HighScores implements Serializable {
 	 * @return HighScore object that is the last (lowest) in the List of scores.
 	 */
 	public HighScore getBottomScore() {
-		final int highScoreSize = getHighScoreList().size();
-		return highScoreSize > 0 ? getHighScoreList().get(highScoreSize - 1) : null;
+		final int highScoreCount = getHighScoreCount();
+		return highScoreCount > 0 ? getHighScoreList().get(highScoreCount - 1) : null;
+	}
+
+	/**
+	 * Returns high score entry count.
+	 *
+	 * @return high score list size.
+	 */
+	public int getHighScoreCount() {
+		return getHighScoreList().size();
+	}
+
+	/**
+	 * Returns whether there are any high scores recorded.
+	 *
+	 * @return whether high score count larger than 0.
+	 */
+	public boolean hasHighScores() {
+		return getHighScoreCount() > 0;
 	}
 }

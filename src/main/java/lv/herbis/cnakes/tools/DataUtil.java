@@ -1,5 +1,6 @@
 package lv.herbis.cnakes.tools;
 
+import lv.herbis.cnakes.save.HighScores;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.BufferUtils;
@@ -15,6 +16,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
+import static lv.herbis.cnakes.constants.CnakesConstants.HIGH_SCORE_FILE;
+import static lv.herbis.cnakes.constants.CnakesConstants.SAVE_FILE_PATH;
 import static org.lwjgl.BufferUtils.createByteBuffer;
 
 /**
@@ -80,5 +83,31 @@ public class DataUtil {
 		buffer.flip();
 		newBuffer.put(buffer);
 		return newBuffer;
+	}
+
+	/**
+	 * Loads High Scores from a file to the local class.
+	 */
+	public static HighScores loadHighScores(final int limit) {
+		HighScores highScores;
+
+		try {
+			highScores = (HighScores) SerializationUtil.deserialize(SAVE_FILE_PATH, HIGH_SCORE_FILE);
+			highScores.changeLimit(limit);
+		} catch (final Exception e) {
+			highScores = new HighScores(limit);
+		}
+
+		return highScores;
+	}
+
+
+	/**
+	 * Get the accurate system time
+	 *
+	 * @return The system time in milliseconds
+	 */
+	public static long getTime() {
+		return System.nanoTime() / 1000000;
 	}
 }
