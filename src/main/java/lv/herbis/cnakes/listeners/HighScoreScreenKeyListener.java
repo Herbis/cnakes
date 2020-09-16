@@ -1,6 +1,7 @@
 package lv.herbis.cnakes.listeners;
 
 import lv.herbis.cnakes.entities.Pagination;
+import lv.herbis.cnakes.menus.MainMenu;
 import org.lwjgl.glfw.GLFWKeyCallback;
 
 import java.util.Objects;
@@ -31,6 +32,8 @@ public class HighScoreScreenKeyListener extends GLFWKeyCallback {
 			this.pagination.previousPage();
 		} else if (key == GLFW_KEY_RIGHT) {
 			this.pagination.nextPage();
+		} else if (key == GLFW_KEY_ESCAPE) {
+			throw new MainMenu.ReturnToMenuRequest();
 		}
 	}
 

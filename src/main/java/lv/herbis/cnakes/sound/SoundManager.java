@@ -63,7 +63,7 @@ public class SoundManager {
 	public void createSound(final String name, final String path) {
 		final SoundSource source = this.soundSourceMap.get(name);
 		if (source != null) {
-			LOG.warn("Sound source '{}' already exists. Reusing existing one.", name);
+			LOG.debug("Sound source '{}' already exists. Reusing existing one.", name);
 			return;
 		}
 

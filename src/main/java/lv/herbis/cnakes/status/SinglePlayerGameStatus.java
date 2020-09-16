@@ -100,9 +100,13 @@ public abstract class SinglePlayerGameStatus implements GameStatus {
 
 	@Override
 	public void end() {
+		if (!this.ended)
+		{
+			afterEnd();
+		}
+
 		this.ended = true;
 		this.beingPlayed = false;
-		afterEnd();
 	}
 
 	public abstract void afterEnd();

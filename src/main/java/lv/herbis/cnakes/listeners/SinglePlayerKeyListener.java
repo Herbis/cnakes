@@ -1,5 +1,6 @@
 package lv.herbis.cnakes.listeners;
 
+import lv.herbis.cnakes.menus.MainMenu;
 import lv.herbis.cnakes.movement.MovingDirections;
 import lv.herbis.cnakes.status.GameStatus;
 import org.lwjgl.glfw.GLFWKeyCallback;
@@ -45,9 +46,9 @@ public class SinglePlayerKeyListener extends GLFWKeyCallback {
 			caught = true;
 		} else if (key == GLFW_KEY_ESCAPE) {
 			/* Only allow to exit if */
-			if (this.game.isPaused()) {
+			if (this.game.isPaused() || !this.game.isBeingPlayed()) {
 				this.game.end();
-				glfwSetWindowShouldClose(this.windowId, true);
+				throw new MainMenu.ReturnToMenuRequest();
 			}
 			caught = true;
 		}

@@ -167,24 +167,31 @@ public class MainMenu implements Runnable {
 	 */
 	private void gameLoop() {
 		while (!glfwWindowShouldClose(this.windowId)) {
-			final Object pendingItem = this.navigation.usePendingItem();
-			if (pendingItem instanceof CnakesScreen) {
-				this.cnakesScreen = (CnakesScreen) pendingItem;
-				this.cnakesScreen.initScreen();
-			}
-
-			glClear(GL_COLOR_BUFFER_BIT);
-
-			if (this.cnakesScreen != null) {
-				// maybe need to use a separate SCREEN interface.
-				this.cnakesScreen.update();
-			} else {
-				update();
-			}
-
-			glfwSwapBuffers(this.windowId);
 			try {
+				final Object pendingItem = this.navigation.usePendingItem();
+				if (pendingItem instanceof CnakesScreen) {
+					this.cnakesScreen = (CnakesScreen) pendingItem;
+					this.cnakesScreen.initScreen();
+				} else if (pendingItem instanceof ReturnToMenuRequest) {
+					this.cnakesScreen = null;
+				}
+
+				glClear(GL_COLOR_BUFFER_BIT);
+
+				if (this.cnakesScreen != null) {
+					// maybe need to use a separate SCREEN interface.
+					this.cnakesScreen.update();
+				} else {
+					update();
+				}
+
+				glfwSwapBuffers(this.windowId);
 				glfwPollEvents();
+
+			} catch (final ReturnToMenuRequest r) {
+				LOG.trace("Received Return to Menu request as an Exception.", r);
+				this.cnakesScreen = null;
+				initMenu();
 			} catch (final NullPointerException e) {
 				LOG.warn("NullPointerException in Poll Events.");
 				LOG.debug(LOG_STACKTRACE, e);
@@ -221,6 +228,12 @@ public class MainMenu implements Runnable {
 			final int difference = i - centerItemIndex;
 			final int slot = (centerSlot + difference);
 			this.drawing.drawText(item.getName(), itemSize, xLoc, scaledHeight - (slot * 3) + adjustment, color, true);
+		}
+	}
+
+	public static class ReturnToMenuRequest extends RuntimeException {
+		public ReturnToMenuRequest() {
+			// Menu Item indicating to return Items
 		}
 	}
 }
