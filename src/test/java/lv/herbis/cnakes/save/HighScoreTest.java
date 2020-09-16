@@ -124,6 +124,8 @@ public class HighScoreTest {
 		assertNotEquals("High scores with different scores should not equal.", highScoreInitial, highScoreDiffScore);
 		assertNotEquals("High scores with different timestamps should not equal.", highScoreInitial,
 						highScoreDiffTimestamp);
+		assertNotEquals("Initial High score should not be equal to null.", highScoreInitial, null);
+		assertNotEquals("Initial High score should not be equal to random Object.", highScoreInitial, new Object());
 	}
 
 
