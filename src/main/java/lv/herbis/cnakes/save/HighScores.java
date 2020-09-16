@@ -59,9 +59,9 @@ public class HighScores implements Serializable {
 		if (getLimit() <= highScoreSize) {
 			LOG.debug("High-score limit ({}) reached.", getLimit());
 			final HighScore bottomScore = getBottomScore();
-			if (bottomScore == null || bottomScore.getScore() < score.getScore()) {
+			if (bottomScore.getScore() < score.getScore()) {
 				/* Add new score and sort. */
-				addHighScoreToList(score, true);
+				addHighScoreToList(score);
 				DataUtil.removeItemsAboveIndex(getHighScoreList(), getLimit() - 1);
 				return true;
 			} else {
@@ -71,7 +71,7 @@ public class HighScores implements Serializable {
 		}
 
 		/*So we haven't reached the high-score count limit, we can just add to the list. */
-		addHighScoreToList(score, true);
+		addHighScoreToList(score);
 
 		return true;
 	}
@@ -81,13 +81,10 @@ public class HighScores implements Serializable {
 	 * Adds high score directly to the list and sorts it, if needed.
 	 *
 	 * @param score HighScore object to add to the list.
-	 * @param sort  Should the list be sorted? (Most likely always true).
 	 */
-	private void addHighScoreToList(final HighScore score, final boolean sort) {
+	private void addHighScoreToList(final HighScore score) {
 		getHighScoreList().add(score);
-		if (sort) {
-			Collections.sort(getHighScoreList());
-		}
+		Collections.sort(getHighScoreList());
 	}
 
 	/**
