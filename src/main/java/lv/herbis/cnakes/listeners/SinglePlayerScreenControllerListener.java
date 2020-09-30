@@ -57,13 +57,12 @@ public class SinglePlayerScreenControllerListener extends ControllerListener {
 	public boolean catchP1CommonAction(final int buttonId) {
 		boolean caught = false;
 
-		if (this.p1ControllerMapping.getBack() == buttonId || this.p1ControllerMapping.getCancel() == buttonId) {
+		if (this.p1ControllerMapping.getCancel() == buttonId) {
 			if (this.game.isPaused() || !this.game.isBeingPlayed()) {
 				this.game.end();
 				throw new MainMenu.ReturnToMenuRequest();
 			}
 
-			this.game.pause();
 			caught = true;
 		} else if (this.p1ControllerMapping.getStart() == buttonId || this.p1ControllerMapping
 				.getConfirm() == buttonId) {
@@ -71,6 +70,9 @@ public class SinglePlayerScreenControllerListener extends ControllerListener {
 			if (!this.game.isBeingPlayed() || this.game.hasEnded()) {
 				this.game.start();
 			}
+			caught = true;
+		} else if (this.p1ControllerMapping.getBack() == buttonId) {
+			this.game.pause();
 			caught = true;
 		}
 
