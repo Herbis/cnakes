@@ -189,7 +189,6 @@ public class MainMenu implements Runnable {
 	private void gameLoop() {
 		while (!glfwWindowShouldClose(this.windowId)) {
 			try {
-				//this.gamePadListener.checkState();
 				final Object pendingItem = this.navigation.usePendingItem();
 				if (pendingItem instanceof CnakesScreen) {
 					this.cnakesScreen = (CnakesScreen) pendingItem;

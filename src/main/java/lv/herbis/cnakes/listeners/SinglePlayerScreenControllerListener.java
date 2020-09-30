@@ -1,24 +1,21 @@
 package lv.herbis.cnakes.listeners;
 
 import lv.herbis.cnakes.controls.ButtonState;
-import lv.herbis.cnakes.controls.ControllerMapping;
 import lv.herbis.cnakes.menus.MainMenu;
 import lv.herbis.cnakes.status.GameStatus;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.Objects;
+
 import static lv.herbis.cnakes.movement.MovingDirections.*;
 import static org.lwjgl.glfw.GLFW.GLFW_JOYSTICK_1;
-import static org.lwjgl.glfw.GLFW.glfwGetJoystickName;
 
 public class SinglePlayerScreenControllerListener extends ControllerListener {
 
 	private static final Logger LOG = LogManager.getLogger(SinglePlayerScreenControllerListener.class);
 
 	private final GameStatus game;
-
-	private ControllerMapping p1ControllerMapping;
-
 
 	public SinglePlayerScreenControllerListener(final GameStatus gameStatus) {
 		this.game = gameStatus;
@@ -103,8 +100,23 @@ public class SinglePlayerScreenControllerListener extends ControllerListener {
 		return false;
 	}
 
-	public void initGamePads() {
-		LOG.debug("Initializing Game Controllers.");
-		this.p1ControllerMapping = getControllerMappingForName(glfwGetJoystickName(GLFW_JOYSTICK_1));
+	@Override
+	public boolean equals(final Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
+		if (!super.equals(o)) {
+			return false;
+		}
+		final SinglePlayerScreenControllerListener that = (SinglePlayerScreenControllerListener) o;
+		return Objects.equals(this.game, that.game);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(super.hashCode(), this.game);
 	}
 }

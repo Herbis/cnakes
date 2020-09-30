@@ -7,7 +7,6 @@ import lv.herbis.cnakes.draw.Drawing;
 import lv.herbis.cnakes.entities.Pagination;
 import lv.herbis.cnakes.listeners.HighScoreScreenControllerListener;
 import lv.herbis.cnakes.listeners.HighScoreScreenKeyListener;
-import lv.herbis.cnakes.listeners.MenuControllerListener;
 import lv.herbis.cnakes.save.HighScore;
 import lv.herbis.cnakes.save.HighScores;
 import lv.herbis.cnakes.screens.CnakesScreen;
@@ -86,7 +85,8 @@ public class HighScoresScreen implements CnakesScreen {
 		initPagination();
 		initScorePage();
 		glfwSetKeyCallback(this.windowId, new HighScoreScreenKeyListener(this.pagination));
-		final HighScoreScreenControllerListener controllerListener = new HighScoreScreenControllerListener(this.pagination);
+		final HighScoreScreenControllerListener controllerListener = new HighScoreScreenControllerListener(
+				this.pagination);
 		glfwSetJoystickCallback(controllerListener);
 		ControllerStatePublisher.setGamePadListener(controllerListener);
 		this.drawing.initFont("fonts/trs-million_rg.ttf");

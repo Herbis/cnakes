@@ -23,9 +23,6 @@ public class ControllerStatePublisher implements Runnable {
 	private long lastCheckNano;
 	private byte[] previousButtonState;
 
-	public ControllerStatePublisher() {
-	}
-
 	@Override
 	public void run() {
 		LOG.debug("Running Controller State Publisher");
@@ -72,26 +69,15 @@ public class ControllerStatePublisher implements Runnable {
 
 		this.previousButtonState = buttonStatusArray;
 
-		/*FloatBuffer axisStatus = glfwGetJoystickAxes(GLFW_JOYSTICK_1);
+		/* Code for getting Controller Axis
+
+		FloatBuffer axisStatus = glfwGetJoystickAxes(GLFW_JOYSTICK_1);
 		if (axisStatus != null)
 		{
 			for (int i = 0; i < axisStatus.capacity(); i++)
 			{
 				stringBuilder.append("Axis(").append(i).append("):").append(axisStatus.get(i)).append(",");
 			}
-		}*/
-
-
-		/*if (isButtonPressed(buttonStatus, this.p1ControllerMapping.getDown()) != this.p1ControllerState
-				.isDownPressed()) {
-			// trigger change
-			if (this.p1ControllerState.isDownPressed()) {
-				// trigger release event
-			} else {
-				// trigger press event
-			}
-
-			this.p1ControllerState.setDownPressed(!this.p1ControllerState.isDownPressed());
 		}*/
 	}
 
