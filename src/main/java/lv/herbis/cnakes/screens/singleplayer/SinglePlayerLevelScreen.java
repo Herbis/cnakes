@@ -1,10 +1,12 @@
 package lv.herbis.cnakes.screens.singleplayer;
 
 import lv.herbis.cnakes.configuration.CnakesConfiguration;
+import lv.herbis.cnakes.controls.ControllerStatePublisher;
 import lv.herbis.cnakes.draw.Drawing;
 import lv.herbis.cnakes.entities.PointCoordinates;
 import lv.herbis.cnakes.entities.Timer;
 import lv.herbis.cnakes.listeners.SinglePlayerKeyListener;
+import lv.herbis.cnakes.listeners.SinglePlayerScreenControllerListener;
 import lv.herbis.cnakes.movement.MovingDirections;
 import lv.herbis.cnakes.save.HighScore;
 import lv.herbis.cnakes.save.HighScores;
@@ -134,6 +136,7 @@ public class SinglePlayerLevelScreen implements CnakesScreen {
 		loadHighScores();
 		startGame();
 		glfwSetKeyCallback(this.windowId, new SinglePlayerKeyListener(this.gameStatus, this.windowId));
+		ControllerStatePublisher.setGamePadListener(new SinglePlayerScreenControllerListener(this.gameStatus));
 		this.drawing.initFont("fonts/trs-million_rg.ttf");
 
 	}

@@ -417,6 +417,34 @@ public class MovingDirections {
 		MovingDirections.p8LastDirection = MovingDirections.UP;
 	}
 
+	public static void attemptToMoveLeft() {
+		/* We can only start moving left, if we're not going right.*/
+		if (getP1Direction() != MovingDirections.RIGHT && getP1Direction() != MovingDirections.LEFT) {
+			MovingDirections.setP1DirectionAndPushToQueue(MovingDirections.LEFT);
+		}
+	}
+
+	public static void attemptToMoveRight() {
+		/* We can only start moving right, if we're not going left.*/
+		if (getP1Direction() != MovingDirections.LEFT && getP1Direction() != MovingDirections.RIGHT) {
+			MovingDirections.setP1DirectionAndPushToQueue(MovingDirections.RIGHT);
+		}
+	}
+
+	public static void attemptToMoveUp() {
+		/* We can only start moving up, if we're not going down.*/
+		if (getP1Direction() != MovingDirections.DOWN && getP1Direction() != MovingDirections.UP) {
+			MovingDirections.setP1DirectionAndPushToQueue(MovingDirections.UP);
+		}
+	}
+
+	public static void attemptToMoveDown() {
+		/* We can only start moving down, if we're not going up.*/
+		if (getP1Direction() != MovingDirections.UP && getP1Direction() != MovingDirections.DOWN) {
+			MovingDirections.setP1DirectionAndPushToQueue(MovingDirections.DOWN);
+		}
+	}
+
 	public static Queue<Integer> getP1DirectionQ() {
 		return p1DirectionQ;
 	}

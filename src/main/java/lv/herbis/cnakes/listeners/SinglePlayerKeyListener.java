@@ -7,6 +7,7 @@ import org.lwjgl.glfw.GLFWKeyCallback;
 
 import java.util.Objects;
 
+import static lv.herbis.cnakes.movement.MovingDirections.*;
 import static org.lwjgl.glfw.GLFW.*;
 
 public class SinglePlayerKeyListener extends GLFWKeyCallback {
@@ -78,38 +79,6 @@ public class SinglePlayerKeyListener extends GLFWKeyCallback {
 		}
 
 		return false;
-	}
-
-	private void attemptToMoveLeft() {
-		/* We can only start moving left, if we're not going right.*/
-		if (MovingDirections.getP1Direction() != MovingDirections.RIGHT && MovingDirections
-				.getP1Direction() != MovingDirections.LEFT) {
-			MovingDirections.setP1DirectionAndPushToQueue(MovingDirections.LEFT);
-		}
-	}
-
-	private void attemptToMoveRight() {
-		/* We can only start moving right, if we're not going left.*/
-		if (MovingDirections.getP1Direction() != MovingDirections.LEFT && MovingDirections
-				.getP1Direction() != MovingDirections.RIGHT) {
-			MovingDirections.setP1DirectionAndPushToQueue(MovingDirections.RIGHT);
-		}
-	}
-
-	private void attemptToMoveUp() {
-		/* We can only start moving up, if we're not going down.*/
-		if (MovingDirections.getP1Direction() != MovingDirections.DOWN && MovingDirections
-				.getP1Direction() != MovingDirections.UP) {
-			MovingDirections.setP1DirectionAndPushToQueue(MovingDirections.UP);
-		}
-	}
-
-	private void attemptToMoveDown() {
-		/* We can only start moving down, if we're not going up.*/
-		if (MovingDirections.getP1Direction() != MovingDirections.UP && MovingDirections
-				.getP1Direction() != MovingDirections.DOWN) {
-			MovingDirections.setP1DirectionAndPushToQueue(MovingDirections.DOWN);
-		}
 	}
 
 	private boolean catchKeyPress(final int action) {
