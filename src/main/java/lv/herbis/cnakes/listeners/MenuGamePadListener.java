@@ -3,6 +3,7 @@ package lv.herbis.cnakes.listeners;
 import lv.herbis.cnakes.controls.ButtonState;
 import lv.herbis.cnakes.controls.ControllerMapping;
 import lv.herbis.cnakes.controls.ControllerState;
+import lv.herbis.cnakes.movement.MenuNavigation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -17,17 +18,17 @@ public class MenuGamePadListener extends GamePadListener {
 
 	private ControllerState p1ControllerState;
 	private ControllerMapping p1ControllerMapping;
+	private final MenuNavigation menuNavigation;
 	private long lastCheckNano;
 
-	public MenuGamePadListener ()
-	{
+	public MenuGamePadListener(final MenuNavigation menuNavigation) {
+		this.menuNavigation = menuNavigation;
 		initGamePads();
 	}
 
 	@Override
-	public void invoke(int i, int i1) {
-		if (i == 10)
-		{
+	public void invoke(final int i, final int i1) {
+		if (i == 10) {
 			LOG.debug("Well, we're here.");
 			// Should handle connect / disconnect
 			// Default configuration from configuration file?
@@ -35,15 +36,38 @@ public class MenuGamePadListener extends GamePadListener {
 	}
 
 	@Override
-	public void invokeButtonStateChange(int gamePadId, int buttonId, ButtonState state) {
+	public void invokeButtonStateChange(final int gamePadId, final int buttonId, final ButtonState state) {
 		LOG.debug("Button state change invoked gamePadId: {}, buttonId: {}, state: {}.", gamePadId, buttonId, state);
+
+		if (GLFW_JOYSTICK_1 == gamePadId) {
+			processGamePad1StateChange(buttonId, state);
+		}
 	}
 
-	public void initGamePads()
-	{
+	public void processGamePad1StateChange(final int buttonId, final ButtonState state) {
+		if (this.p1ControllerMapping == null) {
+			return;
+		}
+
+		if (ButtonState.PRESSED.equals(state)) {
+			if (this.p1ControllerMapping.getDown() == buttonId) {
+				this.menuNavigation.moveDown();
+			} else if (this.p1ControllerMapping.getUp() == buttonId) {
+				this.menuNavigation.moveUp();
+			} else if (this.p1ControllerMapping.getConfirm() == buttonId
+					|| this.p1ControllerMapping.getStart() == buttonId) {
+				this.menuNavigation.enterSelectedItem();
+			} else if (this.p1ControllerMapping.getLeft() == buttonId) {
+				this.menuNavigation.moveLeft();
+			} else if (this.p1ControllerMapping.getRight() == buttonId) {
+				this.menuNavigation.moveRight();
+			}
+		}
+	}
+
+	public void initGamePads() {
 		LOG.debug("Initializing Game Pads.");
 		this.p1ControllerMapping = getControllerMappingForName(glfwGetJoystickName(GLFW_JOYSTICK_1));
-		this.p1ControllerState = new ControllerState();
 
 		/*final String gamePad2Name = glfwGetJoystickName(GLFW_JOYSTICK_2);
 		final String gamePad3Name = glfwGetJoystickName(GLFW_JOYSTICK_3);
@@ -63,36 +87,31 @@ public class MenuGamePadListener extends GamePadListener {
 
 	}
 
-	public void checkState()
-	{
+	public void checkState() {
 		final long currentTime = System.nanoTime();
-		if (currentTime - lastCheckNano > 200_000_000) {
-			lastCheckNano = currentTime;
+		if (currentTime - this.lastCheckNano > 200_000_000) {
+			this.lastCheckNano = currentTime;
 		} else {
-		 	return;
+			return;
 		}
 
 
-		ByteBuffer buttonStatus = glfwGetJoystickButtons(GLFW_JOYSTICK_1);
+		final ByteBuffer buttonStatus = glfwGetJoystickButtons(GLFW_JOYSTICK_1);
 
-		if (buttonStatus == null)
-		{
+		if (buttonStatus == null) {
 			return;
 		}
 
 		final StringBuilder stringBuilder = new StringBuilder("Controller: ");
-		for (int i = 0; i < buttonStatus.capacity(); i++)
-		{
+		for (int i = 0; i < buttonStatus.capacity(); i++) {
 			stringBuilder.append(i).append(":").append(buttonStatus.get(i)).append(",");
 			// maybe use the same logic for
 		}
 
 
-		FloatBuffer axisStatus = glfwGetJoystickAxes(GLFW_JOYSTICK_1);
-		if (axisStatus != null)
-		{
-			for (int i = 0; i < axisStatus.capacity(); i++)
-			{
+		final FloatBuffer axisStatus = glfwGetJoystickAxes(GLFW_JOYSTICK_1);
+		if (axisStatus != null) {
+			for (int i = 0; i < axisStatus.capacity(); i++) {
 				stringBuilder.append("Axis(").append(i).append("):").append(axisStatus.get(i)).append(",");
 			}
 		}
@@ -100,7 +119,8 @@ public class MenuGamePadListener extends GamePadListener {
 		LOG.debug(stringBuilder);
 
 
-		if (isButtonPressed(buttonStatus, this.p1ControllerMapping.getDown()) != this.p1ControllerState.isDownPressed()) {
+		if (isButtonPressed(buttonStatus, this.p1ControllerMapping.getDown()) != this.p1ControllerState
+				.isDownPressed()) {
 			// trigger change
 			if (this.p1ControllerState.isDownPressed()) {
 				// trigger release event
@@ -116,10 +136,10 @@ public class MenuGamePadListener extends GamePadListener {
 		return buttonStatus.get(buttonId) == 1;
 	}
 
-	private ControllerMapping getControllerMappingForName(final String gamePadName)
-	{
+	private ControllerMapping getControllerMappingForName(final String gamePadName) {
 		// based on Xbox 360 controller
 		final ControllerMapping mapping = new ControllerMapping();
+		mapping.setName(gamePadName);
 		mapping.setConfirm(0);
 		mapping.setCancel(1);
 		mapping.setBack(6);

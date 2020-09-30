@@ -25,7 +25,7 @@ public class ControllerStatePublisher implements Runnable {
 
 	@Override
 	public void run() {
-		LOG.debug("Runing Controller State Publisher");
+		LOG.debug("Running Controller State Publisher");
 		while (!stop) {
 			final GamePadListener currentListener = ControllerStatePublisher.gamePadListener;
 

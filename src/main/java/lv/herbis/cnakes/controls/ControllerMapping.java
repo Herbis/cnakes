@@ -1,7 +1,7 @@
 package lv.herbis.cnakes.controls;
 
 public class ControllerMapping {
-
+	private String name;
 	private int confirm;
 	private int cancel;
 	private int start;
@@ -16,6 +16,13 @@ public class ControllerMapping {
 	private int horizontalAxisRightStick;
 	private int verticalAxisRightStick;
 
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
 
 	public int getConfirm() {
 		return confirm;

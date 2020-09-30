@@ -157,7 +157,7 @@ public class MainMenu implements Runnable {
 	private void initMenu() {
 		this.navigation = new MenuNavigation(this.configuration, this.windowId, this.soundManager);
 		glfwSetKeyCallback(this.windowId, new MenuKeyListener(this.navigation, this.windowId));
-		this.gamePadListener = new MenuGamePadListener();
+		this.gamePadListener = new MenuGamePadListener(this.navigation);
 		glfwSetJoystickCallback(this.gamePadListener);
 		loadControllerThread();
 		ControllerStatePublisher.setGamePadListener(this.gamePadListener);
