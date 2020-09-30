@@ -2,9 +2,12 @@ package lv.herbis.cnakes.screens.highscore;
 
 import lv.herbis.cnakes.configuration.CnakesConfiguration;
 import lv.herbis.cnakes.constants.SoundConstants;
+import lv.herbis.cnakes.controls.ControllerStatePublisher;
 import lv.herbis.cnakes.draw.Drawing;
 import lv.herbis.cnakes.entities.Pagination;
+import lv.herbis.cnakes.listeners.HighScoreScreenControllerListener;
 import lv.herbis.cnakes.listeners.HighScoreScreenKeyListener;
+import lv.herbis.cnakes.listeners.MenuControllerListener;
 import lv.herbis.cnakes.save.HighScore;
 import lv.herbis.cnakes.save.HighScores;
 import lv.herbis.cnakes.screens.CnakesScreen;
@@ -21,6 +24,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.LinkedList;
 import java.util.List;
 
+import static org.lwjgl.glfw.GLFW.glfwSetJoystickCallback;
 import static org.lwjgl.glfw.GLFW.glfwSetKeyCallback;
 
 
@@ -82,6 +86,9 @@ public class HighScoresScreen implements CnakesScreen {
 		initPagination();
 		initScorePage();
 		glfwSetKeyCallback(this.windowId, new HighScoreScreenKeyListener(this.pagination));
+		final HighScoreScreenControllerListener controllerListener = new HighScoreScreenControllerListener(this.pagination);
+		glfwSetJoystickCallback(controllerListener);
+		ControllerStatePublisher.setGamePadListener(controllerListener);
 		this.drawing.initFont("fonts/trs-million_rg.ttf");
 
 	}

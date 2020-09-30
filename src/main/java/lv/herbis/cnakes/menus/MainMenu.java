@@ -3,10 +3,11 @@ package lv.herbis.cnakes.menus;
 import lv.herbis.cnakes.configuration.CnakesConfiguration;
 import lv.herbis.cnakes.controls.ControllerStatePublisher;
 import lv.herbis.cnakes.draw.Drawing;
-import lv.herbis.cnakes.listeners.MenuGamePadListener;
-import lv.herbis.cnakes.screens.CnakesScreen;
+import lv.herbis.cnakes.listeners.ControllerListener;
+import lv.herbis.cnakes.listeners.MenuControllerListener;
 import lv.herbis.cnakes.listeners.MenuKeyListener;
 import lv.herbis.cnakes.movement.MenuNavigation;
+import lv.herbis.cnakes.screens.CnakesScreen;
 import lv.herbis.cnakes.sound.SoundListener;
 import lv.herbis.cnakes.sound.SoundManager;
 import org.apache.logging.log4j.LogManager;
@@ -29,7 +30,6 @@ public class MainMenu implements Runnable {
 	private final Drawing drawing;
 	private final CnakesConfiguration configuration;
 	private MenuNavigation navigation;
-	private MenuGamePadListener gamePadListener;
 
 	private boolean resolutionAutoConfig;
 	private Integer monitor;
@@ -40,6 +40,7 @@ public class MainMenu implements Runnable {
 	private int gameScale;
 
 	private final SoundManager soundManager;
+	private Thread controllerStatePublisherThread;
 
 	private CnakesScreen cnakesScreen;
 
@@ -157,17 +158,22 @@ public class MainMenu implements Runnable {
 	private void initMenu() {
 		this.navigation = new MenuNavigation(this.configuration, this.windowId, this.soundManager);
 		glfwSetKeyCallback(this.windowId, new MenuKeyListener(this.navigation, this.windowId));
-		this.gamePadListener = new MenuGamePadListener(this.navigation);
-		glfwSetJoystickCallback(this.gamePadListener);
-		loadControllerThread();
-		ControllerStatePublisher.setGamePadListener(this.gamePadListener);
+		initControllerThread();
 	}
 
-	public static void loadControllerThread() {
-		final ControllerStatePublisher csp = new ControllerStatePublisher();
+	public void initControllerThread() {
 
-		final Thread cspThread = new Thread(csp);
-		cspThread.start();
+		final ControllerListener controllerListener = new MenuControllerListener(this.navigation);
+
+		if (controllerStatePublisherThread == null)
+		{
+			this.controllerStatePublisherThread = new Thread(new ControllerStatePublisher());
+			this.controllerStatePublisherThread.start();
+		}
+		glfwSetJoystickCallback(controllerListener);
+
+		ControllerStatePublisher.setGamePadListener(controllerListener);
+		ControllerStatePublisher.setMenuNavigation(this.navigation);
 	}
 
 	private void initSound() {
@@ -190,6 +196,7 @@ public class MainMenu implements Runnable {
 					this.cnakesScreen.initScreen();
 				} else if (pendingItem instanceof ReturnToMenuRequest) {
 					this.cnakesScreen = null;
+					initMenu();
 				}
 
 				glClear(GL_COLOR_BUFFER_BIT);
