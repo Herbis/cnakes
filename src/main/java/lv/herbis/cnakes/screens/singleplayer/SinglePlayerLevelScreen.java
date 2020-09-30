@@ -135,7 +135,7 @@ public class SinglePlayerLevelScreen implements CnakesScreen {
 		initSounds();
 		loadHighScores();
 		startGame();
-		glfwSetKeyCallback(this.windowId, new SinglePlayerKeyListener(this.gameStatus, this.windowId));
+		glfwSetKeyCallback(this.windowId, new SinglePlayerKeyListener(this.gameStatus));
 		ControllerStatePublisher.setGamePadListener(new SinglePlayerScreenControllerListener(this.gameStatus));
 		this.drawing.initFont("fonts/trs-million_rg.ttf");
 

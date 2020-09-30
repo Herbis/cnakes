@@ -10,13 +10,9 @@ import static org.lwjgl.glfw.GLFW.*;
 public class SinglePlayerKeyListener extends GLFWKeyCallback {
 
 	private final GameStatus game;
-	private final long windowId;
 
-
-	public SinglePlayerKeyListener(final GameStatus gameStatus, final long windowId) {
+	public SinglePlayerKeyListener(final GameStatus gameStatus) {
 		this.game = gameStatus;
-		this.windowId = windowId;
-
 	}
 
 	@Override
