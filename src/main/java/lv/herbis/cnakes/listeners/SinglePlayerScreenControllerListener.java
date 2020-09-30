@@ -6,10 +6,7 @@ import lv.herbis.cnakes.status.GameStatus;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.Objects;
-
 import static lv.herbis.cnakes.movement.MovingDirections.*;
-import static org.lwjgl.glfw.GLFW.GLFW_JOYSTICK_1;
 
 public class SinglePlayerScreenControllerListener extends ControllerListener {
 
@@ -23,20 +20,6 @@ public class SinglePlayerScreenControllerListener extends ControllerListener {
 	}
 
 	@Override
-	public void invoke(final int i, final int i1) {
-		// This is for handling controller connects / disconnects if it's ever going to be implemented.
-	}
-
-	@Override
-	public void invokeButtonStateChange(final int controllerId, final int buttonId, final ButtonState state) {
-		LOG.debug("Button state change invoked controllerId: {}, buttonId: {}, state: {}.", controllerId, buttonId,
-				  state);
-
-		if (GLFW_JOYSTICK_1 == controllerId) {
-			processP1ControllerStateChange(buttonId, state);
-		}
-	}
-
 	public void processP1ControllerStateChange(final int buttonId, final ButtonState state) {
 		if (this.p1ControllerMapping == null) {
 			return;
@@ -102,21 +85,12 @@ public class SinglePlayerScreenControllerListener extends ControllerListener {
 
 	@Override
 	public boolean equals(final Object o) {
-		if (this == o) {
-			return true;
-		}
-		if (o == null || getClass() != o.getClass()) {
-			return false;
-		}
-		if (!super.equals(o)) {
-			return false;
-		}
-		final SinglePlayerScreenControllerListener that = (SinglePlayerScreenControllerListener) o;
-		return Objects.equals(this.game, that.game);
+
+		return this == o;
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(super.hashCode(), this.game);
+		return super.hashCode();
 	}
 }

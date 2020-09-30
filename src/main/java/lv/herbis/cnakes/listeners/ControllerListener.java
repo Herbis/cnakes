@@ -12,9 +12,23 @@ import static org.lwjgl.glfw.GLFW.glfwGetJoystickName;
 public abstract class ControllerListener extends GLFWJoystickCallback {
 	private static final Logger LOG = LogManager.getLogger(ControllerListener.class);
 
-	public abstract void invokeButtonStateChange(int gamePadId, int buttonId, ButtonState state);
+	public abstract void processP1ControllerStateChange(int buttonId, ButtonState state);
+
+	public void invokeButtonStateChange(final int controllerId, final int buttonId, final ButtonState state) {
+		LOG.debug("Button state change invoked controllerId: {}, buttonId: {}, state: {}.", controllerId, buttonId,
+				  state);
+
+		if (GLFW_JOYSTICK_1 == controllerId) {
+			processP1ControllerStateChange(buttonId, state);
+		}
+	}
 
 	protected ControllerMapping p1ControllerMapping;
+
+	@Override
+	public void invoke(final int i, final int i1) {
+		// This is for handling controller connects / disconnects if it's ever going to be implemented.
+	}
 
 	public void initGamePads() {
 		LOG.debug("Initializing Game Controllers in class: {}.", getClass().getName());
@@ -39,5 +53,15 @@ public abstract class ControllerListener extends GLFWJoystickCallback {
 		mapping.setVerticalAxisRightStick(3);
 
 		return mapping;
+	}
+
+	@Override
+	public boolean equals(final Object o) {
+		return this == o;
+	}
+
+	@Override
+	public int hashCode() {
+		return super.hashCode();
 	}
 }

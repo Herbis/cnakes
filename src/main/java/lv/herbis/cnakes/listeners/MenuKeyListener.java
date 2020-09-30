@@ -6,8 +6,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.glfw.GLFWKeyCallback;
 
-import java.util.Objects;
-
 import static org.lwjgl.glfw.GLFW.*;
 
 public class MenuKeyListener extends GLFWKeyCallback {
@@ -51,21 +49,11 @@ public class MenuKeyListener extends GLFWKeyCallback {
 
 	@Override
 	public boolean equals(final Object o) {
-		if (this == o) {
-			return true;
-		}
-		if (o == null || getClass() != o.getClass()) {
-			return false;
-		}
-		if (!super.equals(o)) {
-			return false;
-		}
-		final MenuKeyListener that = (MenuKeyListener) o;
-		return this.windowId == that.windowId && Objects.equals(this.navigation, that.navigation);
+		return this == o;
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(super.hashCode(), this.navigation, this.windowId);
+		return super.hashCode();
 	}
 }

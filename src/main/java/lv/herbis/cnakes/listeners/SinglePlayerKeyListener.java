@@ -1,11 +1,8 @@
 package lv.herbis.cnakes.listeners;
 
 import lv.herbis.cnakes.menus.MainMenu;
-import lv.herbis.cnakes.movement.MovingDirections;
 import lv.herbis.cnakes.status.GameStatus;
 import org.lwjgl.glfw.GLFWKeyCallback;
-
-import java.util.Objects;
 
 import static lv.herbis.cnakes.movement.MovingDirections.*;
 import static org.lwjgl.glfw.GLFW.*;
@@ -87,18 +84,11 @@ public class SinglePlayerKeyListener extends GLFWKeyCallback {
 
 	@Override
 	public boolean equals(final Object o) {
-		if (this == o) {
-			return true;
-		} else if (o == null || getClass() != o.getClass() || !super.equals(o)) {
-			return false;
-		}
-
-		final SinglePlayerKeyListener that = (SinglePlayerKeyListener) o;
-		return this.windowId == that.windowId && Objects.equals(this.game, that.game);
+		return this == o;
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(super.hashCode(), this.game, this.windowId);
+		return super.hashCode();
 	}
 }
