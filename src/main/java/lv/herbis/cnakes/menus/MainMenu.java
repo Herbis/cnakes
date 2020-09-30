@@ -1,7 +1,9 @@
 package lv.herbis.cnakes.menus;
 
 import lv.herbis.cnakes.configuration.CnakesConfiguration;
+import lv.herbis.cnakes.controls.ControllerStatePublisher;
 import lv.herbis.cnakes.draw.Drawing;
+import lv.herbis.cnakes.listeners.MenuGamePadListener;
 import lv.herbis.cnakes.screens.CnakesScreen;
 import lv.herbis.cnakes.listeners.MenuKeyListener;
 import lv.herbis.cnakes.movement.MenuNavigation;
@@ -27,6 +29,7 @@ public class MainMenu implements Runnable {
 	private final Drawing drawing;
 	private final CnakesConfiguration configuration;
 	private MenuNavigation navigation;
+	private MenuGamePadListener gamePadListener;
 
 	private boolean resolutionAutoConfig;
 	private Integer monitor;
@@ -59,6 +62,7 @@ public class MainMenu implements Runnable {
 	 */
 	private void cleanUp() {
 		this.soundManager.cleanup();
+		ControllerStatePublisher.stop();
 		// set cursor back to normal
 		glfwSetInputMode(this.windowId, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 
@@ -153,6 +157,17 @@ public class MainMenu implements Runnable {
 	private void initMenu() {
 		this.navigation = new MenuNavigation(this.configuration, this.windowId, this.soundManager);
 		glfwSetKeyCallback(this.windowId, new MenuKeyListener(this.navigation, this.windowId));
+		this.gamePadListener = new MenuGamePadListener();
+		glfwSetJoystickCallback(this.gamePadListener);
+		loadControllerThread();
+		ControllerStatePublisher.setGamePadListener(this.gamePadListener);
+	}
+
+	public static void loadControllerThread() {
+		final ControllerStatePublisher csp = new ControllerStatePublisher();
+
+		final Thread cspThread = new Thread(csp);
+		cspThread.start();
 	}
 
 	private void initSound() {
@@ -168,6 +183,7 @@ public class MainMenu implements Runnable {
 	private void gameLoop() {
 		while (!glfwWindowShouldClose(this.windowId)) {
 			try {
+				//this.gamePadListener.checkState();
 				final Object pendingItem = this.navigation.usePendingItem();
 				if (pendingItem instanceof CnakesScreen) {
 					this.cnakesScreen = (CnakesScreen) pendingItem;
