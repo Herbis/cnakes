@@ -34,6 +34,12 @@ public class SinglePlayerScreenControllerListener extends ControllerListener {
 		}
 	}
 
+
+	@Override
+	public void processP1ControllerAxisStateChange(float[] axisState) {
+		// TODO
+	}
+
 	public boolean catchP1CommonAction(final int buttonId) {
 		boolean caught = false;
 

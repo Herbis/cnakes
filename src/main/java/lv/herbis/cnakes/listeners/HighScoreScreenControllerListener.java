@@ -31,6 +31,12 @@ public class HighScoreScreenControllerListener extends ControllerListener {
 		}
 	}
 
+
+	@Override
+	public void processP1ControllerAxisStateChange(float[] axisState) {
+		// TODO
+	}
+
 	@Override
 	public boolean equals(final Object o) {
 		return this == o;

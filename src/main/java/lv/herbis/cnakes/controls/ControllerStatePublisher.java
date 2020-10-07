@@ -7,21 +7,25 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.nio.ByteBuffer;
+import java.nio.FloatBuffer;
+import java.util.HashMap;
+import java.util.Map;
 
-import static org.lwjgl.glfw.GLFW.GLFW_JOYSTICK_1;
-import static org.lwjgl.glfw.GLFW.glfwGetJoystickButtons;
+import static org.lwjgl.glfw.GLFW.*;
 
 public class ControllerStatePublisher implements Runnable {
 	private static final Logger LOG = LogManager.getLogger(ControllerStatePublisher.class);
-	private static final long UPDATE_INTERVAL_NS = 10_000_000; // NANO SECONDS
+	private static final long UPDATE_INTERVAL_NS = 10_000_000; // 1_000_000 NANO SECONDS = 1 MILLI SECOND
 	private static final byte PRESSED_BUTTON_VALUE = 1;
+	private static final float AXIS_MIN_VALUE_CHANGE = 0.005f;
 
 	private static ControllerListener controllerListener;
 	private static MenuNavigation menuNavigation;
 	private static boolean stop;
 
 	private long lastCheckNano;
-	private byte[] previousButtonState;
+	final Map<Integer, byte[]> previousControllerButtonStates = new HashMap<>();
+	final Map<Integer, float[]> previousControllerAxisStates = new HashMap<>();
 
 	@Override
 	public void run() {
@@ -39,7 +43,7 @@ public class ControllerStatePublisher implements Runnable {
 			if (currentTime - this.lastCheckNano > UPDATE_INTERVAL_NS) {
 				this.lastCheckNano = currentTime;
 				try {
-					checkState(currentListener);
+					checkState(currentListener, GLFW_JOYSTICK_1);
 				} catch (final MainMenu.ReturnToMenuRequest e) {
 					getMenuNavigation().setPendingItem(e);
 				}
@@ -48,12 +52,12 @@ public class ControllerStatePublisher implements Runnable {
 	}
 
 
-	public void checkState(final ControllerListener currentListener) {
+	public void checkState(final ControllerListener currentListener, final int controllerId) {
 
-		final ByteBuffer buttonStatus = glfwGetJoystickButtons(GLFW_JOYSTICK_1);
+		final ByteBuffer buttonStatus = glfwGetJoystickButtons(controllerId);
 
 		if (buttonStatus == null || buttonStatus.capacity() == 0) {
-			LOG.trace("Button status is null or capacity is empty for joystick {}.", GLFW_JOYSTICK_1);
+			LOG.trace("Button status is null or capacity is empty for joystick {}.", controllerId);
 			return;
 		}
 
@@ -61,33 +65,48 @@ public class ControllerStatePublisher implements Runnable {
 		for (int i = 0; i < buttonStatus.capacity(); i++) {
 			final byte buttonValue = buttonStatus.get(i);
 			buttonStatusArray[i] = buttonValue;
-			if (this.previousButtonState != null && this.previousButtonState.length > i) {
-				invokeButtonStateChangeIfItHasOccurred(GLFW_JOYSTICK_1, i, buttonValue, currentListener);
-			}
-
+			invokeButtonStateChangeIfItHasOccurred(controllerId, i, buttonValue, currentListener);
 		}
 
-		this.previousButtonState = buttonStatusArray;
+		this.previousControllerButtonStates.put(controllerId, buttonStatusArray);
 
-		/* Code for getting Controller Axis
+		/* Code for getting Controller Axis */
+		final FloatBuffer axisStatus = glfwGetJoystickAxes(controllerId);
 
-		FloatBuffer axisStatus = glfwGetJoystickAxes(GLFW_JOYSTICK_1);
 		if (axisStatus != null)
 		{
+			final float[] axisStatusArray = new float[axisStatus.capacity()];
+			boolean anyAxisChanged = false;
 			for (int i = 0; i < axisStatus.capacity(); i++)
 			{
-				stringBuilder.append("Axis(").append(i).append("):").append(axisStatus.get(i)).append(",");
+				final float axisValue = axisStatus.get(i);
+				axisStatusArray[i] = axisStatus.get(i);
+				anyAxisChanged = anyAxisChanged || isAxisValueDifferentEnough(controllerId, i, axisValue);
 			}
-		}*/
+
+			if (anyAxisChanged) {
+				LOG.debug("Axis changed? {}", anyAxisChanged);
+
+				currentListener.invokeAxisStateChange(controllerId, axisStatusArray);
+			}
+			this.previousControllerAxisStates.put(controllerId, axisStatusArray);
+		}
 	}
 
-	private void invokeButtonStateChangeIfItHasOccurred(final int gamePadId, final int buttonId, final byte value,
+	private void invokeButtonStateChangeIfItHasOccurred(final int controllerId, final int buttonId, final byte value,
 														final ControllerListener listener) {
-		if (this.previousButtonState != null && this.previousButtonState.length > buttonId && this.previousButtonState[buttonId] != value) {
-
+		final byte[] previousButtonState = this.previousControllerButtonStates.get(controllerId);
+		if (previousButtonState != null && previousButtonState.length > buttonId && previousButtonState[buttonId] != value) {
 			final ButtonState state = (value == PRESSED_BUTTON_VALUE) ? ButtonState.PRESSED : ButtonState.RELEASED;
-			listener.invokeButtonStateChange(gamePadId, buttonId, state);
+			listener.invokeButtonStateChange(controllerId, buttonId, state);
 		}
+	}
+
+	protected boolean isAxisValueDifferentEnough(final int controllerId, final int axisId, final float value)
+	{
+		final float[] previousAxisState = this.previousControllerAxisStates.get(controllerId);
+		return previousAxisState != null && previousAxisState.length > axisId && previousAxisState[axisId] != value
+				&& Math.abs(previousAxisState[axisId] - value) > AXIS_MIN_VALUE_CHANGE;
 	}
 
 	public static void stop() {
