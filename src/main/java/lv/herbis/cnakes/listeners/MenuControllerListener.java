@@ -51,7 +51,7 @@ public class MenuControllerListener extends ControllerListener {
 		}
 
 		if (axisArraySize > this.p1ControllerMapping.getVerticalAxisLeftStick()) {
-			lsVerticalDirection = getVerticalAxisDirection(axisState[this.p1ControllerMapping.getHorizontalAxisLeftStick()], DEFAULT_CONTROLLER_AXIS_DEAD_ZONE);
+			lsVerticalDirection = getVerticalAxisDirection(axisState[this.p1ControllerMapping.getVerticalAxisLeftStick()], DEFAULT_CONTROLLER_AXIS_DEAD_ZONE);
 		}
 
 		final AxisDirection newDirection = determineAxisDirection(lsHorizontalDirection, lsVerticalDirection, lsPreviousDirection);

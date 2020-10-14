@@ -17,7 +17,7 @@ public class ControllerStatePublisher implements Runnable {
 	private static final Logger LOG = LogManager.getLogger(ControllerStatePublisher.class);
 	private static final long UPDATE_INTERVAL_NS = 10_000_000; // 1_000_000 NANO SECONDS = 1 MILLI SECOND
 	private static final byte PRESSED_BUTTON_VALUE = 1;
-	private static final float AXIS_MIN_VALUE_CHANGE = 0.005f;
+	private static final float AXIS_MIN_VALUE_CHANGE = 0.45f;
 
 	private static ControllerListener controllerListener;
 	private static MenuNavigation menuNavigation;
@@ -85,11 +85,13 @@ public class ControllerStatePublisher implements Runnable {
 			}
 
 			if (anyAxisChanged) {
-				LOG.debug("Axis changed? {}", anyAxisChanged);
+				LOG.debug("Axis has changed!");
 
 				currentListener.invokeAxisStateChange(controllerId, axisStatusArray);
+				this.previousControllerAxisStates.put(controllerId, axisStatusArray);
+			} else {
+				this.previousControllerAxisStates.putIfAbsent(controllerId, axisStatusArray);
 			}
-			this.previousControllerAxisStates.put(controllerId, axisStatusArray);
 		}
 	}
 
