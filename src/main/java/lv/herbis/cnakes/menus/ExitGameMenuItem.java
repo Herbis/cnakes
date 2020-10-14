@@ -1,5 +1,6 @@
 package lv.herbis.cnakes.menus;
 
+import lv.herbis.cnakes.context.ContextItems;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -13,8 +14,8 @@ public class ExitGameMenuItem implements MenuItem {
 
 	private final long windowId;
 
-	public ExitGameMenuItem(final long windowId) {
-		this.windowId = windowId;
+	public ExitGameMenuItem(final ContextItems contextItems) {
+		this.windowId = contextItems.getWindowId();
 	}
 
 	@Override

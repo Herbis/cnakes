@@ -19,19 +19,24 @@ public class ControllerStatePublisher implements Runnable {
 	private static final byte PRESSED_BUTTON_VALUE = 1;
 	protected static final float AXIS_MIN_VALUE_CHANGE = 0.45f;
 
-	private static ControllerListener controllerListener;
-	private static MenuNavigation menuNavigation;
-	private static boolean stop;
+	private ControllerListener controllerListener;
+	private MenuNavigation menuNavigation;
 
+	private boolean stop;
 	private long lastCheckNano;
 	final Map<Integer, byte[]> previousControllerButtonStates = new HashMap<>();
 	final Map<Integer, float[]> previousControllerAxisStates = new HashMap<>();
 
+	public ControllerStatePublisher(final ControllerListener controllerListener, final MenuNavigation menuNavigation) {
+		this.controllerListener = controllerListener;
+		this.menuNavigation = menuNavigation;
+	}
+
 	@Override
 	public void run() {
 		LOG.debug("Running Controller State Publisher");
-		while (!stop) {
-			final ControllerListener currentListener = ControllerStatePublisher.controllerListener;
+		while (!this.stop) {
+			final ControllerListener currentListener = this.controllerListener;
 
 			if (currentListener == null) {
 				LOG.debug("Current Listener is null");
@@ -105,8 +110,7 @@ public class ControllerStatePublisher implements Runnable {
 	}
 
 	protected static boolean isButtonStateDifferent(final int buttonId, final byte value,
-													final byte[] previousButtonState)
-	{
+													final byte[] previousButtonState) {
 		return previousButtonState != null && previousButtonState.length > buttonId && previousButtonState[buttonId] != value;
 	}
 
@@ -116,19 +120,19 @@ public class ControllerStatePublisher implements Runnable {
 				.abs(previousAxisState[axisId] - value) > AXIS_MIN_VALUE_CHANGE;
 	}
 
-	public static void stop() {
-		stop = true;
+	public void stop() {
+		this.stop = true;
 	}
 
-	public static void setGamePadListener(final ControllerListener controllerListener) {
-		ControllerStatePublisher.controllerListener = controllerListener;
+	public void setControllerListener(final ControllerListener controllerListener) {
+		this.controllerListener = controllerListener;
 	}
 
-	public static MenuNavigation getMenuNavigation() {
-		return menuNavigation;
+	public MenuNavigation getMenuNavigation() {
+		return this.menuNavigation;
 	}
 
-	public static void setMenuNavigation(final MenuNavigation menuNavigation) {
-		ControllerStatePublisher.menuNavigation = menuNavigation;
+	public void setMenuNavigation(final MenuNavigation menuNavigation) {
+		this.menuNavigation = menuNavigation;
 	}
 }

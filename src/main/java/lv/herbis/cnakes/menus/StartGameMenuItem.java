@@ -1,9 +1,7 @@
 package lv.herbis.cnakes.menus;
 
-import lv.herbis.cnakes.configuration.CnakesConfiguration;
+import lv.herbis.cnakes.context.ContextItems;
 import lv.herbis.cnakes.screens.singleplayer.SinglePlayerLevelScreen;
-import lv.herbis.cnakes.movement.MenuNavigation;
-import lv.herbis.cnakes.sound.SoundManager;
 
 import java.awt.*;
 
@@ -11,17 +9,10 @@ public class StartGameMenuItem implements MenuItem {
 
 	private static final String NAME = "START";
 
-	private final CnakesConfiguration configuration;
-	private final MenuNavigation menuNavigation;
-	private final long windowId;
-	private final SoundManager soundManager;
+	private final ContextItems contextItems;
 
-	public StartGameMenuItem(final CnakesConfiguration configuration, final MenuNavigation menuNavigation,
-							 final long windowId, final SoundManager soundManager) {
-		this.configuration = configuration;
-		this.menuNavigation = menuNavigation;
-		this.windowId = windowId;
-		this.soundManager = soundManager;
+	public StartGameMenuItem(final ContextItems contextItems) {
+		this.contextItems = contextItems;
 	}
 
 	@Override
@@ -36,8 +27,8 @@ public class StartGameMenuItem implements MenuItem {
 
 	@Override
 	public boolean enter() {
-		final SinglePlayerLevelScreen ls = new SinglePlayerLevelScreen(configuration, windowId, this.soundManager);
-		menuNavigation.setPendingItem(ls);
+		final SinglePlayerLevelScreen ls = new SinglePlayerLevelScreen(this.contextItems);
+		this.contextItems.getMenuNavigation().setPendingItem(ls);
 
 		return true;
 	}
