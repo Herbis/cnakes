@@ -60,7 +60,7 @@ public class MainMenu implements Runnable {
 		final GLFWVidMode vidModes = glfwGetVideoMode(glfwGetPrimaryMonitor());
 		if (vidModes == null) {
 			LOG.error("Returned Vid Mode from glfwGetVideoMode(glfwGetPrimaryMonitor()) is null. Cannot proceed.");
-			throw new RuntimeException("Returned Vid Mode from glfwGetVideoMode(glfwGetPrimaryMonitor()) is null");
+			throw new IllegalStateException("Returned Vid Mode from glfwGetVideoMode(glfwGetPrimaryMonitor()) is null");
 		}
 		this.configuration.getVideo().getResolution().setHorizontal(vidModes.width());
 		this.configuration.getVideo().getResolution().setVertical(vidModes.height());
