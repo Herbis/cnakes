@@ -40,55 +40,8 @@ public class MenuControllerListener extends ControllerListener {
 	}
 
 	@Override
-	public void processP1ControllerAxisStateChange(final float[] axisState) {
-
-
-
-		final AxisDirection previousLsDirection = this.p1ControllerState.getLeftPadAxisDirection();
-		final AxisDirection lsDirection = determineNewDirection(axisState,
-																this.p1ControllerMapping.getHorizontalAxisLeftStick(),
-																this.p1ControllerMapping.getVerticalAxisLeftStick(),
-																previousLsDirection);
-		this.p1ControllerState.setLeftPadAxisDirection(lsDirection);
-
-		navigateBasedOnCurrentAndPreviousAxisDirection(lsDirection, previousLsDirection);
-
-
-		final AxisDirection previousRsDirection = this.p1ControllerState.getLeftPadAxisDirection();
-		final AxisDirection rsDirection = determineNewDirection(axisState,
-																this.p1ControllerMapping.getHorizontalAxisRightStick(),
-																this.p1ControllerMapping.getVerticalAxisRightStick(),
-																previousRsDirection);
-		this.p1ControllerState.setRightPadAxisDirection(rsDirection);
-
-		navigateBasedOnCurrentAndPreviousAxisDirection(rsDirection, previousRsDirection);
-	}
-
-	protected static AxisDirection determineNewDirection(final float[] axisState, final int horizontalAxisId,
-													  final int verticalAxisId, final AxisDirection previousDirection) {
-		final int axisArraySize = axisState.length;
-
-		AxisDirection horizontalDirection = AxisDirection.NONE;
-		AxisDirection verticalDirection = AxisDirection.NONE;
-		if (axisArraySize > horizontalAxisId) {
-			horizontalDirection = getHorizontalAxisDirection(axisState[horizontalAxisId],
-															 DEFAULT_CONTROLLER_AXIS_DEAD_ZONE);
-		}
-
-		if (axisArraySize > verticalAxisId) {
-			verticalDirection = getVerticalAxisDirection(axisState[verticalAxisId], DEFAULT_CONTROLLER_AXIS_DEAD_ZONE);
-		}
-
-		final AxisDirection newDirection = determineAxisDirection(horizontalDirection, verticalDirection,
-																  previousDirection);
-		LOG.debug("Previous Direction: {}, new direction {}", previousDirection, newDirection);
-
-
-		return newDirection;
-	}
-
-	protected void navigateBasedOnCurrentAndPreviousAxisDirection(final AxisDirection direction,
-																  final AxisDirection previousDirection) {
+	protected void moveP1BasedOnCurrentAndPreviousAxisDirection(final AxisDirection direction,
+															  final AxisDirection previousDirection) {
 		if (!previousDirection.equals(direction)) {
 			if (AxisDirection.DOWN.equals(direction)) {
 				this.menuNavigation.moveDown();

@@ -1,5 +1,6 @@
 package lv.herbis.cnakes.listeners;
 
+import lv.herbis.cnakes.controls.AxisDirection;
 import lv.herbis.cnakes.controls.ButtonState;
 import lv.herbis.cnakes.entities.Pagination;
 import lv.herbis.cnakes.menus.MainMenu;
@@ -33,8 +34,15 @@ public class HighScoreScreenControllerListener extends ControllerListener {
 
 
 	@Override
-	public void processP1ControllerAxisStateChange(float[] axisState) {
-		// TODO
+	protected void moveP1BasedOnCurrentAndPreviousAxisDirection(final AxisDirection direction,
+																final AxisDirection previousDirection) {
+		if (!previousDirection.equals(direction)) {
+			 if (AxisDirection.LEFT.equals(direction)) {
+				this.pagination.previousPage();
+			} else if (AxisDirection.RIGHT.equals(direction)) {
+				this.pagination.nextPage();
+			}
+		}
 	}
 
 	@Override

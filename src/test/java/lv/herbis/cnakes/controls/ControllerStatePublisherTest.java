@@ -37,7 +37,8 @@ public class ControllerStatePublisherTest {
 			}
 
 			@Override
-			public void processP1ControllerAxisStateChange(final float[] axisState) {
+			protected void moveP1BasedOnCurrentAndPreviousAxisDirection(final AxisDirection direction,
+																		final AxisDirection previousDirection) {
 
 			}
 		};

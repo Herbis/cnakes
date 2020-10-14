@@ -1,5 +1,6 @@
 package lv.herbis.cnakes.listeners;
 
+import lv.herbis.cnakes.controls.AxisDirection;
 import lv.herbis.cnakes.controls.ButtonState;
 import lv.herbis.cnakes.menus.MainMenu;
 import lv.herbis.cnakes.status.GameStatus;
@@ -36,8 +37,19 @@ public class SinglePlayerScreenControllerListener extends ControllerListener {
 
 
 	@Override
-	public void processP1ControllerAxisStateChange(float[] axisState) {
-		// TODO
+	protected void moveP1BasedOnCurrentAndPreviousAxisDirection(final AxisDirection direction,
+																final AxisDirection previousDirection) {
+		if (!previousDirection.equals(direction)) {
+			if (AxisDirection.DOWN.equals(direction)) {
+				attemptToMoveDown();
+			} else if (AxisDirection.UP.equals(direction)) {
+				attemptToMoveUp();
+			} else if (AxisDirection.LEFT.equals(direction)) {
+				attemptToMoveLeft();
+			} else if (AxisDirection.RIGHT.equals(direction)) {
+				attemptToMoveRight();
+			}
+		}
 	}
 
 	public boolean catchP1CommonAction(final int buttonId) {
