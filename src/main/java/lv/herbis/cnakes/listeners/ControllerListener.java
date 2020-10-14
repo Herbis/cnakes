@@ -13,7 +13,7 @@ import static org.lwjgl.glfw.GLFW.glfwGetJoystickName;
 
 public abstract class ControllerListener extends GLFWJoystickCallback {
 	private static final Logger LOG = LogManager.getLogger(ControllerListener.class);
-	protected static final float DEFAULT_CONTROLLER_AXIS_DEAD_ZONE = 0.5f;
+	protected static final float DEFAULT_CONTROLLER_AXIS_DEAD_ZONE = 0.6f;
 
 	protected ControllerMapping p1ControllerMapping;
 	protected ControllerState p1ControllerState;

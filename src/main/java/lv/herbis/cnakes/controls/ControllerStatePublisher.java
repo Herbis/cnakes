@@ -17,7 +17,7 @@ public class ControllerStatePublisher implements Runnable {
 	private static final Logger LOG = LogManager.getLogger(ControllerStatePublisher.class);
 	private static final long UPDATE_INTERVAL_NS = 10_000_000; // 1_000_000 NANO SECONDS = 1 MILLI SECOND
 	private static final byte PRESSED_BUTTON_VALUE = 1;
-	private static final float AXIS_MIN_VALUE_CHANGE = 0.45f;
+	protected static final float AXIS_MIN_VALUE_CHANGE = 0.45f;
 
 	private static ControllerListener controllerListener;
 	private static MenuNavigation menuNavigation;
@@ -73,15 +73,16 @@ public class ControllerStatePublisher implements Runnable {
 		/* Code for getting Controller Axis */
 		final FloatBuffer axisStatus = glfwGetJoystickAxes(controllerId);
 
-		if (axisStatus != null)
-		{
+		if (axisStatus != null) {
 			final float[] axisStatusArray = new float[axisStatus.capacity()];
 			boolean anyAxisChanged = false;
-			for (int i = 0; i < axisStatus.capacity(); i++)
-			{
+			for (int i = 0; i < axisStatus.capacity(); i++) {
 				final float axisValue = axisStatus.get(i);
 				axisStatusArray[i] = axisStatus.get(i);
-				anyAxisChanged = anyAxisChanged || isAxisValueDifferentEnough(controllerId, i, axisValue);
+
+				anyAxisChanged = anyAxisChanged || isAxisValueDifferentEnough(i, axisValue,
+																			  this.previousControllerAxisStates
+																					  .get(controllerId));
 			}
 
 			if (anyAxisChanged) {
@@ -104,11 +105,10 @@ public class ControllerStatePublisher implements Runnable {
 		}
 	}
 
-	protected boolean isAxisValueDifferentEnough(final int controllerId, final int axisId, final float value)
-	{
-		final float[] previousAxisState = this.previousControllerAxisStates.get(controllerId);
-		return previousAxisState != null && previousAxisState.length > axisId && previousAxisState[axisId] != value
-				&& Math.abs(previousAxisState[axisId] - value) > AXIS_MIN_VALUE_CHANGE;
+	protected static boolean isAxisValueDifferentEnough(final int axisId, final float value,
+														final float[] previousAxisState) {
+		return previousAxisState != null && previousAxisState.length > axisId && previousAxisState[axisId] != value && Math
+				.abs(previousAxisState[axisId] - value) > AXIS_MIN_VALUE_CHANGE;
 	}
 
 	public static void stop() {
