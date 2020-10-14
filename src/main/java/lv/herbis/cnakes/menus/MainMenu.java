@@ -2,7 +2,6 @@ package lv.herbis.cnakes.menus;
 
 import lv.herbis.cnakes.configuration.CnakesConfiguration;
 import lv.herbis.cnakes.context.ContextItems;
-import lv.herbis.cnakes.controls.ControllerStatePublisher;
 import lv.herbis.cnakes.draw.Drawing;
 import lv.herbis.cnakes.listeners.ControllerListener;
 import lv.herbis.cnakes.listeners.MenuControllerListener;
@@ -41,8 +40,6 @@ public class MainMenu implements Runnable {
 	private int gameScale;
 
 	private final SoundManager soundManager;
-	private Thread controllerStatePublisherThread;
-	private ControllerStatePublisher controllerStatePublisher;
 	private final ContextItems contextItems;
 
 	private CnakesScreen cnakesScreen;
@@ -168,25 +165,12 @@ public class MainMenu implements Runnable {
 	private void initMenu() {
 		this.navigation = this.contextItems.getMenuNavigation();
 		glfwSetKeyCallback(this.windowId, new MenuKeyListener(this.navigation, this.windowId));
-		initControllerThread();
+		initControllerListener();
 	}
 
-	public void initControllerThread() {
-
+	public void initControllerListener() {
 		final ControllerListener controllerListener = new MenuControllerListener(this.navigation);
 		this.contextItems.getControllerStatePublisher().setControllerListener(controllerListener);
-		if (this.controllerStatePublisherThread == null || this.controllerStatePublisher == null) {
-			if (this.controllerStatePublisherThread != null && this.controllerStatePublisherThread.isAlive()) {
-				this.controllerStatePublisherThread.interrupt();
-			}
-
-			this.controllerStatePublisher = new ControllerStatePublisher(controllerListener, this.navigation);
-			this.controllerStatePublisherThread = new Thread(this.controllerStatePublisher);
-			this.controllerStatePublisherThread.start();
-		} else {
-			this.controllerStatePublisher.setControllerListener(controllerListener);
-			this.controllerStatePublisher.setMenuNavigation(this.navigation);
-		}
 
 		glfwSetJoystickCallback(controllerListener);
 	}
