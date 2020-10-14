@@ -51,7 +51,6 @@ public class ControllerStatePublisher implements Runnable {
 		}
 	}
 
-
 	public void checkState(final ControllerListener currentListener, final int controllerId) {
 
 		final ByteBuffer buttonStatus = glfwGetJoystickButtons(controllerId);
@@ -99,10 +98,16 @@ public class ControllerStatePublisher implements Runnable {
 	private void invokeButtonStateChangeIfItHasOccurred(final int controllerId, final int buttonId, final byte value,
 														final ControllerListener listener) {
 		final byte[] previousButtonState = this.previousControllerButtonStates.get(controllerId);
-		if (previousButtonState != null && previousButtonState.length > buttonId && previousButtonState[buttonId] != value) {
+		if (isButtonStateDifferent(buttonId, value, previousButtonState)) {
 			final ButtonState state = (value == PRESSED_BUTTON_VALUE) ? ButtonState.PRESSED : ButtonState.RELEASED;
 			listener.invokeButtonStateChange(controllerId, buttonId, state);
 		}
+	}
+
+	protected static boolean isButtonStateDifferent(final int buttonId, final byte value,
+													final byte[] previousButtonState)
+	{
+		return previousButtonState != null && previousButtonState.length > buttonId && previousButtonState[buttonId] != value;
 	}
 
 	protected static boolean isAxisValueDifferentEnough(final int axisId, final float value,

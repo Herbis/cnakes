@@ -82,4 +82,42 @@ public class ControllerStatePublisherTest {
 
 	}
 
+	@Test
+	public void isButtonStateDifferentWithNoPreviousState() {
+		assertFalse("If no previous button state has been given, there should be no difference.",
+					ControllerStatePublisher.isButtonStateDifferent(0, (byte) 1, null));
+	}
+
+	@Test
+	public void isButtonStateDifferentWithPreviousStateLengthBeingLowerThanButtonId() {
+		final byte[] previousState = new byte[1];
+		assertFalse("If previous button state [] length is smaller than btn id, there should be no difference.",
+					ControllerStatePublisher.isButtonStateDifferent(2, (byte) 1, previousState));
+	}
+
+	@Test
+	public void isButtonStateDifferentWithPreviousStateHavingSameValue() {
+		final byte[] previousState = new byte[2];
+		previousState[0] = 1;
+
+		assertFalse("If previous button state has the same value for btn 0, there should be no difference.",
+					ControllerStatePublisher.isButtonStateDifferent(0, (byte) 1, previousState));
+		assertFalse("If previous button state has the same value for btn 1, there should be no difference.",
+				   ControllerStatePublisher.isButtonStateDifferent(1, (byte) 0, previousState));
+
+	}
+
+	@Test
+	public void isButtonStateDifferentWithPreviousStateHavingDifferentValue() {
+		final byte[] previousState = new byte[3];
+		previousState[0] = 2;
+		previousState[1] = 3;
+
+		assertTrue("If previous button state has different value for btn 0, there should be difference.",
+					ControllerStatePublisher.isButtonStateDifferent(0, (byte) 1, previousState));
+		assertTrue("If previous button state has different value for btn 1, there should be difference.",
+					ControllerStatePublisher.isButtonStateDifferent(1, (byte) 0, previousState));
+		assertFalse("If previous button state has same value for btn 2, there should be no difference.",
+					ControllerStatePublisher.isButtonStateDifferent(1, (byte) 3, previousState));
+	}
 }
