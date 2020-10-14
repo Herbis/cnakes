@@ -13,8 +13,6 @@ public class DefaultMenuNavigation implements MenuNavigation {
 	private final MenuItem[] menuItems;
 
 	private MenuItem activeItem;
-
-
 	private Object pendingItem;
 
 	public DefaultMenuNavigation(final ContextItems contextItems) {

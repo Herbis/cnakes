@@ -10,7 +10,6 @@ public interface MenuNavigation {
 
 	void moveUp();
 
-
 	void moveRight();
 
 	void moveLeft();

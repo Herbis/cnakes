@@ -7,6 +7,9 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.concurrent.TimeUnit;
+
+import static org.awaitility.Awaitility.await;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -199,7 +202,7 @@ public class ControllerStatePublisherTest {
 	public void testStopThread() throws InterruptedException {
 		assertTrue("Publisher Thread should be alive at this point.", this.controllerStatePublisherThread.isAlive());
 		this.controllerStatePublisher.stop();
-		Thread.sleep(100);
-		assertFalse("Publisher Thread should be dead at this point.", this.controllerStatePublisherThread.isAlive());
+		await().atLeast(100, TimeUnit.MILLISECONDS)
+				.untilAsserted(() -> assertFalse(this.controllerStatePublisherThread.isAlive()));
 	}
 }
