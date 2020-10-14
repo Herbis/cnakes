@@ -3,12 +3,8 @@ package lv.herbis.cnakes.listeners;
 import lv.herbis.cnakes.controls.AxisDirection;
 import lv.herbis.cnakes.controls.ButtonState;
 import lv.herbis.cnakes.movement.MenuNavigation;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 public class MenuControllerListener extends ControllerListener {
-	private static final Logger LOG = LogManager.getLogger(MenuControllerListener.class);
-
 	private final MenuNavigation menuNavigation;
 
 
@@ -41,7 +37,7 @@ public class MenuControllerListener extends ControllerListener {
 
 	@Override
 	protected void moveP1BasedOnCurrentAndPreviousAxisDirection(final AxisDirection direction,
-															  final AxisDirection previousDirection) {
+																final AxisDirection previousDirection) {
 		if (!previousDirection.equals(direction)) {
 			if (AxisDirection.DOWN.equals(direction)) {
 				this.menuNavigation.moveDown();
