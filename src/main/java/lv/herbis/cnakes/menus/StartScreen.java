@@ -20,7 +20,8 @@ public class StartScreen {
 
 		LOG.debug("Game launched.");
 		try {
-			loadMenu(ConfigurationUtil.readConfiguration(ConfigurationUtil.LOCAL_CONFIG_FILE_NAME));
+			final CnakesConfiguration configuration = ConfigurationUtil.readConfiguration(ConfigurationUtil.LOCAL_CONFIG_FILE_NAME);
+			loadMenu(configuration);
 		} catch (final ConfigurationException e) {
 			LOG.error("Could not launch the game, configuration error.", e);
 			System.exit(1);

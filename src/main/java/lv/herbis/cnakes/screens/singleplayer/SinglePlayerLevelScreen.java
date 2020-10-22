@@ -1,14 +1,17 @@
 package lv.herbis.cnakes.screens.singleplayer;
 
 import lv.herbis.cnakes.configuration.CnakesConfiguration;
+import lv.herbis.cnakes.constants.SoundConstants;
+import lv.herbis.cnakes.context.ContextItems;
+import lv.herbis.cnakes.controls.ControllerStatePublisher;
 import lv.herbis.cnakes.draw.Drawing;
 import lv.herbis.cnakes.entities.PointCoordinates;
 import lv.herbis.cnakes.entities.Timer;
 import lv.herbis.cnakes.listeners.SinglePlayerKeyListener;
+import lv.herbis.cnakes.listeners.SinglePlayerScreenControllerListener;
 import lv.herbis.cnakes.movement.MovingDirections;
 import lv.herbis.cnakes.save.HighScore;
 import lv.herbis.cnakes.save.HighScores;
-import lv.herbis.cnakes.constants.SoundConstants;
 import lv.herbis.cnakes.screens.CnakesScreen;
 import lv.herbis.cnakes.sound.SoundManager;
 import lv.herbis.cnakes.staticaccess.GameRules;
@@ -50,6 +53,7 @@ public class SinglePlayerLevelScreen implements CnakesScreen {
 	private PointCoordinates target;
 	private List<PointCoordinates> body;
 	private Random random;
+	private final ControllerStatePublisher controllerStatePublisher;
 
 	/**
 	 * time at last frame
@@ -68,12 +72,12 @@ public class SinglePlayerLevelScreen implements CnakesScreen {
 	long lastFPS;
 
 
-	public SinglePlayerLevelScreen(final CnakesConfiguration configuration, final long windowId,
-								   final SoundManager soundManager) {
-		this.configuration = configuration;
-		this.windowId = windowId;
-		this.drawing = new Drawing(configuration);
-		this.soundManager = soundManager;
+	public SinglePlayerLevelScreen(final ContextItems contextItems) {
+		this.configuration = contextItems.getConfiguration();
+		this.windowId = contextItems.getWindowId();
+		this.drawing = contextItems.getDrawing();
+		this.soundManager = contextItems.getSoundManager();
+		this.controllerStatePublisher = contextItems.getControllerStatePublisher();
 		initConfiguration();
 	}
 
@@ -129,11 +133,13 @@ public class SinglePlayerLevelScreen implements CnakesScreen {
 	/**
 	 * Initializes the Screen.
 	 */
+	@Override
 	public void initScreen() {
 		initSounds();
 		loadHighScores();
 		startGame();
-		glfwSetKeyCallback(this.windowId, new SinglePlayerKeyListener(this.gameStatus, this.windowId));
+		glfwSetKeyCallback(this.windowId, new SinglePlayerKeyListener(this.gameStatus));
+		this.controllerStatePublisher.setControllerListener(new SinglePlayerScreenControllerListener(this.gameStatus));
 		this.drawing.initFont("fonts/trs-million_rg.ttf");
 
 	}
@@ -246,6 +252,7 @@ public class SinglePlayerLevelScreen implements CnakesScreen {
 	/**
 	 * Updates the game.
 	 */
+	@Override
 	public void update() {
 
 		/* Reset Target (bug) and Snake if the game has just been started. */

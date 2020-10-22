@@ -1,10 +1,13 @@
 package lv.herbis.cnakes.menus;
 
 import lv.herbis.cnakes.configuration.CnakesConfiguration;
+import lv.herbis.cnakes.context.ContextItems;
 import lv.herbis.cnakes.draw.Drawing;
-import lv.herbis.cnakes.screens.CnakesScreen;
+import lv.herbis.cnakes.listeners.ControllerListener;
+import lv.herbis.cnakes.listeners.MenuControllerListener;
 import lv.herbis.cnakes.listeners.MenuKeyListener;
 import lv.herbis.cnakes.movement.MenuNavigation;
+import lv.herbis.cnakes.screens.CnakesScreen;
 import lv.herbis.cnakes.sound.SoundListener;
 import lv.herbis.cnakes.sound.SoundManager;
 import org.apache.logging.log4j.LogManager;
@@ -37,18 +40,25 @@ public class MainMenu implements Runnable {
 	private int gameScale;
 
 	private final SoundManager soundManager;
+	private final ContextItems contextItems;
 
 	private CnakesScreen cnakesScreen;
 
 	public MainMenu(final CnakesConfiguration configuration) {
 		this.configuration = configuration;
-		this.drawing = new Drawing(configuration);
-		this.soundManager = new SoundManager();
+		this.contextItems = new ContextItems();
+		this.contextItems.setConfiguration(configuration);
+		this.soundManager = this.contextItems.getSoundManager();
+		this.drawing = this.contextItems.getDrawing();
 		initConfiguration();
 	}
 
 	private void autoConfigureResolution() {
 		final GLFWVidMode vidModes = glfwGetVideoMode(glfwGetPrimaryMonitor());
+		if (vidModes == null) {
+			LOG.error("Returned Vid Mode from glfwGetVideoMode(glfwGetPrimaryMonitor()) is null. Cannot proceed.");
+			throw new IllegalStateException("Returned Vid Mode from glfwGetVideoMode(glfwGetPrimaryMonitor()) is null");
+		}
 		this.configuration.getVideo().getResolution().setHorizontal(vidModes.width());
 		this.configuration.getVideo().getResolution().setVertical(vidModes.height());
 		this.configuration.getVideo().getResolution().setFullScreen(true);
@@ -58,7 +68,8 @@ public class MainMenu implements Runnable {
 	 * Cleans up (releases) the resources and destroys the window.
 	 */
 	private void cleanUp() {
-		this.soundManager.cleanup();
+		this.contextItems.cleanup();
+
 		// set cursor back to normal
 		glfwSetInputMode(this.windowId, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 
@@ -107,6 +118,7 @@ public class MainMenu implements Runnable {
 		if (this.windowId == NULL) {
 			throw new IllegalStateException("Failed to create the GLFW window");
 		}
+		this.contextItems.setWindowId(this.windowId);
 
 		// Hide cursor
 		glfwSetInputMode(this.windowId, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
@@ -151,8 +163,16 @@ public class MainMenu implements Runnable {
 	 * Initializes the game.
 	 */
 	private void initMenu() {
-		this.navigation = new MenuNavigation(this.configuration, this.windowId, this.soundManager);
+		this.navigation = this.contextItems.getMenuNavigation();
 		glfwSetKeyCallback(this.windowId, new MenuKeyListener(this.navigation, this.windowId));
+		initControllerListener();
+	}
+
+	public void initControllerListener() {
+		final ControllerListener controllerListener = new MenuControllerListener(this.navigation);
+		this.contextItems.getControllerStatePublisher().setControllerListener(controllerListener);
+
+		glfwSetJoystickCallback(controllerListener);
 	}
 
 	private void initSound() {
@@ -174,6 +194,7 @@ public class MainMenu implements Runnable {
 					this.cnakesScreen.initScreen();
 				} else if (pendingItem instanceof ReturnToMenuRequest) {
 					this.cnakesScreen = null;
+					initMenu();
 				}
 
 				glClear(GL_COLOR_BUFFER_BIT);

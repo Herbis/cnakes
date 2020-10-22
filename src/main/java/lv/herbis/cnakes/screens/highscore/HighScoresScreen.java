@@ -2,8 +2,10 @@ package lv.herbis.cnakes.screens.highscore;
 
 import lv.herbis.cnakes.configuration.CnakesConfiguration;
 import lv.herbis.cnakes.constants.SoundConstants;
+import lv.herbis.cnakes.context.ContextItems;
 import lv.herbis.cnakes.draw.Drawing;
 import lv.herbis.cnakes.entities.Pagination;
+import lv.herbis.cnakes.listeners.HighScoreScreenControllerListener;
 import lv.herbis.cnakes.listeners.HighScoreScreenKeyListener;
 import lv.herbis.cnakes.save.HighScore;
 import lv.herbis.cnakes.save.HighScores;
@@ -21,6 +23,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.LinkedList;
 import java.util.List;
 
+import static org.lwjgl.glfw.GLFW.glfwSetJoystickCallback;
 import static org.lwjgl.glfw.GLFW.glfwSetKeyCallback;
 
 
@@ -37,7 +40,6 @@ public class HighScoresScreen implements CnakesScreen {
 	private int screenWidthCenterScaled;
 	private int screenHeightScaled;
 
-
 	private final DateTimeFormatter hsDateFormat = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
 
@@ -47,18 +49,19 @@ public class HighScoresScreen implements CnakesScreen {
 	private float titleLocation;
 
 	private final Drawing drawing;
+	private final ContextItems contextItems;
 
 	private Pagination pagination;
 	private int currentPage = 1;
 	private String pageText;
 	private float pageTextYLocation;
 
-	public HighScoresScreen(final CnakesConfiguration configuration, final long windowId,
-							final SoundManager soundManager) {
-		this.configuration = configuration;
-		this.windowId = windowId;
-		this.drawing = new Drawing(configuration);
-		this.soundManager = soundManager;
+	public HighScoresScreen(final ContextItems contextItems) {
+		this.contextItems = contextItems;
+		this.configuration = contextItems.getConfiguration();
+		this.windowId = contextItems.getWindowId();
+		this.drawing = contextItems.getDrawing();
+		this.soundManager = contextItems.getSoundManager();
 		initConfiguration();
 	}
 
@@ -82,6 +85,10 @@ public class HighScoresScreen implements CnakesScreen {
 		initPagination();
 		initScorePage();
 		glfwSetKeyCallback(this.windowId, new HighScoreScreenKeyListener(this.pagination));
+		final HighScoreScreenControllerListener controllerListener = new HighScoreScreenControllerListener(
+				this.pagination);
+		glfwSetJoystickCallback(controllerListener);
+		this.contextItems.getControllerStatePublisher().setControllerListener(controllerListener);
 		this.drawing.initFont("fonts/trs-million_rg.ttf");
 
 	}
