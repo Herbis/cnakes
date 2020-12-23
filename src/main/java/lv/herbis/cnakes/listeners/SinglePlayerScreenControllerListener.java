@@ -11,10 +11,14 @@ import static lv.herbis.cnakes.movement.MovingDirections.*;
 
 public class SinglePlayerScreenControllerListener extends ControllerListener {
 
+	protected static final String LOG_DIRECTION_UP_NAME = "Up";
+	protected static final String LOG_DIRECTION_DOWN_NAME = "Down";
+	protected static final String LOG_DIRECTION_LEFT_NAME = "Left";
+	protected static final String LOG_DIRECTION_RIGHT_NAME = "Right";
+
 	private static final Logger LOG = LogManager.getLogger(SinglePlayerScreenControllerListener.class);
-	private static final long MIN_DPAD_TIME_DIFFERENCE = 80_000_000; // 80ms
-	private long p1LastDpadChangeNanoTime = 0L;
-	private boolean p1lastDpadMoveAttemptSuccessful = false;
+	protected long p1LastDpadChangeNanoTime = 0L;
+	protected boolean p1lastDpadMoveAttemptSuccessful = false;
 
 	private final GameStatus game;
 
@@ -113,24 +117,8 @@ public class SinglePlayerScreenControllerListener extends ControllerListener {
 		return false;
 	}
 
-	protected boolean checkDpadChangeRealistic(final boolean isLastDpadMoveAttemptSuccessful,
-											   final long lastDpadChangeNanoTime, final String directionNameForDebug) {
-		final long now = System.nanoTime();
-		final long difference = now - lastDpadChangeNanoTime;
-		if (isLastDpadMoveAttemptSuccessful && difference < MIN_DPAD_TIME_DIFFERENCE) {
-			LOG.debug(
-					"DENIED to move {} but the time difference ({}ms) between dpad changes was too small, " + "and successful attempt already made recently.",
-					directionNameForDebug, difference / 1_000_000);
-			return false;
-		} else {
-			LOG.debug("ALLOWED to move {} the time difference ({}ms) between dpad changes was large enough.",
-					  directionNameForDebug, difference / 1_000_000);
-			return true;
-		}
-	}
-
 	protected void moveP1LeftWithDPadIfRealistic() {
-		if (checkDpadChangeRealistic(this.p1lastDpadMoveAttemptSuccessful, this.p1LastDpadChangeNanoTime, "Left")) {
+		if (checkDpadChangeRealistic(this.p1lastDpadMoveAttemptSuccessful, this.p1LastDpadChangeNanoTime, LOG_DIRECTION_LEFT_NAME)) {
 			this.p1lastDpadMoveAttemptSuccessful = attemptToMoveLeft();
 			this.p1LastDpadChangeNanoTime = System.nanoTime();
 		} else {
@@ -139,7 +127,7 @@ public class SinglePlayerScreenControllerListener extends ControllerListener {
 	}
 
 	protected void moveP1RightWithDPadIfRealistic() {
-		if (checkDpadChangeRealistic(this.p1lastDpadMoveAttemptSuccessful, this.p1LastDpadChangeNanoTime, "Right")) {
+		if (checkDpadChangeRealistic(this.p1lastDpadMoveAttemptSuccessful, this.p1LastDpadChangeNanoTime, LOG_DIRECTION_RIGHT_NAME)) {
 			this.p1lastDpadMoveAttemptSuccessful = attemptToMoveRight();
 			this.p1LastDpadChangeNanoTime = System.nanoTime();
 		} else {
@@ -148,7 +136,7 @@ public class SinglePlayerScreenControllerListener extends ControllerListener {
 	}
 
 	protected void moveP1UpWithDPadIfRealistic() {
-		if (checkDpadChangeRealistic(this.p1lastDpadMoveAttemptSuccessful, this.p1LastDpadChangeNanoTime, "Up")) {
+		if (checkDpadChangeRealistic(this.p1lastDpadMoveAttemptSuccessful, this.p1LastDpadChangeNanoTime, LOG_DIRECTION_UP_NAME)) {
 			this.p1lastDpadMoveAttemptSuccessful = attemptToMoveUp();
 			this.p1LastDpadChangeNanoTime = System.nanoTime();
 		} else {
@@ -157,7 +145,7 @@ public class SinglePlayerScreenControllerListener extends ControllerListener {
 	}
 
 	protected void moveP1DownWithDPadIfRealistic() {
-		if (checkDpadChangeRealistic(this.p1lastDpadMoveAttemptSuccessful, this.p1LastDpadChangeNanoTime, "Down")) {
+		if (checkDpadChangeRealistic(this.p1lastDpadMoveAttemptSuccessful, this.p1LastDpadChangeNanoTime, LOG_DIRECTION_DOWN_NAME)) {
 			this.p1lastDpadMoveAttemptSuccessful = attemptToMoveDown();
 			this.p1LastDpadChangeNanoTime = System.nanoTime();
 		} else {
