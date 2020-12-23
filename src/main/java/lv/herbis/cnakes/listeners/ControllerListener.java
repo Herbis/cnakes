@@ -167,6 +167,12 @@ public abstract class ControllerListener extends GLFWJoystickCallback {
 		return AxisDirection.DOWN.equals(direction) || AxisDirection.UP.equals(direction);
 	}
 
+	protected static boolean isDirectionalPadButton(final int buttonId, final ControllerMapping controllerMapping)
+	{
+		return buttonId == controllerMapping.getLeft() || buttonId == controllerMapping.getRight()
+				|| buttonId == controllerMapping.getUp() || buttonId == controllerMapping.getDown();
+	}
+
 	@Override
 	public boolean equals(final Object o) {
 		return this == o;
