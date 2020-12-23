@@ -14,9 +14,9 @@ import static org.lwjgl.glfw.GLFW.glfwGetJoystickName;
 public abstract class ControllerListener extends GLFWJoystickCallback {
 
 	protected static final float DEFAULT_CONTROLLER_AXIS_DEAD_ZONE = 0.5f;
+	protected static final long MIN_DPAD_TIME_DIFFERENCE = 80_000_000; // 80ms
 
 	private static final Logger LOG = LogManager.getLogger(ControllerListener.class);
-	private static final long MIN_DPAD_TIME_DIFFERENCE = 80_000_000; // 80ms
 
 	protected ControllerMapping p1ControllerMapping;
 	protected ControllerState p1ControllerState;
