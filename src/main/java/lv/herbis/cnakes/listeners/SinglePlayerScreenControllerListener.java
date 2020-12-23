@@ -13,8 +13,8 @@ public class SinglePlayerScreenControllerListener extends ControllerListener {
 
 	private static final Logger LOG = LogManager.getLogger(SinglePlayerScreenControllerListener.class);
 	private static final long MIN_DPAD_TIME_DIFFERENCE = 80_000_000; // 80ms
-	private long lastDpadChangeNanoTime = 0L;
-	private boolean lastDpadMoveAttemptSuccessful = false;
+	private long p1LastDpadChangeNanoTime = 0L;
+	private boolean p1lastDpadMoveAttemptSuccessful = false;
 
 	private final GameStatus game;
 
@@ -47,7 +47,6 @@ public class SinglePlayerScreenControllerListener extends ControllerListener {
 			this.p1ControllerState.setRightPressed(ButtonState.PRESSED.equals(state));
 		}
 	}
-
 
 	@Override
 	protected void moveP1BasedOnCurrentAndPreviousAxisDirection(final AxisDirection direction,
@@ -91,42 +90,20 @@ public class SinglePlayerScreenControllerListener extends ControllerListener {
 	}
 
 	public boolean catchP1ButtonMovementChange(final int buttonId) {
-		if (this.game.isBeingPlayed() && !this.game.hasEnded() && !this.game.isPaused()) {
+		if (isValidGameStateForMovementChange()) {
 			/* Actions allowed only when the game has not been started or has not ended or is not paused. */
 			boolean caught = false;
 			if (this.p1ControllerMapping.getLeft() == buttonId) {
-				if (checkDpadChangeRealistic("Left")) {
-					this.lastDpadMoveAttemptSuccessful = attemptToMoveLeft();
-					this.lastDpadChangeNanoTime = System.nanoTime();
-				}
+				moveP1LeftWithDPadIfRealistic();
 				caught = true;
 			} else if (this.p1ControllerMapping.getRight() == buttonId) {
-				if (checkDpadChangeRealistic("Right")) {
-					this.lastDpadMoveAttemptSuccessful = attemptToMoveRight();
-					this.lastDpadChangeNanoTime = System.nanoTime();
-				} else {
-					this.lastDpadMoveAttemptSuccessful = false;
-				}
-
+				moveP1RightWithDPadIfRealistic();
 				caught = true;
 			} else if (this.p1ControllerMapping.getUp() == buttonId) {
-				if (checkDpadChangeRealistic("Up")) {
-					this.lastDpadMoveAttemptSuccessful = attemptToMoveUp();
-					this.lastDpadChangeNanoTime = System.nanoTime();
-				} else {
-					this.lastDpadMoveAttemptSuccessful = false;
-				}
-
+				moveP1UpWithDPadIfRealistic();
 				caught = true;
 			} else if (this.p1ControllerMapping.getDown() == buttonId) {
-				if (checkDpadChangeRealistic("Down")) {
-					this.lastDpadMoveAttemptSuccessful = attemptToMoveDown();
-					this.lastDpadChangeNanoTime = System.nanoTime();
-				} else {
-					this.lastDpadMoveAttemptSuccessful = false;
-				}
-
-
+				moveP1DownWithDPadIfRealistic();
 				caught = true;
 			}
 
@@ -136,19 +113,60 @@ public class SinglePlayerScreenControllerListener extends ControllerListener {
 		return false;
 	}
 
-	protected boolean checkDpadChangeRealistic(final String direction) {
+	protected boolean checkDpadChangeRealistic(final boolean isLastDpadMoveAttemptSuccessful,
+											   final long lastDpadChangeNanoTime, final String directionNameForDebug) {
 		final long now = System.nanoTime();
-		final long difference = now - this.lastDpadChangeNanoTime;
-		if (this.lastDpadMoveAttemptSuccessful && difference < MIN_DPAD_TIME_DIFFERENCE) {
+		final long difference = now - lastDpadChangeNanoTime;
+		if (isLastDpadMoveAttemptSuccessful && difference < MIN_DPAD_TIME_DIFFERENCE) {
 			LOG.debug(
 					"DENIED to move {} but the time difference ({}ms) between dpad changes was too small, " + "and successful attempt already made recently.",
-					direction, difference / 1_000_000);
+					directionNameForDebug, difference / 1_000_000);
 			return false;
 		} else {
-			LOG.debug("ALLOWED to move {} the time difference ({}ms) between dpad changes was large enough.", direction,
-					  difference / 1_000_000);
+			LOG.debug("ALLOWED to move {} the time difference ({}ms) between dpad changes was large enough.",
+					  directionNameForDebug, difference / 1_000_000);
 			return true;
 		}
+	}
+
+	protected void moveP1LeftWithDPadIfRealistic() {
+		if (checkDpadChangeRealistic(this.p1lastDpadMoveAttemptSuccessful, this.p1LastDpadChangeNanoTime, "Left")) {
+			this.p1lastDpadMoveAttemptSuccessful = attemptToMoveLeft();
+			this.p1LastDpadChangeNanoTime = System.nanoTime();
+		} else {
+			this.p1lastDpadMoveAttemptSuccessful = false;
+		}
+	}
+
+	protected void moveP1RightWithDPadIfRealistic() {
+		if (checkDpadChangeRealistic(this.p1lastDpadMoveAttemptSuccessful, this.p1LastDpadChangeNanoTime, "Right")) {
+			this.p1lastDpadMoveAttemptSuccessful = attemptToMoveRight();
+			this.p1LastDpadChangeNanoTime = System.nanoTime();
+		} else {
+			this.p1lastDpadMoveAttemptSuccessful = false;
+		}
+	}
+
+	protected void moveP1UpWithDPadIfRealistic() {
+		if (checkDpadChangeRealistic(this.p1lastDpadMoveAttemptSuccessful, this.p1LastDpadChangeNanoTime, "Up")) {
+			this.p1lastDpadMoveAttemptSuccessful = attemptToMoveUp();
+			this.p1LastDpadChangeNanoTime = System.nanoTime();
+		} else {
+			this.p1lastDpadMoveAttemptSuccessful = false;
+		}
+	}
+
+	protected void moveP1DownWithDPadIfRealistic() {
+		if (checkDpadChangeRealistic(this.p1lastDpadMoveAttemptSuccessful, this.p1LastDpadChangeNanoTime, "Down")) {
+			this.p1lastDpadMoveAttemptSuccessful = attemptToMoveDown();
+			this.p1LastDpadChangeNanoTime = System.nanoTime();
+		} else {
+			this.p1lastDpadMoveAttemptSuccessful = false;
+		}
+	}
+
+	protected boolean isValidGameStateForMovementChange() {
+		return this.game.isBeingPlayed() && !this.game.hasEnded() && !this.game.isPaused();
 	}
 
 	@Override
