@@ -9,8 +9,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ControllerListenerTest {
@@ -25,9 +24,91 @@ public class ControllerListenerTest {
 	}
 
 	@Test
+	public void determineAxisDirectionWhenNone()
+	{
+		assertEquals("Direction Should be NONE.", AxisDirection.NONE, ControllerListener.determineAxisDirection(AxisDirection.NONE, AxisDirection.NONE, AxisDirection.NONE));
+	}
+
+	@Test
+	public void determineAxisDirectionWhenHorizontalPreviousAndHorizontalChange()
+	{
+		assertEquals("L1: Direction Should be LEFT.", AxisDirection.LEFT, ControllerListener.determineAxisDirection(AxisDirection.LEFT, AxisDirection.NONE, AxisDirection.LEFT));
+		assertEquals("L2: Direction Should be LEFT.", AxisDirection.LEFT, ControllerListener.determineAxisDirection(AxisDirection.LEFT, AxisDirection.NONE, AxisDirection.RIGHT));
+		assertEquals("R1: Direction Should be RIGHT.", AxisDirection.RIGHT, ControllerListener.determineAxisDirection(AxisDirection.RIGHT, AxisDirection.NONE, AxisDirection.LEFT));
+		assertEquals("R2: Direction Should be RIGHT.", AxisDirection.RIGHT, ControllerListener.determineAxisDirection(AxisDirection.RIGHT, AxisDirection.NONE, AxisDirection.RIGHT));
+	}
+
+	@Test
+	public void determineAxisDirectionWhenNonePreviousAndHorizontalChange()
+	{
+		assertEquals("L3: Direction Should be LEFT.", AxisDirection.LEFT, ControllerListener.determineAxisDirection(AxisDirection.LEFT, AxisDirection.NONE, AxisDirection.NONE));
+		assertEquals("R3: Direction Should be RIGHT.", AxisDirection.RIGHT, ControllerListener.determineAxisDirection(AxisDirection.RIGHT, AxisDirection.NONE, AxisDirection.NONE));
+	}
+
+	@Test
+	public void determineAxisDirectionWhenPreviousHorizontalMatchAndBothChange()
+	{
+		assertEquals("L4: Direction Should be UP.", AxisDirection.UP, ControllerListener.determineAxisDirection(AxisDirection.LEFT, AxisDirection.UP, AxisDirection.LEFT));
+		assertEquals("R4: Direction Should be UP.", AxisDirection.UP, ControllerListener.determineAxisDirection(AxisDirection.RIGHT, AxisDirection.UP, AxisDirection.RIGHT));
+		assertEquals("L5: Direction Should be DOWN.", AxisDirection.DOWN, ControllerListener.determineAxisDirection(AxisDirection.LEFT, AxisDirection.DOWN, AxisDirection.LEFT));
+		assertEquals("R5: Direction Should be DOWN.", AxisDirection.DOWN, ControllerListener.determineAxisDirection(AxisDirection.RIGHT, AxisDirection.DOWN, AxisDirection.RIGHT));
+	}
+
+	@Test
+	public void determineAxisDirectionWhenPreviousNoneAndBothChange()
+	{
+		assertEquals("V1: Direction Should be UP because vertical is prioritized.", AxisDirection.UP, ControllerListener.determineAxisDirection(AxisDirection.LEFT, AxisDirection.UP, AxisDirection.NONE));
+		assertEquals("V2: Direction Should be UP because vertical is prioritized.", AxisDirection.UP, ControllerListener.determineAxisDirection(AxisDirection.RIGHT, AxisDirection.UP, AxisDirection.NONE));
+		assertEquals("V3: Direction Should be DOWN because vertical is prioritized.", AxisDirection.DOWN, ControllerListener.determineAxisDirection(AxisDirection.LEFT, AxisDirection.DOWN, AxisDirection.NONE));
+		assertEquals("V4: Direction Should be DOWN because vertical is prioritized.", AxisDirection.DOWN, ControllerListener.determineAxisDirection(AxisDirection.RIGHT, AxisDirection.DOWN, AxisDirection.NONE));
+	}
+
+	@Test
+	public void determineAxisDirectionWhenPreviousHorizontalOppositeAndBothChanged()
+	{
+		assertEquals("OH1: Direction Should be LEFT.", AxisDirection.LEFT, ControllerListener.determineAxisDirection(AxisDirection.LEFT, AxisDirection.UP, AxisDirection.RIGHT));
+		assertEquals("OH2: Direction Should be RIGHT.", AxisDirection.RIGHT, ControllerListener.determineAxisDirection(AxisDirection.RIGHT, AxisDirection.UP, AxisDirection.LEFT));
+		assertEquals("OH3: Direction Should be LEFT.", AxisDirection.LEFT, ControllerListener.determineAxisDirection(AxisDirection.LEFT, AxisDirection.DOWN, AxisDirection.RIGHT));
+		assertEquals("OH4: Direction Should be RIGHT.", AxisDirection.RIGHT, ControllerListener.determineAxisDirection(AxisDirection.RIGHT, AxisDirection.DOWN, AxisDirection.LEFT));
+	}
+
+	@Test
+	public void determineAxisDirectionWhenPreviousVerticalOppositeAndBothChanged()
+	{
+		assertEquals("OV1: Direction Should be UP.", AxisDirection.UP, ControllerListener.determineAxisDirection(AxisDirection.LEFT, AxisDirection.UP, AxisDirection.DOWN));
+		assertEquals("OV2: Direction Should be UP.", AxisDirection.UP, ControllerListener.determineAxisDirection(AxisDirection.RIGHT, AxisDirection.UP, AxisDirection.DOWN));
+		assertEquals("OV3: Direction Should be DOWN.", AxisDirection.DOWN, ControllerListener.determineAxisDirection(AxisDirection.LEFT, AxisDirection.DOWN, AxisDirection.UP));
+		assertEquals("OV4: Direction Should be DOWN.", AxisDirection.DOWN, ControllerListener.determineAxisDirection(AxisDirection.RIGHT, AxisDirection.DOWN, AxisDirection.UP));
+	}
+
+	@Test
+	public void determineAxisDirectionWhenVerticalPreviousAndVerticalChange()
+	{
+		assertEquals("U1: Direction Should be UP.", AxisDirection.UP, ControllerListener.determineAxisDirection(AxisDirection.UP, AxisDirection.NONE, AxisDirection.UP));
+		assertEquals("U2: Direction Should be UP.", AxisDirection.UP, ControllerListener.determineAxisDirection(AxisDirection.UP, AxisDirection.NONE, AxisDirection.DOWN));
+		assertEquals("D1: Direction Should be DOWN.", AxisDirection.DOWN, ControllerListener.determineAxisDirection(AxisDirection.DOWN, AxisDirection.NONE, AxisDirection.UP));
+		assertEquals("D2: Direction Should be DOWN.", AxisDirection.DOWN, ControllerListener.determineAxisDirection(AxisDirection.DOWN, AxisDirection.NONE, AxisDirection.DOWN));
+	}
+
+	@Test
+	public void determineAxisDirectionWhenNonePreviousAndVerticalChange()
+	{
+		assertEquals("U3: Direction Should be UP.", AxisDirection.UP, ControllerListener.determineAxisDirection(AxisDirection.UP, AxisDirection.NONE, AxisDirection.NONE));
+		assertEquals("D3: Direction Should be DOWN.", AxisDirection.DOWN, ControllerListener.determineAxisDirection(AxisDirection.DOWN, AxisDirection.NONE, AxisDirection.NONE));
+	}
+
+	@Test
+	public void determineAxisDirectionWhenPreviousVerticalMatchAndBothChange()
+	{
+		assertEquals("U4: Direction Should be LEFT.", AxisDirection.LEFT, ControllerListener.determineAxisDirection(AxisDirection.LEFT, AxisDirection.UP, AxisDirection.UP));
+		assertEquals("D4: Direction Should be LEFT.", AxisDirection.LEFT, ControllerListener.determineAxisDirection(AxisDirection.LEFT, AxisDirection.DOWN, AxisDirection.DOWN));
+		assertEquals("U5: Direction Should be RIGHT.", AxisDirection.RIGHT, ControllerListener.determineAxisDirection(AxisDirection.RIGHT, AxisDirection.UP, AxisDirection.UP));
+		assertEquals("D5: Direction Should be RIGHT.", AxisDirection.RIGHT, ControllerListener.determineAxisDirection(AxisDirection.RIGHT, AxisDirection.DOWN, AxisDirection.DOWN));
+	}
+
+	@Test
 	public void isHorizontalDirectionNone() {
 		assertFalse("NONE direction should not be a horizontal direction.", ControllerListener.isHorizontalDirection(AxisDirection.NONE));
-
 	}
 
 	@Test
