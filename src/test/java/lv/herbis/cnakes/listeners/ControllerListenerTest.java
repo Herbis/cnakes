@@ -23,6 +23,37 @@ public class ControllerListenerTest {
 		controllerListener = Mockito.mock(ControllerListener.class, Mockito.CALLS_REAL_METHODS);
 	}
 
+
+	@Test
+	public void getHorizontalAxisDirectionMatchDeadZone() {
+		final float simpleDeadZone = 0.5f;
+		assertEquals("DZH1: Direction Should be NONE because of deadzone.", AxisDirection.NONE, ControllerListener
+				.getHorizontalAxisDirection(0, simpleDeadZone));
+		assertEquals("DZH2: Direction Should be NONE because of deadzone.", AxisDirection.NONE, ControllerListener
+				.getHorizontalAxisDirection(0.4f, simpleDeadZone));
+		assertEquals("DZH2: Direction Should be NONE because of deadzone.", AxisDirection.NONE, ControllerListener
+				.getHorizontalAxisDirection(-0.4f, simpleDeadZone));
+	}
+
+	@Test
+	public void getHorizontalAxisDirectionMatchUp() {
+		final float simpleDeadZone = 0.5f;
+		assertEquals("HD1: Direction Should be LEFT.", AxisDirection.LEFT, ControllerListener
+				.getHorizontalAxisDirection(-1.0f, simpleDeadZone));
+		assertEquals("HD2: Direction Should be LEFT.", AxisDirection.LEFT, ControllerListener
+				.getHorizontalAxisDirection(-0.4f, 0.3f));
+	}
+
+
+	@Test
+	public void getHorizontalAxisDirectionMatchDown() {
+		final float simpleDeadZone = 0.5f;
+		assertEquals("HD3: Direction Should be RIGHT.", AxisDirection.RIGHT, ControllerListener
+				.getHorizontalAxisDirection(1.0f, simpleDeadZone));
+		assertEquals("HD4: Direction Should be RIGHT .", AxisDirection.RIGHT, ControllerListener
+				.getHorizontalAxisDirection(0.4f, 0.3f));
+	}
+
 	@Test
 	public void getVerticalAxisDirectionMatchDeadZone() {
 		final float simpleDeadZone = 0.5f;
@@ -45,7 +76,7 @@ public class ControllerListenerTest {
 
 
 	@Test
-	public void getVerticalAxisDirectionMatcDown() {
+	public void getVerticalAxisDirectionMatchDown() {
 		final float simpleDeadZone = 0.5f;
 		assertEquals("VD3: Direction Should be DOWN.", AxisDirection.DOWN, ControllerListener
 				.getVerticalAxisDirection(1.0f, simpleDeadZone));
