@@ -18,6 +18,7 @@
         <maven-shade-plugin.version>3.2.1</maven-shade-plugin.version>
 		<log4j.version>2.13.3</log4j.version>
 		<joml.version>1.9.25</joml.version>
+		<mockito.version>3.6.28</mockito.version>
 	</properties>
 
 	<profiles>
@@ -274,6 +275,12 @@
 			<groupId>org.joml</groupId>
 			<artifactId>joml</artifactId>
 			<version>${joml.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-core</artifactId>
+			<version>${mockito.version}</version>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 </project>

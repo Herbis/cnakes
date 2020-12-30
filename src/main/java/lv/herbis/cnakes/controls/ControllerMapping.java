@@ -2,19 +2,19 @@ package lv.herbis.cnakes.controls;
 
 public class ControllerMapping {
 	private String name;
-	private int confirm;
-	private int cancel;
-	private int start;
-	private int back;
-	private int left;
-	private int right;
-	private int up;
-	private int down;
+	private int confirm = -1;
+	private int cancel = -1;
+	private int start = -1;
+	private int back = -1;
+	private int left = -1;
+	private int right = -1;
+	private int up = -1;
+	private int down = -1;
 
-	private int horizontalAxisLeftStick;
-	private int verticalAxisLeftStick;
-	private int horizontalAxisRightStick;
-	private int verticalAxisRightStick;
+	private int horizontalAxisLeftStick = -1;
+	private int verticalAxisLeftStick = -1;
+	private int horizontalAxisRightStick = -1;
+	private int verticalAxisRightStick = -1;
 
 	public String getName() {
 		return name;

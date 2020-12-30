@@ -12,8 +12,11 @@ import static org.lwjgl.glfw.GLFW.GLFW_JOYSTICK_1;
 import static org.lwjgl.glfw.GLFW.glfwGetJoystickName;
 
 public abstract class ControllerListener extends GLFWJoystickCallback {
-	private static final Logger LOG = LogManager.getLogger(ControllerListener.class);
+
 	protected static final float DEFAULT_CONTROLLER_AXIS_DEAD_ZONE = 0.5f;
+	protected static final long MIN_DPAD_TIME_DIFFERENCE = 80_000_000; // 80ms
+
+	private static final Logger LOG = LogManager.getLogger(ControllerListener.class);
 
 	protected ControllerMapping p1ControllerMapping;
 	protected ControllerState p1ControllerState;
@@ -165,6 +168,28 @@ public abstract class ControllerListener extends GLFWJoystickCallback {
 	protected static boolean isVerticalDirection(final AxisDirection direction)
 	{
 		return AxisDirection.DOWN.equals(direction) || AxisDirection.UP.equals(direction);
+	}
+
+	protected static boolean isDirectionalPadButton(final int buttonId, final ControllerMapping controllerMapping)
+	{
+		return buttonId == controllerMapping.getLeft() || buttonId == controllerMapping.getRight()
+				|| buttonId == controllerMapping.getUp() || buttonId == controllerMapping.getDown();
+	}
+
+	protected static boolean checkDpadChangeRealistic(final boolean isLastDpadMoveAttemptSuccessful,
+											   final long lastDpadChangeNanoTime, final String directionNameForDebug) {
+		final long now = System.nanoTime();
+		final long difference = now - lastDpadChangeNanoTime;
+		if (isLastDpadMoveAttemptSuccessful && difference < MIN_DPAD_TIME_DIFFERENCE) {
+			LOG.debug(
+					"DENIED to move {} but the time difference ({}ms) between dpad changes was too small, " + "and successful attempt already made recently.",
+					directionNameForDebug, difference / 1_000_000);
+			return false;
+		} else {
+			LOG.debug("ALLOWED to move {} the time difference ({}ms) between dpad changes was large enough.",
+					  directionNameForDebug, difference / 1_000_000);
+			return true;
+		}
 	}
 
 	@Override

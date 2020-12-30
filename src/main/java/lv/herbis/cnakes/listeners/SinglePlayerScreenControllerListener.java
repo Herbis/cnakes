@@ -11,7 +11,14 @@ import static lv.herbis.cnakes.movement.MovingDirections.*;
 
 public class SinglePlayerScreenControllerListener extends ControllerListener {
 
+	protected static final String LOG_DIRECTION_UP_NAME = "Up";
+	protected static final String LOG_DIRECTION_DOWN_NAME = "Down";
+	protected static final String LOG_DIRECTION_LEFT_NAME = "Left";
+	protected static final String LOG_DIRECTION_RIGHT_NAME = "Right";
+
 	private static final Logger LOG = LogManager.getLogger(SinglePlayerScreenControllerListener.class);
+	protected long p1LastDpadChangeNanoTime = 0L;
+	protected boolean p1lastDpadMoveAttemptSuccessful = false;
 
 	private final GameStatus game;
 
@@ -33,8 +40,17 @@ public class SinglePlayerScreenControllerListener extends ControllerListener {
 				LOG.debug("Caught Common action on Controller.");
 			}
 		}
-	}
 
+		if (buttonId == this.p1ControllerMapping.getDown()) {
+			this.p1ControllerState.setDownPressed(ButtonState.PRESSED.equals(state));
+		} else if (buttonId == this.p1ControllerMapping.getUp()) {
+			this.p1ControllerState.setUpPressed(ButtonState.PRESSED.equals(state));
+		} else if (buttonId == this.p1ControllerMapping.getLeft()) {
+			this.p1ControllerState.setLeftPressed(ButtonState.PRESSED.equals(state));
+		} else if (buttonId == this.p1ControllerMapping.getRight()) {
+			this.p1ControllerState.setRightPressed(ButtonState.PRESSED.equals(state));
+		}
+	}
 
 	@Override
 	protected void moveP1BasedOnCurrentAndPreviousAxisDirection(final AxisDirection direction,
@@ -78,20 +94,20 @@ public class SinglePlayerScreenControllerListener extends ControllerListener {
 	}
 
 	public boolean catchP1ButtonMovementChange(final int buttonId) {
-		if (this.game.isBeingPlayed() && !this.game.hasEnded() && !this.game.isPaused()) {
+		if (isValidGameStateForMovementChange()) {
 			/* Actions allowed only when the game has not been started or has not ended or is not paused. */
 			boolean caught = false;
 			if (this.p1ControllerMapping.getLeft() == buttonId) {
-				attemptToMoveLeft();
+				moveP1LeftWithDPadIfRealistic();
 				caught = true;
 			} else if (this.p1ControllerMapping.getRight() == buttonId) {
-				attemptToMoveRight();
+				moveP1RightWithDPadIfRealistic();
 				caught = true;
 			} else if (this.p1ControllerMapping.getUp() == buttonId) {
-				attemptToMoveUp();
+				moveP1UpWithDPadIfRealistic();
 				caught = true;
 			} else if (this.p1ControllerMapping.getDown() == buttonId) {
-				attemptToMoveDown();
+				moveP1DownWithDPadIfRealistic();
 				caught = true;
 			}
 
@@ -99,6 +115,46 @@ public class SinglePlayerScreenControllerListener extends ControllerListener {
 		}
 
 		return false;
+	}
+
+	protected void moveP1LeftWithDPadIfRealistic() {
+		if (checkDpadChangeRealistic(this.p1lastDpadMoveAttemptSuccessful, this.p1LastDpadChangeNanoTime, LOG_DIRECTION_LEFT_NAME)) {
+			this.p1lastDpadMoveAttemptSuccessful = attemptToMoveLeft();
+			this.p1LastDpadChangeNanoTime = System.nanoTime();
+		} else {
+			this.p1lastDpadMoveAttemptSuccessful = false;
+		}
+	}
+
+	protected void moveP1RightWithDPadIfRealistic() {
+		if (checkDpadChangeRealistic(this.p1lastDpadMoveAttemptSuccessful, this.p1LastDpadChangeNanoTime, LOG_DIRECTION_RIGHT_NAME)) {
+			this.p1lastDpadMoveAttemptSuccessful = attemptToMoveRight();
+			this.p1LastDpadChangeNanoTime = System.nanoTime();
+		} else {
+			this.p1lastDpadMoveAttemptSuccessful = false;
+		}
+	}
+
+	protected void moveP1UpWithDPadIfRealistic() {
+		if (checkDpadChangeRealistic(this.p1lastDpadMoveAttemptSuccessful, this.p1LastDpadChangeNanoTime, LOG_DIRECTION_UP_NAME)) {
+			this.p1lastDpadMoveAttemptSuccessful = attemptToMoveUp();
+			this.p1LastDpadChangeNanoTime = System.nanoTime();
+		} else {
+			this.p1lastDpadMoveAttemptSuccessful = false;
+		}
+	}
+
+	protected void moveP1DownWithDPadIfRealistic() {
+		if (checkDpadChangeRealistic(this.p1lastDpadMoveAttemptSuccessful, this.p1LastDpadChangeNanoTime, LOG_DIRECTION_DOWN_NAME)) {
+			this.p1lastDpadMoveAttemptSuccessful = attemptToMoveDown();
+			this.p1LastDpadChangeNanoTime = System.nanoTime();
+		} else {
+			this.p1lastDpadMoveAttemptSuccessful = false;
+		}
+	}
+
+	protected boolean isValidGameStateForMovementChange() {
+		return this.game.isBeingPlayed() && !this.game.hasEnded() && !this.game.isPaused();
 	}
 
 	@Override
