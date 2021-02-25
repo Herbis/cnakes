@@ -1,13 +1,16 @@
 package lv.herbis.cnakes.tools;
 
+import lv.herbis.cnakes.entities.Image;
 import lv.herbis.cnakes.save.HighScores;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.BufferUtils;
+import org.lwjgl.system.MemoryStack;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.SeekableByteChannel;
@@ -19,6 +22,7 @@ import java.util.List;
 import static lv.herbis.cnakes.constants.CnakesConstants.HIGH_SCORE_FILE;
 import static lv.herbis.cnakes.constants.CnakesConstants.SAVE_FILE_PATH;
 import static org.lwjgl.BufferUtils.createByteBuffer;
+import static org.lwjgl.stb.STBImage.stbi_load;
 
 /**
  * Utility class to help manipulate data.
@@ -30,8 +34,7 @@ public class DataUtil {
 		// Only static access.
 	}
 
-	public static void removeItemsAboveIndex(final List<?> list, final int maxIndex)
-	{
+	public static void removeItemsAboveIndex(final List<?> list, final int maxIndex) {
 		if (list == null || maxIndex < 0) {
 			if (list == null) {
 				LOG.warn("Can't remove items above index from list, because list is null.");
@@ -47,23 +50,24 @@ public class DataUtil {
 		}
 	}
 
-	public static ByteBuffer ioResourceToByteBuffer(String resource, int bufferSize) throws IOException {
+	public static ByteBuffer ioResourceToByteBuffer(final String resource, final int bufferSize) throws IOException {
 		ByteBuffer buffer;
 
-		Path path = Paths.get(resource);
+		final Path path = Paths.get(resource);
 		if (Files.isReadable(path)) {
-			try (SeekableByteChannel fc = Files.newByteChannel(path)) {
+			try (final SeekableByteChannel fc = Files.newByteChannel(path)) {
 				buffer = createByteBuffer((int) fc.size() + 1);
-				while (fc.read(buffer) != -1) ;
+				while (fc.read(buffer) != -1) {
+					;
+				}
 			}
 		} else {
-			try (
-				InputStream source = DataUtil.class.getClassLoader().getResourceAsStream(resource);
-				ReadableByteChannel rbc = Channels.newChannel(source)) {
+			try (final InputStream source = DataUtil.class.getClassLoader()
+					.getResourceAsStream(resource); final ReadableByteChannel rbc = Channels.newChannel(source)) {
 				buffer = createByteBuffer(bufferSize);
 
 				while (true) {
-					int bytes = rbc.read(buffer);
+					final int bytes = rbc.read(buffer);
 					if (bytes == -1) {
 						break;
 					}
@@ -78,8 +82,8 @@ public class DataUtil {
 		return buffer;
 	}
 
-	private static ByteBuffer resizeBuffer(ByteBuffer buffer, int newCapacity) {
-		ByteBuffer newBuffer = BufferUtils.createByteBuffer(newCapacity);
+	private static ByteBuffer resizeBuffer(final ByteBuffer buffer, final int newCapacity) {
+		final ByteBuffer newBuffer = BufferUtils.createByteBuffer(newCapacity);
 		buffer.flip();
 		newBuffer.put(buffer);
 		return newBuffer;
@@ -109,5 +113,24 @@ public class DataUtil {
 	 */
 	public static long getTime() {
 		return System.nanoTime() / 1000000;
+	}
+
+	public static Image loadImage(final String path) {
+		final ByteBuffer image;
+		final int width;
+		final int height;
+		try (final MemoryStack stack = MemoryStack.stackPush()) {
+			final IntBuffer comp = stack.mallocInt(1);
+			final IntBuffer w = stack.mallocInt(1);
+			final IntBuffer h = stack.mallocInt(1);
+
+			image = stbi_load(path, w, h, comp, 4);
+			if (image == null) {
+				throw new IllegalArgumentException("Could not load image resources.");
+			}
+			width = w.get();
+			height = h.get();
+		}
+		return new Image(width, height, image);
 	}
 }

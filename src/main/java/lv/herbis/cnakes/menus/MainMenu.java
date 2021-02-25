@@ -3,6 +3,7 @@ package lv.herbis.cnakes.menus;
 import lv.herbis.cnakes.configuration.CnakesConfiguration;
 import lv.herbis.cnakes.context.ContextItems;
 import lv.herbis.cnakes.draw.Drawing;
+import lv.herbis.cnakes.entities.Image;
 import lv.herbis.cnakes.listeners.ControllerListener;
 import lv.herbis.cnakes.listeners.MenuControllerListener;
 import lv.herbis.cnakes.listeners.MenuKeyListener;
@@ -10,14 +11,17 @@ import lv.herbis.cnakes.movement.MenuNavigation;
 import lv.herbis.cnakes.screens.CnakesScreen;
 import lv.herbis.cnakes.sound.SoundListener;
 import lv.herbis.cnakes.sound.SoundManager;
+import lv.herbis.cnakes.tools.DataUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.glfw.GLFWErrorCallback;
+import org.lwjgl.glfw.GLFWImage;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 
 import java.awt.*;
 
+import static lv.herbis.cnakes.constants.CnakesConstants.APP_ICON_PATH;
 import static lv.herbis.cnakes.constants.CnakesConstants.LOG_STACKTRACE;
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
@@ -95,7 +99,6 @@ public class MainMenu implements Runnable {
 		if (!glfwInit()) {
 			throw new IllegalStateException("Unable to initialize GLFW");
 		}
-
 		// Configure GLFW
 		glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE); // the window will not be resizable
 
@@ -119,6 +122,7 @@ public class MainMenu implements Runnable {
 			throw new IllegalStateException("Failed to create the GLFW window");
 		}
 		this.contextItems.setWindowId(this.windowId);
+		//initGameIcon(); // TODO path does not resolve, once package
 
 		// Hide cursor
 		glfwSetInputMode(this.windowId, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
@@ -131,6 +135,16 @@ public class MainMenu implements Runnable {
 		glfwMakeContextCurrent(this.windowId);
 		glfwSwapInterval(0);
 		GL.createCapabilities();
+	}
+
+	private void initGameIcon() {
+		final Image icon = DataUtil.loadImage(APP_ICON_PATH);
+
+		final GLFWImage image = GLFWImage.malloc();
+		final GLFWImage.Buffer imageBf = GLFWImage.malloc(1);
+		image.set(icon.getWidth(), icon.getHeight(), icon.getImage());
+		imageBf.put(0, image);
+		glfwSetWindowIcon(this.windowId, imageBf);
 	}
 
 	/**
