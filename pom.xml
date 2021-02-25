@@ -19,6 +19,7 @@
 		<log4j.version>2.13.3</log4j.version>
 		<joml.version>1.9.25</joml.version>
 		<mockito.version>3.6.28</mockito.version>
+		<launch4j.version>1.7.25</launch4j.version>
 	</properties>
 
 	<profiles>
@@ -174,6 +175,46 @@
                     </execution>
                 </executions>
             </plugin>
+			<plugin>
+				<groupId>com.akathist.maven.plugins.launch4j</groupId>
+				<artifactId>launch4j-maven-plugin</artifactId>
+				<version>${launch4j.version}</version>
+				<executions>
+
+					<!-- GUI exe -->
+					<execution>
+						<id>l4j-gui</id>
+						<phase>package</phase>
+						<goals>
+							<goal>launch4j</goal>
+						</goals>
+						<configuration>
+							<headerType>gui</headerType>
+							<outfile>target/cnakes.exe</outfile>
+							<jar>target/${artifactId}-${version}.jar</jar> <!-- 'shaded' is the value set on shadedClassifierName above -->
+							<errTitle>Cnakes Error</errTitle>
+							<classPath>
+								<mainClass>lv.herbis.cnakes.menus.StartScreen</mainClass>
+							</classPath>
+							<icon>resources/icons/icon.ico</icon>
+							<jre>
+								<minVersion>11.0</minVersion>
+							</jre>
+							<versionInfo>
+								<fileVersion>1.0.0.0</fileVersion>
+								<txtFileVersion>${version}</txtFileVersion>
+								<fileDescription>Video game where you play as a snake.</fileDescription>
+								<copyright>C Herberts Markuns</copyright>
+								<productVersion>1.0.0.0</productVersion>
+								<txtProductVersion>${version}</txtProductVersion>
+								<productName>${name}</productName>
+								<internalName>${name}</internalName>
+								<originalFilename>cnakes.exe</originalFilename>
+							</versionInfo>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
         </plugins>
     </build>
 
@@ -281,6 +322,11 @@
 			<artifactId>mockito-core</artifactId>
 			<version>${mockito.version}</version>
 			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.akathist.maven.plugins.launch4j</groupId>
+			<artifactId>launch4j-maven-plugin</artifactId>
+			<version>${launch4j.version}</version>
 		</dependency>
 	</dependencies>
 </project>
