@@ -12,6 +12,7 @@ import other.fontloader.FontTT;
 
 import java.awt.*;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 import static org.lwjgl.opengl.GL11.*;
@@ -57,9 +58,11 @@ public class Drawing {
 
 	public void initFont(final String fontLocation) {
 		try {
-			this.gameFont = new FontTT(
-					Font.createFont(Font.TRUETYPE_FONT, getClass().getClassLoader().getResourceAsStream(fontLocation)),
-					this.gameScale * 2, 0);
+			final InputStream fontInput = getClass().getClassLoader().getResourceAsStream(fontLocation);
+			if (fontInput == null) {
+				throw new IOException(String.format("Font '%s' not found", fontLocation));
+			}
+			this.gameFont = new FontTT(Font.createFont(Font.TRUETYPE_FONT, fontInput), this.gameScale * 2, 0);
 		} catch (final FontFormatException | IOException e) {
 			LOG.error("Something went wrong while loading textures", e);
 		}
@@ -133,7 +136,8 @@ public class Drawing {
 
 		/* Vertical lines */
 		for (int x = this.gameScale; x <= this.gameBoundX; x += this.gameScale) {
-			if (this.configuration.getGameplay().isBrightenMovementLine() && (headXScaled == x || headXScaledPlus == x)) {
+			if (this.configuration.getGameplay()
+					.isBrightenMovementLine() && (headXScaled == x || headXScaledPlus == x)) {
 				drawVerticalBrightPlayGridLineBasedOnDirection(x, 0, this.gameBoundY, direction);
 				resetToBasicPlayGridLineColor();
 			} else {
@@ -143,7 +147,8 @@ public class Drawing {
 
 		/* Horizontal lines */
 		for (int y = this.gameScale; y <= this.gameBoundY; y += this.gameScale) {
-			if (this.configuration.getGameplay().isBrightenMovementLine() && (headYScaled == y || headYScaledPlus == y)) {
+			if (this.configuration.getGameplay()
+					.isBrightenMovementLine() && (headYScaled == y || headYScaledPlus == y)) {
 				drawHorizontalBrightPlayGridLineBasedOnDirection(0, this.gameBoundX, y, direction);
 				resetToBasicPlayGridLineColor();
 			} else {
@@ -355,7 +360,8 @@ public class Drawing {
 		}
 	}
 
-	private PointCoordinates drawSnakeBodyInMovementAndGetSmoothingCoordinates(final PointCoordinates head, final List<PointCoordinates> body,
+	private PointCoordinates drawSnakeBodyInMovementAndGetSmoothingCoordinates(final PointCoordinates head,
+																			   final List<PointCoordinates> body,
 																			   final boolean halfCellReached) {
 		/* We need to determine which snake part we need to smooth to. */
 		final PointCoordinates smoothTo;
@@ -379,8 +385,7 @@ public class Drawing {
 	}
 
 	private void drawSnakeBodySmoothing(final PointCoordinates smoothTo, final PointCoordinates lastBodyPart,
-										final long pixelAmount, final boolean halfCellReached)
-	{
+										final long pixelAmount, final boolean halfCellReached) {
 
 		if (smoothTo.getX() - lastBodyPart.getX() != 0) { // Smooth on the X axis
 			if (smoothTo.getX() - lastBodyPart.getX() == 1) { // Smooth to left
@@ -398,8 +403,7 @@ public class Drawing {
 	}
 
 	private void drawSnakeBodySmoothingLeft(final PointCoordinates lastBodyPart, final long pixelAmount,
-											final boolean halfCellReached)
-	{
+											final boolean halfCellReached) {
 		final float gameScaleF = this.gameScale;
 		if (halfCellReached) {
 			drawFilledUnscaledSquare((lastBodyPart.getX() * gameScaleF) + pixelAmount - gameScaleF,
@@ -415,12 +419,11 @@ public class Drawing {
 	}
 
 	private void drawSnakeBodySmoothingRight(final PointCoordinates lastBodyPart, final long pixelAmount,
-											 final boolean halfCellReached)
-	{
+											 final boolean halfCellReached) {
 		final float gameScaleF = this.gameScale;
 		if (halfCellReached) {
-			drawFilledUnscaledSquare((lastBodyPart.getX() * gameScaleF), (lastBodyPart
-											 .getX() * gameScaleF) + gameScaleF - pixelAmount + gameScaleF,
+			drawFilledUnscaledSquare((lastBodyPart.getX() * gameScaleF),
+									 (lastBodyPart.getX() * gameScaleF) + gameScaleF - pixelAmount + gameScaleF,
 									 (lastBodyPart.getY() * gameScaleF),
 									 (lastBodyPart.getY() * gameScaleF) + gameScaleF);
 		} else {
@@ -432,8 +435,7 @@ public class Drawing {
 	}
 
 	private void drawSnakeBodySmoothingUp(final PointCoordinates lastBodyPart, final long pixelAmount,
-											   final boolean halfCellReached)
-	{
+										  final boolean halfCellReached) {
 		final float gameScaleF = this.gameScale;
 		if (halfCellReached) {
 			drawFilledUnscaledSquare((lastBodyPart.getX() * gameScaleF),
@@ -449,14 +451,13 @@ public class Drawing {
 	}
 
 	private void drawSnakeBodySmoothingDown(final PointCoordinates lastBodyPart, final long pixelAmount,
-										  final boolean halfCellReached)
-	{
+											final boolean halfCellReached) {
 		final float gameScaleF = this.gameScale;
 		if (halfCellReached) {
 			drawFilledUnscaledSquare((lastBodyPart.getX() * gameScaleF),
 									 (lastBodyPart.getX() * gameScaleF) + gameScaleF,
-									 (lastBodyPart.getY() * gameScaleF) - gameScaleF, (lastBodyPart
-							.getY() * gameScaleF) + gameScaleF - pixelAmount + gameScaleF);
+									 (lastBodyPart.getY() * gameScaleF) - gameScaleF,
+									 (lastBodyPart.getY() * gameScaleF) + gameScaleF - pixelAmount + gameScaleF);
 		} else {
 			drawFilledUnscaledSquare((lastBodyPart.getX() * gameScaleF),
 									 (lastBodyPart.getX() * gameScaleF) + gameScaleF,
@@ -466,10 +467,11 @@ public class Drawing {
 	}
 
 	private void drawSnakeBodyInMovement(final PointCoordinates head, final List<PointCoordinates> body,
-												 final long pixelAmount, final boolean halfCellReached) {
+										 final long pixelAmount, final boolean halfCellReached) {
 		if (!body.isEmpty()) {
 			glBegin(GL_QUADS); // Must
-			final PointCoordinates smoothTo = drawSnakeBodyInMovementAndGetSmoothingCoordinates(head, body, halfCellReached);
+			final PointCoordinates smoothTo = drawSnakeBodyInMovementAndGetSmoothingCoordinates(head, body,
+																								halfCellReached);
 			drawSnakeBodySmoothing(smoothTo, body.get(0), pixelAmount, halfCellReached);
 			glEnd();
 		}
@@ -496,15 +498,16 @@ public class Drawing {
 	public void drawText(final String text, final float size, final float x, final float y, final Color color,
 						 final boolean centered) {
 		glEnable(GL_TEXTURE_2D);
-		this.gameFont.drawText(text, this.gameScale * size, x * this.gameScale, y * this.gameScale, 0, color, 0, 0, 0, centered);
+		this.gameFont.drawText(text, this.gameScale * size, x * this.gameScale, y * this.gameScale, 0, color, 0, 0, 0,
+							   centered);
 		glDisable(GL_TEXTURE_2D);
 	}
 
 	public void drawOutlinedText(final String text, final float size, final float x, final float y, final Color color,
 								 final Color outlineColor, final boolean centered) {
 		glEnable(GL_TEXTURE_2D);
-		this.gameFont.drawOutlinedText(text, this.gameScale * size, x * this.gameScale, y * this.gameScale, 0, color, outlineColor, 0, 0, 0,
-									   centered);
+		this.gameFont.drawOutlinedText(text, this.gameScale * size, x * this.gameScale, y * this.gameScale, 0, color,
+									   outlineColor, 0, 0, 0, centered);
 		glDisable(GL_TEXTURE_2D);
 	}
 
@@ -518,7 +521,8 @@ public class Drawing {
 			glVertex2f((x * this.gameScale) + lap, (y * this.gameScale) + this.gameScale - lap); // top left
 			glVertex2f((x * this.gameScale) + lap, (y * this.gameScale) + (lap - 1)); // bottom left
 			glVertex2f((x * this.gameScale) + this.gameScale - lap, y * this.gameScale + lap); // bottom right
-			glVertex2f((x * this.gameScale) + this.gameScale - lap, (y * this.gameScale) + this.gameScale - lap); // top right
+			glVertex2f((x * this.gameScale) + this.gameScale - lap,
+					   (y * this.gameScale) + this.gameScale - lap); // top right
 			glVertex2f((x * this.gameScale) + lap, (y * this.gameScale) + this.gameScale - lap); // top left
 		}
 		glEnd();

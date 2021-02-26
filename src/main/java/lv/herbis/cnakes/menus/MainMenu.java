@@ -122,7 +122,7 @@ public class MainMenu implements Runnable {
 			throw new IllegalStateException("Failed to create the GLFW window");
 		}
 		this.contextItems.setWindowId(this.windowId);
-		//initGameIcon(); // TODO path does not resolve, once package
+		initGameIcon();
 
 		// Hide cursor
 		glfwSetInputMode(this.windowId, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);

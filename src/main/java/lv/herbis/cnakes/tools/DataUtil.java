@@ -22,7 +22,7 @@ import java.util.List;
 import static lv.herbis.cnakes.constants.CnakesConstants.HIGH_SCORE_FILE;
 import static lv.herbis.cnakes.constants.CnakesConstants.SAVE_FILE_PATH;
 import static org.lwjgl.BufferUtils.createByteBuffer;
-import static org.lwjgl.stb.STBImage.stbi_load;
+import static org.lwjgl.stb.STBImage.stbi_load_from_memory;
 
 /**
  * Utility class to help manipulate data.
@@ -51,34 +51,44 @@ public class DataUtil {
 	}
 
 	public static ByteBuffer ioResourceToByteBuffer(final String resource, final int bufferSize) throws IOException {
-		ByteBuffer buffer;
+		final ByteBuffer buffer;
 
 		final Path path = Paths.get(resource);
 		if (Files.isReadable(path)) {
 			try (final SeekableByteChannel fc = Files.newByteChannel(path)) {
 				buffer = createByteBuffer((int) fc.size() + 1);
-				while (fc.read(buffer) != -1) {
-					;
+				boolean endReached = fc.read(buffer) == -1;
+				while (!endReached) {
+					endReached = fc.read(buffer) == -1;
 				}
 			}
 		} else {
-			try (final InputStream source = DataUtil.class.getClassLoader()
-					.getResourceAsStream(resource); final ReadableByteChannel rbc = Channels.newChannel(source)) {
-				buffer = createByteBuffer(bufferSize);
-
-				while (true) {
-					final int bytes = rbc.read(buffer);
-					if (bytes == -1) {
-						break;
-					}
-					if (buffer.remaining() == 0) {
-						buffer = resizeBuffer(buffer, buffer.capacity() * 2);
-					}
+			try (final InputStream source = DataUtil.class.getClassLoader().getResourceAsStream(resource)) {
+				if (source == null) {
+					throw new IOException(String.format("Input stream for resource '%s' is null", resource));
 				}
+				buffer = createAndReadByteBufferFromStream(source, bufferSize);
 			}
 		}
 
 		buffer.flip();
+		return buffer;
+	}
+
+	private static ByteBuffer createAndReadByteBufferFromStream(final InputStream source,
+																final int bufferSize) throws IOException {
+		ByteBuffer buffer;
+
+		try (final ReadableByteChannel rbc = Channels.newChannel(source)) {
+			buffer = createByteBuffer(bufferSize);
+
+			while (rbc.read(buffer) != -1) {
+				if (buffer.remaining() == 0) {
+					buffer = resizeBuffer(buffer, buffer.capacity() * 2);
+				}
+			}
+		}
+
 		return buffer;
 	}
 
@@ -116,20 +126,23 @@ public class DataUtil {
 	}
 
 	public static Image loadImage(final String path) {
-		final ByteBuffer image;
+		ByteBuffer image;
 		final int width;
 		final int height;
 		try (final MemoryStack stack = MemoryStack.stackPush()) {
 			final IntBuffer comp = stack.mallocInt(1);
 			final IntBuffer w = stack.mallocInt(1);
 			final IntBuffer h = stack.mallocInt(1);
-
-			image = stbi_load(path, w, h, comp, 4);
+			DataUtil.class.getClassLoader().getResourceAsStream(path);
+			image = ioResourceToByteBuffer(path, 1024);
+			image = stbi_load_from_memory(image, w, h, comp, 4);
 			if (image == null) {
 				throw new IllegalArgumentException("Could not load image resources.");
 			}
 			width = w.get();
 			height = h.get();
+		} catch (final IOException e) {
+			throw new IllegalArgumentException("Could not initially load image resources.");
 		}
 		return new Image(width, height, image);
 	}
