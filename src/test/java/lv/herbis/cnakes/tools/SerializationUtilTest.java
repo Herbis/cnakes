@@ -7,6 +7,7 @@ import org.junit.Test;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import static lv.herbis.cnakes.constants.CnakesConstants.SAVE_FILE_PATH;
 import static org.junit.Assert.*;
@@ -14,16 +15,16 @@ import static org.junit.Assert.*;
 public class SerializationUtilTest {
 	private static final String SERIALIZE_FILE_1 = "test_serialize_file_1.boop";
 	private static final String SERIALIZE_FILE_2 = "test_serialize_file_2.boop";
-	private static final Path TEST_FILE_PATH_1 = Path.of(SAVE_FILE_PATH.toString(), SERIALIZE_FILE_1);
-	private static final Path TEST_FILE_PATH_2 = Path.of(SAVE_FILE_PATH.toString(), SERIALIZE_FILE_2);
+	private static final Path TEST_FILE_PATH_1 = Paths.get(SAVE_FILE_PATH.toString(), SERIALIZE_FILE_1);
+	private static final Path TEST_FILE_PATH_2 = Paths.get(SAVE_FILE_PATH.toString(), SERIALIZE_FILE_2);
 	private static final HighScore HIGH_SCORE_1 = new HighScore("userName1", 553, 1218545112);
 	private static final HighScore HIGH_SCORE_2 = new HighScore("userName2", 533, 1218545112);
 
 
 	@After
 	public void breakDown() throws IOException {
-		Files.deleteIfExists(Path.of(SAVE_FILE_PATH.toString(), SERIALIZE_FILE_1));
-		Files.deleteIfExists(Path.of(SAVE_FILE_PATH.toString(), SERIALIZE_FILE_2));
+		Files.deleteIfExists(Paths.get(SAVE_FILE_PATH.toString(), SERIALIZE_FILE_1));
+		Files.deleteIfExists(Paths.get(SAVE_FILE_PATH.toString(), SERIALIZE_FILE_2));
 	}
 
 	@Test

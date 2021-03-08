@@ -17,7 +17,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.IntBuffer;
 import java.nio.file.Files;
-import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Hashtable;
 
@@ -249,7 +249,7 @@ public class TextureLoader {
 				return ImageIO.read(new BufferedInputStream(inputStream));
 			}
 		} else {
-			return ImageIO.read(Files.newInputStream(Path.of(ref)));
+			return ImageIO.read(Files.newInputStream(Paths.get(ref)));
 		}
 	}
 

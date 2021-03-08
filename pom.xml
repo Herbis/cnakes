@@ -145,7 +145,7 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>${maven-compiler-plugin.version}</version>
 				<configuration>
-					<release>11</release>
+					<release>8</release>
 				</configuration>
             </plugin>
             <plugin>
@@ -198,7 +198,7 @@
 							</classPath>
 							<icon>resources/icons/icon.ico</icon>
 							<jre>
-								<minVersion>11.0</minVersion>
+								<minVersion>8.0</minVersion>
 							</jre>
 							<versionInfo>
 								<fileVersion>1.0.0.0</fileVersion>

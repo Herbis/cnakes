@@ -3,6 +3,7 @@ package lv.herbis.cnakes.tools;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 /**
  * This class is a utility class for performing the serialization and
@@ -23,7 +24,7 @@ public class SerializationUtil {
 	public static Object deserialize(final Path path,
 									 final String fileName) throws IOException, ClassNotFoundException {
 		Files.createDirectories(path);
-		final BufferedInputStream bis = new BufferedInputStream(Files.newInputStream(Path.of(path.toString(), fileName)));
+		final BufferedInputStream bis = new BufferedInputStream(Files.newInputStream(Paths.get(path.toString(), fileName)));
 		try (final ObjectInputStream ois = new ObjectInputStream(bis)) {
 			return ois.readObject();
 		}
@@ -35,7 +36,7 @@ public class SerializationUtil {
 	 */
 	public static void serialize(final Object obj, final Path path, final String fileName) throws IOException {
 		Files.createDirectories(path);
-		final BufferedOutputStream bos = new BufferedOutputStream(Files.newOutputStream(Path.of(path.toString(), fileName)));
+		final BufferedOutputStream bos = new BufferedOutputStream(Files.newOutputStream(Paths.get(path.toString(), fileName)));
 		try (final ObjectOutputStream oos = new ObjectOutputStream(bos)) {
 			oos.writeObject(obj);
 		}
