@@ -22,6 +22,7 @@ public class Drawing {
 	private static final Logger LOG = LogManager.getLogger(Drawing.class);
 
 	private final CnakesConfiguration configuration;
+
 	private int screenWidth;
 	private int screenHeight;
 	private int gameBoundX;
@@ -39,7 +40,6 @@ public class Drawing {
 
 	public Drawing(final CnakesConfiguration configuration) {
 		this.configuration = configuration;
-		initConfiguration();
 	}
 
 	public void initConfiguration() {

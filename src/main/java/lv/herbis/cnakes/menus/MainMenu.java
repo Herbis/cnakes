@@ -106,6 +106,8 @@ public class MainMenu implements Runnable {
 			autoConfigureResolution();
 		}
 
+		this.drawing.initConfiguration();
+
 		final boolean fullScreen = this.configuration.getVideo().getResolution().isFullScreen();
 		this.screenWidth = this.configuration.getVideo().getResolution().getHorizontal();
 		this.screenHeight = this.configuration.getVideo().getResolution().getVertical();
