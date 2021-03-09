@@ -209,8 +209,10 @@ public class SinglePlayerLevelScreen implements CnakesScreen {
 	 * Renders all that needs to be rendered for this game.
 	 */
 	private void render() {
-		this.drawing.drawTarget(this.target);
-		this.drawing.drawPlayGrid(this.head);
+		if (!this.gameStatus.hasEnded()) {
+			this.drawing.drawTarget(this.target);
+			this.drawing.drawPlayGrid(this.head);
+		}
 		this.drawing.drawScoreboard(this.gameStatus);
 	}
 
@@ -278,6 +280,8 @@ public class SinglePlayerLevelScreen implements CnakesScreen {
 			final int direction = MovingDirections.getP1LastDirection();
 			this.drawing.drawSnakeInMovement(this.head, this.body, direction,
 											 this.lastDelta * this.gameScale / this.gameSpeedMs, this.halfCellReached);
+		} else if (this.gameStatus.hasEnded()) {
+
 		} else {
 			this.drawing.drawSnake(this.head, this.body);
 		}

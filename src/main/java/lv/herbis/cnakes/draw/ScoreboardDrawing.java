@@ -47,6 +47,12 @@ public class ScoreboardDrawing {
 	private final float startGameXLocation;
 	private final float startGameYLocation;
 
+	private final float enterNameXLocation;
+	private final float enterNameYLocation;
+
+	private final float nameInputXLocation;
+	private final float nameInputYLocation;
+
 	private final float timerXLocation;
 	private final float timerYLocation;
 
@@ -90,6 +96,13 @@ public class ScoreboardDrawing {
 
 		this.timerXLocation = xMiddle;
 		this.timerYLocation = drawing.getPlayAreaYEndPoint() + 3.1f;
+
+		this.enterNameXLocation = xMiddle;
+		this.enterNameYLocation = yMiddle + 3.1f;
+
+		this.nameInputXLocation = xMiddle;
+		this.nameInputYLocation = yMiddle;
+
 	}
 
 	/**
@@ -135,6 +148,7 @@ public class ScoreboardDrawing {
 		}
 
 		drawTime(gameStatus);
+		drawEnterName(gameStatus);
 	}
 
 
@@ -146,7 +160,7 @@ public class ScoreboardDrawing {
 		final Timer currentTimer = gameStatus.getTimer();
 		if (currentTimer == null) {
 			/* If the current Timer is null, the game was never started. */
-			this.drawing.drawText("Start the Game!", 2f, this.startGameXLocation, this.startGameYLocation, Color.GREEN,
+			this.drawing.drawText("Press Enter to Start the Game!", 2f, this.startGameXLocation, this.startGameYLocation, Color.GREEN,
 								  true);
 		} else {
 			if (gameStatus.hasEnded()) {
@@ -164,6 +178,15 @@ public class ScoreboardDrawing {
 						gameStatus.getTimer().getTimeLeft())), 2f, this.timerXLocation, this.timerYLocation, Color.RED,
 									  true);
 			}
+		}
+	}
+
+	public void drawEnterName(final SinglePlayerGameStatus gameStatus) {
+		if (gameStatus.hasEnded()) {
+			this.drawing.drawText("Enter your name", 2f, this.enterNameXLocation, this.enterNameYLocation, Color.GREEN,
+								  true);
+			this.drawing.drawText("Somename", 2f, this.nameInputXLocation, this.nameInputYLocation, Color.BLUE,
+								  true); // TODO enter name
 		}
 	}
 
