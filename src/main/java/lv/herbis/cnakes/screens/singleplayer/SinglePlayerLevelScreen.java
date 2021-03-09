@@ -88,9 +88,9 @@ public class SinglePlayerLevelScreen implements CnakesScreen {
 	 *
 	 * @return milliseconds passed since last frame
 	 */
-	public int getDelta() {
+	public long getDelta() {
 		final long time = DataUtil.getTime();
-		final int delta = (int) (time - this.lastFrame);
+		final long delta = time - this.lastFrame;
 		this.lastFrame = time;
 
 		return delta;
@@ -169,6 +169,7 @@ public class SinglePlayerLevelScreen implements CnakesScreen {
 	public void newSnake() {
 		this.head = new PointCoordinates(0, 0);
 		this.body = new ArrayList<>();
+		LOG.debug("New Snake created.");
 	}
 
 
@@ -242,9 +243,8 @@ public class SinglePlayerLevelScreen implements CnakesScreen {
 			}
 		};
 
-		this.head = new PointCoordinates(0, 0);
 		this.random = new SecureRandom();
-		this.body = new ArrayList<>();
+		newSnake();
 		newTarget();
 	}
 
@@ -280,7 +280,6 @@ public class SinglePlayerLevelScreen implements CnakesScreen {
 											 this.lastDelta * this.gameScale / this.gameSpeedMs, this.halfCellReached);
 		} else {
 			this.drawing.drawSnake(this.head, this.body);
-
 		}
 
 		render();
