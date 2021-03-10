@@ -18,4 +18,16 @@ public interface GameStatus {
 
 	void reset();
 
+	void setHighScoreNameEntered(boolean highScoreNameEntered);
+
+	boolean isHighScoreNameEntered();
+
+	String getHighScoreName();
+
+	boolean isValidHighScoreCharacter(char character);
+
+	void setHighScoreName(String name);
+
+	void submitHighScore();
+
 }

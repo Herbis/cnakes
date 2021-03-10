@@ -2,11 +2,18 @@ package lv.herbis.cnakes.status;
 
 import lv.herbis.cnakes.entities.Timer;
 
+import java.util.regex.Pattern;
+
 public abstract class SinglePlayerGameStatus implements GameStatus {
+	private final Pattern validCharacters = Pattern.compile("^[a-zA-Z0-9\\s]$");
+
 	private boolean beingPlayed;
 	private boolean paused;
 	private boolean justStarted;
 	private boolean ended = false;
+	private boolean highScoreNameEntered = true;
+
+	private String highScoreName = "Player 1";
 
 	private long score = 0;
 	private long snakeLength = 5;
@@ -111,7 +118,6 @@ public abstract class SinglePlayerGameStatus implements GameStatus {
 
 	public abstract void afterEnd();
 
-
 	@Override
 	public boolean hasEnded() {
 		if (this.ended) {
@@ -140,6 +146,7 @@ public abstract class SinglePlayerGameStatus implements GameStatus {
 		this.paused = false;
 		this.beingPlayed = false;
 		this.justStarted = false;
+		this.highScoreNameEntered = false;
 
 		this.gameTimer = new Timer(this.gameLength);
 	}
@@ -161,4 +168,26 @@ public abstract class SinglePlayerGameStatus implements GameStatus {
 		}
 	}
 
+	public boolean isHighScoreNameEntered() {
+		return highScoreNameEntered;
+	}
+
+	public void setHighScoreNameEntered(boolean highScoreNameEntered) {
+		this.highScoreNameEntered = highScoreNameEntered;
+	}
+
+	@Override
+	public String getHighScoreName() {
+		return this.highScoreName;
+	}
+
+	@Override
+	public void setHighScoreName(String name) {
+		this.highScoreName = name;
+	}
+
+	@Override
+	public boolean isValidHighScoreCharacter(final char character) {
+		return validCharacters.matcher("" + character).matches();
+	}
 }

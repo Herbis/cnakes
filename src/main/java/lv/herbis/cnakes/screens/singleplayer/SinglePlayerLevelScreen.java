@@ -7,6 +7,7 @@ import lv.herbis.cnakes.controls.ControllerStatePublisher;
 import lv.herbis.cnakes.draw.Drawing;
 import lv.herbis.cnakes.entities.PointCoordinates;
 import lv.herbis.cnakes.entities.Timer;
+import lv.herbis.cnakes.listeners.NameInputCharListener;
 import lv.herbis.cnakes.listeners.SinglePlayerKeyListener;
 import lv.herbis.cnakes.listeners.SinglePlayerScreenControllerListener;
 import lv.herbis.cnakes.movement.MovingDirections;
@@ -28,6 +29,7 @@ import java.util.Random;
 
 import static lv.herbis.cnakes.constants.CnakesConstants.HIGH_SCORE_FILE;
 import static lv.herbis.cnakes.constants.CnakesConstants.SAVE_FILE_PATH;
+import static org.lwjgl.glfw.GLFW.glfwSetCharCallback;
 import static org.lwjgl.glfw.GLFW.glfwSetKeyCallback;
 
 
@@ -169,7 +171,6 @@ public class SinglePlayerLevelScreen implements CnakesScreen {
 	public void newSnake() {
 		this.head = new PointCoordinates(0, 0);
 		this.body = new ArrayList<>();
-		LOG.debug("New Snake created.");
 	}
 
 
@@ -227,7 +228,12 @@ public class SinglePlayerLevelScreen implements CnakesScreen {
 			@Override
 			public void afterEnd() {
 				LOG.info("End of the game.");
-				final HighScore highScore = new HighScore("Player 1",
+				glfwSetCharCallback(windowId, new NameInputCharListener(gameStatus));
+			}
+
+			@Override
+			public void submitHighScore() {
+				final HighScore highScore = new HighScore(SinglePlayerLevelScreen.this.gameStatus.getHighScoreName(),
 														  SinglePlayerLevelScreen.this.gameStatus.getScore());
 				if (SinglePlayerLevelScreen.this.highScores.addHighScore(highScore)) {
 					LOG.debug("Adding to high-scores.");
@@ -242,6 +248,10 @@ public class SinglePlayerLevelScreen implements CnakesScreen {
 				} else {
 					LOG.debug("High-score was not added.");
 				}
+
+				this.setHighScoreNameEntered(true);
+
+				glfwSetCharCallback(windowId, null);
 			}
 		};
 
@@ -281,7 +291,7 @@ public class SinglePlayerLevelScreen implements CnakesScreen {
 			this.drawing.drawSnakeInMovement(this.head, this.body, direction,
 											 this.lastDelta * this.gameScale / this.gameSpeedMs, this.halfCellReached);
 		} else if (this.gameStatus.hasEnded()) {
-
+ 			// ?
 		} else {
 			this.drawing.drawSnake(this.head, this.body);
 		}

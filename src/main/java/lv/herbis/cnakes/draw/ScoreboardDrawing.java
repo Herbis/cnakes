@@ -182,11 +182,11 @@ public class ScoreboardDrawing {
 	}
 
 	public void drawEnterName(final SinglePlayerGameStatus gameStatus) {
-		if (gameStatus.hasEnded()) {
+		if (gameStatus.hasEnded() && !gameStatus.isHighScoreNameEntered()) {
 			this.drawing.drawText("Enter your name", 2f, this.enterNameXLocation, this.enterNameYLocation, Color.GREEN,
 								  true);
-			this.drawing.drawText("Somename", 2f, this.nameInputXLocation, this.nameInputYLocation, Color.BLUE,
-								  true); // TODO enter name
+			this.drawing.drawText(gameStatus.getHighScoreName(), 2f, this.nameInputXLocation, this.nameInputYLocation, Color.BLUE,
+								  true);
 		}
 	}
 
