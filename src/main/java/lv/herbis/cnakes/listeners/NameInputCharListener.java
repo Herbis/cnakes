@@ -3,6 +3,8 @@ package lv.herbis.cnakes.listeners;
 import lv.herbis.cnakes.status.GameStatus;
 import org.lwjgl.glfw.GLFWCharCallback;
 
+import java.util.Objects;
+
 public class NameInputCharListener extends GLFWCharCallback {
 
 	private final GameStatus gameStatus;
@@ -22,5 +24,10 @@ public class NameInputCharListener extends GLFWCharCallback {
 	@Override
 	public boolean equals(final Object o) {
 		return this == o;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(super.hashCode(), gameStatus);
 	}
 }
