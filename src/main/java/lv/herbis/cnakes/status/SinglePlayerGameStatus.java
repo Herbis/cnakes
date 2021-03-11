@@ -15,7 +15,7 @@ public abstract class SinglePlayerGameStatus implements GameStatus {
 	private boolean ended = false;
 	private boolean highScoreNameEntered = true;
 
-	private String highScoreName = "Player 1";
+	private String highScoreName;
 
 	private long score = 0;
 	private long snakeLength = 5;
