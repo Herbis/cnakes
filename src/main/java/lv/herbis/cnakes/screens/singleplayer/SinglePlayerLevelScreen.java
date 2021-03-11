@@ -211,8 +211,11 @@ public class SinglePlayerLevelScreen implements CnakesScreen {
 	 */
 	private void render() {
 		if (!this.gameStatus.hasEnded()) {
-			this.drawing.drawTarget(this.target);
+
 			this.drawing.drawPlayGrid(this.head);
+		}
+		if (this.gameStatus.isBeingPlayed()) {
+			this.drawing.drawTarget(this.target);
 		}
 		this.drawing.drawScoreboard(this.gameStatus);
 	}

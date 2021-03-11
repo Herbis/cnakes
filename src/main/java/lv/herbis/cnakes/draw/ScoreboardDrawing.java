@@ -140,7 +140,7 @@ public class ScoreboardDrawing {
 						  Color.YELLOW, false);
 
 		/* "Player name" text */
-		this.drawing.drawText("Player 1", 1, this.playerNameXLocation, this.playerNameYLocation, Color.YELLOW, false);
+		this.drawing.drawText(gameStatus.getHighScoreName(), 1, this.playerNameXLocation, this.playerNameYLocation, Color.YELLOW, false);
 
 
 		if (gameStatus.isPaused()) {
@@ -165,6 +165,11 @@ public class ScoreboardDrawing {
 		} else {
 			if (gameStatus.hasEnded()) {
 				this.drawing.drawText("Game Over", 2f, this.gameOverXLocation, this.gameOverYLocation, Color.RED, true);
+				if (gameStatus.isHighScoreNameEntered()) {
+					this.drawing.drawText("Press Enter to Start the Game!", 2f, this.startGameXLocation, this.startGameYLocation, Color.GREEN,
+										  true);
+				}
+
 				if (this.topHighScore == null) {
 					this.drawing.drawText("High score cannot be displayed.", 1f, this.highScoreXLocation,
 										  this.highScoreYLocation, Color.WHITE, true);
