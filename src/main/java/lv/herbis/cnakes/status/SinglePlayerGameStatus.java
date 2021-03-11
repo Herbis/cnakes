@@ -1,10 +1,12 @@
 package lv.herbis.cnakes.status;
 
+import lv.herbis.cnakes.configuration.CnakesConfiguration;
 import lv.herbis.cnakes.entities.Timer;
 
 import java.util.regex.Pattern;
 
 public abstract class SinglePlayerGameStatus implements GameStatus {
+	private static final int MAX_NAME_LENGTH = 24;
 	private final Pattern validCharacters = Pattern.compile("^[a-zA-Z0-9\\s]$");
 
 	private boolean beingPlayed;
@@ -22,7 +24,8 @@ public abstract class SinglePlayerGameStatus implements GameStatus {
 	private Timer gameTimer;
 	private long gameLength = 0;
 
-	public SinglePlayerGameStatus(final long gameLength) {
+	public SinglePlayerGameStatus(final CnakesConfiguration configuration, final long gameLength) {
+		setHighScoreName(configuration.getUserName());
 		this.gameLength = gameLength;
 	}
 
@@ -182,8 +185,14 @@ public abstract class SinglePlayerGameStatus implements GameStatus {
 	}
 
 	@Override
-	public void setHighScoreName(String name) {
-		this.highScoreName = name;
+	public void setHighScoreName(final String name) {
+		if (name == null) {
+			this.highScoreName = (new CnakesConfiguration()).getUserName();
+		} else if (name.length() > MAX_NAME_LENGTH) {
+			this.highScoreName = name.substring(0, MAX_NAME_LENGTH);
+		} else {
+			this.highScoreName = name;
+		}
 	}
 
 	@Override

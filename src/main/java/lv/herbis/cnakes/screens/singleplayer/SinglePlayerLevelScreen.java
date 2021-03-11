@@ -1,6 +1,7 @@
 package lv.herbis.cnakes.screens.singleplayer;
 
 import lv.herbis.cnakes.configuration.CnakesConfiguration;
+import lv.herbis.cnakes.configuration.ConfigurationException;
 import lv.herbis.cnakes.constants.SoundConstants;
 import lv.herbis.cnakes.context.ContextItems;
 import lv.herbis.cnakes.controls.ControllerStatePublisher;
@@ -17,6 +18,7 @@ import lv.herbis.cnakes.screens.CnakesScreen;
 import lv.herbis.cnakes.sound.SoundManager;
 import lv.herbis.cnakes.staticaccess.GameRules;
 import lv.herbis.cnakes.status.SinglePlayerGameStatus;
+import lv.herbis.cnakes.tools.ConfigurationUtil;
 import lv.herbis.cnakes.tools.DataUtil;
 import lv.herbis.cnakes.tools.SerializationUtil;
 import org.apache.logging.log4j.LogManager;
@@ -227,7 +229,7 @@ public class SinglePlayerLevelScreen implements CnakesScreen {
 	public void startGame() {
 		MovingDirections.resetP1Direction();
 
-		this.gameStatus = new SinglePlayerGameStatus(Timer.minutesToMilliseconds(GAME_LENGTH)) {
+		this.gameStatus = new SinglePlayerGameStatus(configuration, Timer.minutesToMilliseconds(GAME_LENGTH)) {
 			@Override
 			public void afterEnd() {
 				LOG.info("End of the game.");
@@ -236,8 +238,7 @@ public class SinglePlayerLevelScreen implements CnakesScreen {
 
 			@Override
 			public void submitHighScore() {
-				final HighScore highScore = new HighScore(SinglePlayerLevelScreen.this.gameStatus.getHighScoreName(),
-														  SinglePlayerLevelScreen.this.gameStatus.getScore());
+				final HighScore highScore = new HighScore(getHighScoreName(), getScore());
 				if (SinglePlayerLevelScreen.this.highScores.addHighScore(highScore)) {
 					LOG.debug("Adding to high-scores.");
 					try {
@@ -254,6 +255,8 @@ public class SinglePlayerLevelScreen implements CnakesScreen {
 
 				this.setHighScoreNameEntered(true);
 
+				SinglePlayerLevelScreen.this.updateConfigurationIfUserNameDifferent(getHighScoreName());
+
 				glfwSetCharCallback(windowId, null);
 			}
 		};
@@ -263,6 +266,19 @@ public class SinglePlayerLevelScreen implements CnakesScreen {
 		newTarget();
 	}
 
+	protected void updateConfigurationIfUserNameDifferent(final String newUsername) {
+		if (newUsername == null || newUsername.equals(configuration.getUserName())) {
+			return;
+		}
+
+		configuration.setUserName(gameStatus.getHighScoreName());
+
+		try {
+			ConfigurationUtil.saveConfiguration(configuration, ConfigurationUtil.LOCAL_CONFIG_FILE_NAME);
+		} catch (final ConfigurationException e) {
+			LOG.error("Could not save the configuration.", e);
+		}
+	}
 
 	/**
 	 * Updates the game.

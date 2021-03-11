@@ -18,6 +18,7 @@ public class NameInputCharListener extends GLFWCharCallback {
 	@Override
 	public void invoke(long windowId, int codepoint) {
 		final char keyChar = (char) codepoint;
+		LOG.debug("char: {}", keyChar);
 		if (this.gameStatus.isValidHighScoreCharacter(keyChar)) {
 			gameStatus.setHighScoreName(gameStatus.getHighScoreName() + keyChar);
 		}
