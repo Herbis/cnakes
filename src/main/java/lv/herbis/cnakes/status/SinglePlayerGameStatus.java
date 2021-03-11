@@ -24,7 +24,7 @@ public abstract class SinglePlayerGameStatus implements GameStatus {
 	private Timer gameTimer;
 	private long gameLength = 0;
 
-	public SinglePlayerGameStatus(final CnakesConfiguration configuration, final long gameLength) {
+	protected SinglePlayerGameStatus(final CnakesConfiguration configuration, final long gameLength) {
 		setHighScoreName(configuration.getUserName());
 		this.gameLength = gameLength;
 	}
