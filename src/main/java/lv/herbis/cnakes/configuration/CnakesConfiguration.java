@@ -5,6 +5,7 @@ public class CnakesConfiguration {
 	private GameplayConfiguration gameplay;
 
 	private boolean defaultConfig = true;
+	private String userName = "Player 1";
 
 	public VideoConfiguration getVideo() {
 		if (this.video == null) {
@@ -34,5 +35,13 @@ public class CnakesConfiguration {
 
 	public void setDefaultConfig(boolean defaultConfig) {
 		this.defaultConfig = defaultConfig;
+	}
+
+	public String getUserName() {
+		return userName;
+	}
+
+	public void setUserName(String userName) {
+		this.userName = userName;
 	}
 }

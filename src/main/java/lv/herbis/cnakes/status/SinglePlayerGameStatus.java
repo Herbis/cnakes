@@ -1,12 +1,21 @@
 package lv.herbis.cnakes.status;
 
+import lv.herbis.cnakes.configuration.CnakesConfiguration;
 import lv.herbis.cnakes.entities.Timer;
 
+import java.util.regex.Pattern;
+
 public abstract class SinglePlayerGameStatus implements GameStatus {
+	private static final int MAX_NAME_LENGTH = 24;
+	private final Pattern validCharacters = Pattern.compile("^[a-zA-Z0-9\\s]$");
+
 	private boolean beingPlayed;
 	private boolean paused;
 	private boolean justStarted;
 	private boolean ended = false;
+	private boolean highScoreNameEntered = true;
+
+	private String highScoreName;
 
 	private long score = 0;
 	private long snakeLength = 5;
@@ -15,7 +24,8 @@ public abstract class SinglePlayerGameStatus implements GameStatus {
 	private Timer gameTimer;
 	private long gameLength = 0;
 
-	public SinglePlayerGameStatus(final long gameLength) {
+	protected SinglePlayerGameStatus(final CnakesConfiguration configuration, final long gameLength) {
+		setHighScoreName(configuration.getUserName());
 		this.gameLength = gameLength;
 	}
 
@@ -111,7 +121,6 @@ public abstract class SinglePlayerGameStatus implements GameStatus {
 
 	public abstract void afterEnd();
 
-
 	@Override
 	public boolean hasEnded() {
 		if (this.ended) {
@@ -140,6 +149,7 @@ public abstract class SinglePlayerGameStatus implements GameStatus {
 		this.paused = false;
 		this.beingPlayed = false;
 		this.justStarted = false;
+		this.highScoreNameEntered = false;
 
 		this.gameTimer = new Timer(this.gameLength);
 	}
@@ -161,4 +171,32 @@ public abstract class SinglePlayerGameStatus implements GameStatus {
 		}
 	}
 
+	public boolean isHighScoreNameEntered() {
+		return highScoreNameEntered;
+	}
+
+	public void setHighScoreNameEntered(boolean highScoreNameEntered) {
+		this.highScoreNameEntered = highScoreNameEntered;
+	}
+
+	@Override
+	public String getHighScoreName() {
+		return this.highScoreName;
+	}
+
+	@Override
+	public void setHighScoreName(final String name) {
+		if (name == null) {
+			this.highScoreName = (new CnakesConfiguration()).getUserName();
+		} else if (name.length() > MAX_NAME_LENGTH) {
+			this.highScoreName = name.substring(0, MAX_NAME_LENGTH);
+		} else {
+			this.highScoreName = name;
+		}
+	}
+
+	@Override
+	public boolean isValidHighScoreCharacter(final char character) {
+		return validCharacters.matcher("" + character).matches();
+	}
 }

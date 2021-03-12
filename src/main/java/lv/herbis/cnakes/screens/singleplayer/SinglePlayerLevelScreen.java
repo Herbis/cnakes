@@ -1,12 +1,14 @@
 package lv.herbis.cnakes.screens.singleplayer;
 
 import lv.herbis.cnakes.configuration.CnakesConfiguration;
+import lv.herbis.cnakes.configuration.ConfigurationException;
 import lv.herbis.cnakes.constants.SoundConstants;
 import lv.herbis.cnakes.context.ContextItems;
 import lv.herbis.cnakes.controls.ControllerStatePublisher;
 import lv.herbis.cnakes.draw.Drawing;
 import lv.herbis.cnakes.entities.PointCoordinates;
 import lv.herbis.cnakes.entities.Timer;
+import lv.herbis.cnakes.listeners.NameInputCharListener;
 import lv.herbis.cnakes.listeners.SinglePlayerKeyListener;
 import lv.herbis.cnakes.listeners.SinglePlayerScreenControllerListener;
 import lv.herbis.cnakes.movement.MovingDirections;
@@ -16,6 +18,7 @@ import lv.herbis.cnakes.screens.CnakesScreen;
 import lv.herbis.cnakes.sound.SoundManager;
 import lv.herbis.cnakes.staticaccess.GameRules;
 import lv.herbis.cnakes.status.SinglePlayerGameStatus;
+import lv.herbis.cnakes.tools.ConfigurationUtil;
 import lv.herbis.cnakes.tools.DataUtil;
 import lv.herbis.cnakes.tools.SerializationUtil;
 import org.apache.logging.log4j.LogManager;
@@ -28,6 +31,7 @@ import java.util.Random;
 
 import static lv.herbis.cnakes.constants.CnakesConstants.HIGH_SCORE_FILE;
 import static lv.herbis.cnakes.constants.CnakesConstants.SAVE_FILE_PATH;
+import static org.lwjgl.glfw.GLFW.glfwSetCharCallback;
 import static org.lwjgl.glfw.GLFW.glfwSetKeyCallback;
 
 
@@ -169,7 +173,6 @@ public class SinglePlayerLevelScreen implements CnakesScreen {
 	public void newSnake() {
 		this.head = new PointCoordinates(0, 0);
 		this.body = new ArrayList<>();
-		LOG.debug("New Snake created.");
 	}
 
 
@@ -209,8 +212,13 @@ public class SinglePlayerLevelScreen implements CnakesScreen {
 	 * Renders all that needs to be rendered for this game.
 	 */
 	private void render() {
-		this.drawing.drawTarget(this.target);
-		this.drawing.drawPlayGrid(this.head);
+		if (!this.gameStatus.hasEnded()) {
+
+			this.drawing.drawPlayGrid(this.head);
+		}
+		if (this.gameStatus.isBeingPlayed()) {
+			this.drawing.drawTarget(this.target);
+		}
 		this.drawing.drawScoreboard(this.gameStatus);
 	}
 
@@ -221,12 +229,16 @@ public class SinglePlayerLevelScreen implements CnakesScreen {
 	public void startGame() {
 		MovingDirections.resetP1Direction();
 
-		this.gameStatus = new SinglePlayerGameStatus(Timer.minutesToMilliseconds(GAME_LENGTH)) {
+		this.gameStatus = new SinglePlayerGameStatus(configuration, Timer.minutesToMilliseconds(GAME_LENGTH)) {
 			@Override
 			public void afterEnd() {
 				LOG.info("End of the game.");
-				final HighScore highScore = new HighScore("Player 1",
-														  SinglePlayerLevelScreen.this.gameStatus.getScore());
+				glfwSetCharCallback(windowId, new NameInputCharListener(gameStatus));
+			}
+
+			@Override
+			public void submitHighScore() {
+				final HighScore highScore = new HighScore(getHighScoreName(), getScore());
 				if (SinglePlayerLevelScreen.this.highScores.addHighScore(highScore)) {
 					LOG.debug("Adding to high-scores.");
 					try {
@@ -240,6 +252,12 @@ public class SinglePlayerLevelScreen implements CnakesScreen {
 				} else {
 					LOG.debug("High-score was not added.");
 				}
+
+				this.setHighScoreNameEntered(true);
+
+				SinglePlayerLevelScreen.this.updateConfigurationIfUserNameDifferent(getHighScoreName());
+
+				glfwSetCharCallback(windowId, null);
 			}
 		};
 
@@ -248,6 +266,19 @@ public class SinglePlayerLevelScreen implements CnakesScreen {
 		newTarget();
 	}
 
+	protected void updateConfigurationIfUserNameDifferent(final String newUsername) {
+		if (newUsername == null || newUsername.equals(configuration.getUserName())) {
+			return;
+		}
+
+		configuration.setUserName(gameStatus.getHighScoreName());
+
+		try {
+			ConfigurationUtil.saveConfiguration(configuration, ConfigurationUtil.LOCAL_CONFIG_FILE_NAME);
+		} catch (final ConfigurationException e) {
+			LOG.error("Could not save the configuration.", e);
+		}
+	}
 
 	/**
 	 * Updates the game.
@@ -278,6 +309,8 @@ public class SinglePlayerLevelScreen implements CnakesScreen {
 			final int direction = MovingDirections.getP1LastDirection();
 			this.drawing.drawSnakeInMovement(this.head, this.body, direction,
 											 this.lastDelta * this.gameScale / this.gameSpeedMs, this.halfCellReached);
+		} else if (this.gameStatus.hasEnded()) {
+ 			// ?
 		} else {
 			this.drawing.drawSnake(this.head, this.body);
 		}

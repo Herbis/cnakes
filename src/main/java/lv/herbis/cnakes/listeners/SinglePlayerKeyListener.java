@@ -34,9 +34,7 @@ public class SinglePlayerKeyListener extends GLFWKeyCallback {
 			caught = true;
 		} else if (key == GLFW_KEY_ENTER) {
 			/* Only allow to start the game if the game is not being played or has ended. */
-			if (!this.game.isBeingPlayed() || this.game.hasEnded()) {
-				this.game.start();
-			}
+			handleEnterKeyPress();
 			caught = true;
 		} else if (key == GLFW_KEY_ESCAPE) {
 			/* Only allow to exit if */
@@ -45,9 +43,29 @@ public class SinglePlayerKeyListener extends GLFWKeyCallback {
 				throw new MainMenu.ReturnToMenuRequest();
 			}
 			caught = true;
+		} else if (this.game.hasEnded() && !this.game.isHighScoreNameEntered()
+				&& (key == GLFW_KEY_BACKSPACE || key == GLFW_KEY_DELETE)) {
+			removeLastCharacterFromHighScoreName();
 		}
 
 		return caught;
+	}
+
+	private void removeLastCharacterFromHighScoreName() {
+		final String name = this.game.getHighScoreName();
+		if (name != null && name.length() > 0) {
+			this.game.setHighScoreName(name.substring(0, name.length() - 1));
+		}
+	}
+
+	private void handleEnterKeyPress() {
+		if (!this.game.isBeingPlayed()) {
+			if (this.game.hasEnded() && !this.game.isHighScoreNameEntered()) {
+				this.game.submitHighScore();
+			} else {
+				this.game.start();
+			}
+		}
 	}
 
 	private boolean catchMovement(final int key) {
