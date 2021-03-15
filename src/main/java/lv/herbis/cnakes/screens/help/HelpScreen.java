@@ -65,7 +65,7 @@ public class HelpScreen implements CnakesScreen {
 
 	@Override
 	public void update() {
-		this.drawing.drawText(RULES, 2, this.screenWidthCenterScaled, this.screenHeightScaled - 2, Color.GREEN, true);
+		this.drawing.drawText(RULES, 2, this.screenWidthCenterScaled, this.screenHeightScaled - 2f, Color.GREEN, true);
 		this.drawing.drawText(RULE_1, 1.5f, this.screenWidthCenterScaled, this.screenHeightScaled - 4.5f, Color.GREEN,
 							  true);
 		this.drawing.drawText(RULE_1_1, 1f, this.screenWidthCenterScaled, this.screenHeightScaled - 6.5f, Color.GREEN,
