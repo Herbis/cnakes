@@ -89,7 +89,6 @@ public class HighScoresScreen implements CnakesScreen {
 				this.pagination);
 		glfwSetJoystickCallback(controllerListener);
 		this.contextItems.getControllerStatePublisher().setControllerListener(controllerListener);
-		this.drawing.initFont("fonts/trs-million_rg.ttf");
 
 	}
 
