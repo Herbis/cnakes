@@ -116,7 +116,7 @@ public class ConfigurationUtil {
 		final Path path = Paths.get(SAVE_FILE_PATH.toString(), configFileName);
 		try {
 			Files.createDirectories(SAVE_FILE_PATH); // Make sure directory exists
-			return new FileInputStream(path.toString());
+			return Files.newInputStream(path);
 		} catch (final IOException e) {
 			LOG.warn("Local configuration not found. Path: {}, Reason: {}", path, e.getMessage());
 			LOG.debug(LOG_STACKTRACE, e);
