@@ -35,7 +35,6 @@ public class MainMenu implements Runnable {
 	private final CnakesConfiguration configuration;
 	private MenuNavigation navigation;
 
-	private boolean resolutionAutoConfig;
 	private Integer monitor;
 
 	private long windowId;
@@ -82,7 +81,6 @@ public class MainMenu implements Runnable {
 	}
 
 	private void initConfiguration() {
-		this.resolutionAutoConfig = this.configuration.getVideo().getResolution().isAutoConfig();
 		this.monitor = this.configuration.getVideo().getMonitor();
 		this.gameScale = this.configuration.getVideo().getScale();
 	}
@@ -102,7 +100,7 @@ public class MainMenu implements Runnable {
 		// Configure GLFW
 		glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE); // the window will not be resizable
 
-		if (this.resolutionAutoConfig) {
+		if (this.configuration.getVideo().getResolution().isAutoConfig()) {
 			autoConfigureResolution();
 		}
 
