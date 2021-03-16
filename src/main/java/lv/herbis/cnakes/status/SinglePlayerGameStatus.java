@@ -22,7 +22,7 @@ public abstract class SinglePlayerGameStatus implements GameStatus {
 	private long bugsCollected = 0;
 	private boolean inBonus = true;
 	private Timer gameTimer;
-	private long gameLength = 0;
+	private long gameLength;
 
 	protected SinglePlayerGameStatus(final CnakesConfiguration configuration, final long gameLength) {
 		setHighScoreName(configuration.getUserName());
