@@ -38,7 +38,7 @@ import static org.lwjgl.glfw.GLFW.glfwSetKeyCallback;
 public class SinglePlayerLevelScreen implements CnakesScreen {
 	private static final Logger LOG = LogManager.getLogger(SinglePlayerLevelScreen.class);
 
-	private static final int GAME_LENGTH = 1;
+	private static final int GAME_LENGTH = 5;
 
 	private final CnakesConfiguration configuration;
 	private final long windowId;
