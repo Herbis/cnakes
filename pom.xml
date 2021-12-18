@@ -16,7 +16,7 @@
 		<class>menus.StartScreen</class>
 		<maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
         <maven-shade-plugin.version>3.2.1</maven-shade-plugin.version>
-		<log4j.version>2.13.3</log4j.version>
+		<log4j.version>2.17.0</log4j.version>
 		<joml.version>1.9.25</joml.version>
 		<mockito.version>3.6.28</mockito.version>
 		<launch4j.version>1.7.25</launch4j.version>
